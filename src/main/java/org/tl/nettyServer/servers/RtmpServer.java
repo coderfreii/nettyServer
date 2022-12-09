@@ -1,18 +1,15 @@
 package org.tl.nettyServer.servers;
 
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.tl.nettyServer.servers.net.http.codec.ChunkM2MDecoder;
-import org.tl.nettyServer.servers.net.http.codec.ContentTypeDecoder;
-import org.tl.nettyServer.servers.net.http.codec.HTTPRequestDecoder;
-import org.tl.nettyServer.servers.net.http.codec.HTTPResponseEncoder;
-import org.tl.nettyServer.servers.net.http.handler.HTTPNettyIoHandler;
+import org.tl.nettyServer.servers.net.rtmp.handler.ConnInboundHandler;
+import org.tl.nettyServer.servers.net.rtmp.handler.HandshakeHandler;
+import org.tl.nettyServer.servers.net.rtmp.handler.RTMPEHandler;
 
-public class HttpServer {
+public class RtmpServer {
     static private EventLoopGroup bossGroup;
     static private EventLoopGroup workerGroup;
 
@@ -21,11 +18,10 @@ public class HttpServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new HTTPRequestDecoder())
-                        .addLast(new HTTPResponseEncoder())
-                        .addLast(new ChunkM2MDecoder())
-                        .addLast(new ContentTypeDecoder())
-                        .addLast(new HTTPNettyIoHandler());
+                        .addLast(new ConnInboundHandler())
+                        .addLast(new HandshakeHandler())
+                        .addLast(new RTMPEHandler())
+                ;
             }
         };
 
