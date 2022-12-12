@@ -8,6 +8,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.tl.nettyServer.servers.net.rtmp.handler.ConnInboundHandler;
 import org.tl.nettyServer.servers.net.rtmp.handler.HandshakeHandler;
 import org.tl.nettyServer.servers.net.rtmp.handler.RTMPEHandler;
+import org.tl.nettyServer.servers.net.rtmp.handler.RtmpDecodeToPacketHandler;
 
 public class RtmpServer {
     static private EventLoopGroup bossGroup;
@@ -21,6 +22,7 @@ public class RtmpServer {
                         .addLast(new ConnInboundHandler())
                         .addLast(new HandshakeHandler())
                         .addLast(new RTMPEHandler())
+                        .addLast(new RtmpDecodeToPacketHandler())
                 ;
             }
         };

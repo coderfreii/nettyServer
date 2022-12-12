@@ -70,6 +70,16 @@ public interface BufFacade<T> {
 
 
     //read----
+    boolean readable();
+
+    boolean isReadOnly();
+
+    /**
+     * Returns a read-only version of this buffer.
+     */
+    BufFacade<T> asReadOnly();
+
+
     BufFacade<T> readBytes(int length);
 
 
@@ -802,6 +812,8 @@ public interface BufFacade<T> {
 
 
     //write----------------
+
+    boolean writeable();
 
     /**
      * Sets the specified boolean at the current {@code writerIndex}

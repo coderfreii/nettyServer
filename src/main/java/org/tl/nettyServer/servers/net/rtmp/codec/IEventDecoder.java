@@ -18,7 +18,6 @@
 
 package org.tl.nettyServer.servers.net.rtmp.codec;
 
-import com.sun.org.apache.bcel.internal.classfile.Unknown;
 import org.tl.nettyServer.servers.buf.BufFacade;
 import org.tl.nettyServer.servers.net.rtmp.event.*;
 import org.tl.nettyServer.servers.so.ISharedObjectMessage;

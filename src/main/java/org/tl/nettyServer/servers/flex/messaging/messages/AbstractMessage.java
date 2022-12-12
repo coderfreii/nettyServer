@@ -25,6 +25,7 @@ import org.tl.nettyServer.servers.io.amf3.ByteArray;
 import org.tl.nettyServer.servers.io.amf3.IDataInput;
 import org.tl.nettyServer.servers.io.amf3.IDataOutput;
 import org.tl.nettyServer.servers.util.ObjectMap;
+import org.tl.nettyServer.servers.util.RandomGUID;
 
 import java.io.Serializable;
 import java.util.Map;

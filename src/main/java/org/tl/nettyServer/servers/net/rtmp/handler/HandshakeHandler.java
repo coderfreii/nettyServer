@@ -3,13 +3,14 @@ package org.tl.nettyServer.servers.net.rtmp.handler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import io.netty.util.Attribute;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.servers.buf.BufFacade;
+import org.tl.nettyServer.servers.net.rtmp.codec.HandShake;
 import org.tl.nettyServer.servers.net.rtmp.codec.RTMP;
 import org.tl.nettyServer.servers.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.servers.net.rtmp.message.Constants;
-import org.tl.nettyServer.servers.net.rtmp.session.NettySessionFacade;
+import org.tl.nettyServer.servers.net.rtmp.session.SessionAccessor;
+import org.tl.nettyServer.servers.net.rtmp.session.SessionFacade;
 
 import java.util.List;
 
@@ -19,9 +20,8 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> in, List<Object> out) throws Exception {
-        Attribute<NettySessionFacade> attr = ctx.channel().attr(NettySessionFacade.sessionKeyAttr);
-        NettySessionFacade nettySessionFacade = attr.get();
-        RTMPConnection connection = (RTMPConnection) nettySessionFacade.getConnection();
+        RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        SessionFacade nettySessionFacade = SessionAccessor.resolveSession(ctx);
         RTMP state = connection.getState();
 
         switch (state.getState()) {

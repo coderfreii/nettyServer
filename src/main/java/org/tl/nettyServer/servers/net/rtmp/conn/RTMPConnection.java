@@ -166,7 +166,16 @@ public class RTMPConnection extends BaseConnection {
     }
 
 
-    RTMPDecodeState getDecoderState() {
+    public RTMPDecodeState getDecoderState() {
         return this.decoderState;
+    }
+
+    public Number getStreamIdForChannelId(int channelId) {
+        if (channelId < 4) {
+            return 0;
+        }
+        Number streamId = Math.floor(((channelId - 4) / 5.0d) + 1);
+
+        return streamId;
     }
 }

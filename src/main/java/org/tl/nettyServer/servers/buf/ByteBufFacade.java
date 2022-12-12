@@ -491,6 +491,11 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     }
 
     @Override
+    public boolean writeable() {
+        return this.target.isWritable();
+    }
+
+    @Override
     public BufFacade<ByteBuf> writeBoolean(boolean value) {
         this.target.writeBoolean(value);
         return this;
@@ -602,6 +607,24 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     @Override
     public byte[] array() {
         return this.target.array();
+    }
+
+    @Override
+    public boolean readable() {
+        return this.target.isReadable();
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.target.isReadOnly();
+    }
+
+    @Override
+    public BufFacade<ByteBuf> asReadOnly() {
+        if (isReadOnly()) {
+            return this;
+        }
+        return wrapper(this.target.asReadOnly());
     }
 
     @Override

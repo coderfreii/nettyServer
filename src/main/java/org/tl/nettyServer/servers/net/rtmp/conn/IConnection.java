@@ -24,6 +24,7 @@ import org.tl.nettyServer.servers.net.rtmp.session.SessionFacade;
 import java.util.Map;
 
 /**
+ * iconnection
  * The connection object.
  * <p>
  * * 每个连接都有一个关联的客户端和作用域。
@@ -33,11 +34,12 @@ import java.util.Map;
  * @author The Red5 Project
  * @author Luke Hubbard (luke@codegent.com)
  * @author Paul Gregoire (mondain@gmail.com)
+ * @date 2022/12/12
  */
 public interface IConnection extends ICoreObject {
     void setSession(SessionFacade sessionFacade);
 
-    SessionFacade getSession(SessionFacade sessionFacade);
+    SessionFacade getSession();
 
     /**
      * Encoding type.

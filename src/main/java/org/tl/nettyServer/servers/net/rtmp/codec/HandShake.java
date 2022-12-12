@@ -1,4 +1,4 @@
-package org.tl.nettyServer.servers.net.rtmp.handler;
+package org.tl.nettyServer.servers.net.rtmp.codec;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;

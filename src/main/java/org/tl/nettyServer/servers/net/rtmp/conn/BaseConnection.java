@@ -24,7 +24,7 @@ public abstract class BaseConnection extends AttributeStore implements IConnecti
     }
 
     @Override
-    public SessionFacade getSession(SessionFacade sessionFacade) {
+    public SessionFacade getSession() {
         return this.sessionFacade;
     }
 }

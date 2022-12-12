@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.servers.io.amf3.ByteArray;
 import org.tl.nettyServer.servers.io.amf3.IDataInput;
 import org.tl.nettyServer.servers.io.amf3.IDataOutput;
+import org.tl.nettyServer.servers.util.RandomGUID;
 
 /**
  * Base class for for asynchronous Flex compatibility messages.

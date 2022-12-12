@@ -52,8 +52,9 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
 
     /**
      * Channel
+     * chunk stream ID
      */
-    private int channelId;
+    private int csId;
 
     /**
      * Getter for format
@@ -79,16 +80,16 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
      * @return Channel id
      */
     public int getChannelId() {
-        return channelId;
+        return csId;
     }
 
     /**
      * Setter for channel id
      *
-     * @param channelId Header channel id
+     * @param csId Header channel id
      */
-    public void setChannelId(int channelId) {
-        this.channelId = channelId;
+    public void setChannelId(int csId) {
+        this.csId = csId;
     }
 
     /**
@@ -118,13 +119,13 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
     public static ChunkHeader read(BufFacade in) {
         int remaining = in.readableBytes();
         if (remaining > 0) {
-            byte headerByte = in.readByte();
+            byte firstByte = in.readByte();
             ChunkHeader h = new ChunkHeader();
             // going to check highest 2 bits 0b是二进制的意思
-            h.format = (byte) ((0b11000000 & headerByte) >> 6);
+            h.format = (byte) ((firstByte & 0xff) >> 6);
             //0x3f 十进制是63 = 3 * 16 + 15 二进制=0b111111
-            int fmt = headerByte & 0x3f;
-            switch (fmt) {
+            int assumeCsId = (firstByte & 0x3f);
+            switch (assumeCsId) {
                 case 0:
                     // two byte header
                     h.size = 2;
@@ -135,7 +136,7 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
                     //计算机内的存储都是利用二进制的补码进行存储的
                     //byte要转化为int的时候，高的24位必然会补1
                     //byte是8位二进制0xFF转化成8位二进制就是11111111其本质原因就是想保持二进制补码的一致性
-                    h.channelId = 64 + (in.readByte() & 0xff);
+                    h.csId = 64 + (in.readByte() & 0xff);
                     break;
                 case 1:
                     // three byte header
@@ -145,19 +146,19 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
                     }
                     byte b1 = in.readByte();
                     byte b2 = in.readByte();
-                    h.channelId = 64 + ((b2 & 0xff) << 8 | (b1 & 0xff));
+                    h.csId = 64 + ((b2 & 0xff) << 8 | (b1 & 0xff));
                     break;
                 default:
                     // single byte header
                     h.size = 1;
-                    h.channelId = 0x3f & headerByte;
+                    h.csId = assumeCsId;
                     break;
             }
             // check channel id is valid
-            if (h.channelId < 0) {
-                throw new ProtocolException("Bad channel id: " + h.channelId);
+            if (h.csId < 0) {
+                throw new ProtocolException("Bad channel id: " + h.csId);
             }
-            log.trace("CHUNK header byte {}, count {}, header {}, channel {}", String.format("%02x", headerByte), h.size, 0, h.channelId);
+            log.trace("CHUNK header byte {}, count {}, header {}, channel {}", String.format("%02x", firstByte), h.size, 0, h.csId);
             return h;
         } else {
             // at least one byte for valid decode
@@ -172,7 +173,7 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
     public boolean equals(Object other) {
         if (other instanceof ChunkHeader) {
             final ChunkHeader header = (ChunkHeader) other;
-            return (header.getChannelId() == channelId && header.getFormat() == format);
+            return (header.getChannelId() == csId && header.getFormat() == format);
         }
         return false;
     }
@@ -183,7 +184,7 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
     @Override
     public ChunkHeader clone() {
         final ChunkHeader header = new ChunkHeader();
-        header.setChannelId(channelId);
+        header.setChannelId(csId);
         header.setSize(size);
         header.setFormat(format);
         return header;
@@ -191,20 +192,20 @@ public class ChunkHeader implements Constants, Cloneable, Externalizable {
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         format = in.readByte();
-        channelId = in.readInt();
-        size = (byte) (channelId > 319 ? 3 : (channelId > 63 ? 2 : 1));
+        csId = in.readInt();
+        size = (byte) (csId > 319 ? 3 : (csId > 63 ? 2 : 1));
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeByte(format);
-        out.writeInt(channelId);
+        out.writeInt(csId);
     }
 
     @Override
     public String toString() {
         // if its new and props are un-set, just return that message
-        if ((channelId + format) > 0d) {
-            return "ChunkHeader [type=" + format + ", channelId=" + channelId + ", size=" + size + "]";
+        if ((csId + format) > 0d) {
+            return "ChunkHeader [type=" + format + ", csId=" + csId + ", size=" + size + "]";
         } else {
             return "empty";
         }
