@@ -15,7 +15,10 @@ import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
+<<<<<<<< HEAD:src/main/java/org/tl/nettyServer/media/net/rtmp/codec/RtmpPacketToMessageDecoder.java
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
+========
+>>>>>>>> origin/master:src/main/java/org/tl/nettyServer/media/net/rtmp/codec/RtmpMessageDecoder.java
 import org.tl.nettyServer.media.net.rtmp.message.SharedObjectTypeMapping;
 import org.tl.nettyServer.media.service.PendingCall;
 import org.tl.nettyServer.media.so.FlexSharedObjectMessage;
