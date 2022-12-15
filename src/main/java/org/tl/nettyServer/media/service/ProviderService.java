@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,8 @@
 
 package org.tl.nettyServer.media.service;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-
 import org.tl.nettyServer.media.messaging.IMessageInput;
 import org.tl.nettyServer.media.messaging.IPipe;
 import org.tl.nettyServer.media.messaging.InMemoryPullPullPipe;
@@ -29,6 +29,7 @@ import org.tl.nettyServer.media.stream.provider.FileProvider;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class ProviderService implements IProviderService {
     // whether or not to support FCS/FMS/AMS live-wait (default to off)
     private boolean liveWaitSupport;
 
-    
+
     public INPUT_TYPE lookupProviderInput(IScope scope, String name, int type) {
         INPUT_TYPE result = INPUT_TYPE.NOT_FOUND;
         if (scope.getBasicScope(ScopeType.BROADCAST, name) != null) {
@@ -60,7 +61,7 @@ public class ProviderService implements IProviderService {
         return result;
     }
 
-    
+
     public IMessageInput getProviderInput(IScope scope, String name) {
         IMessageInput msgIn = getLiveProviderInput(scope, name, false);
         if (msgIn == null) {
@@ -69,7 +70,7 @@ public class ProviderService implements IProviderService {
         return msgIn;
     }
 
-    
+
     public IMessageInput getLiveProviderInput(IScope scope, String name, boolean needCreate) {
         log.debug("Get live provider input for {} scope: {}", name, scope);
         //make sure the create is actually needed
@@ -87,7 +88,7 @@ public class ProviderService implements IProviderService {
         return broadcastScope;
     }
 
-    
+
     public IMessageInput getVODProviderInput(IScope scope, String name) {
         log.debug("getVODProviderInput - scope: {} name: {}", scope, name);
         File file = getVODProviderFile(scope, name);
@@ -99,7 +100,7 @@ public class ProviderService implements IProviderService {
         return pipe;
     }
 
-    
+
     public File getVODProviderFile(IScope scope, String name) {
         if (log.isDebugEnabled()) {
             log.debug("getVODProviderFile - scope: {} name: {}", scope, name);
@@ -116,10 +117,10 @@ public class ProviderService implements IProviderService {
         return file;
     }
 
-    
+
     public boolean registerBroadcastStream(IScope scope, String name, IBroadcastStream bs) {
         if (log.isDebugEnabled()) {
-            log.debug("Registering - name: {} stream: {} scope: {}", new Object[] { name, bs, scope });
+            log.debug("Registering - name: {} stream: {} scope: {}", new Object[]{name, bs, scope});
             ((Scope) scope).dump();
         }
         IBroadcastScope broadcastScope = scope.getBroadcastScope(name);
@@ -142,20 +143,20 @@ public class ProviderService implements IProviderService {
         return broadcastScope.subscribe(bs.getProvider(), null);
     }
 
-    
+
     public Set<String> getBroadcastStreamNames(IScope scope) {
         return scope.getBasicScopeNames(ScopeType.BROADCAST);
     }
 
-    
+
     public boolean unregisterBroadcastStream(IScope scope, String name) {
         return unregisterBroadcastStream(scope, name, null);
     }
 
-    
+
     public boolean unregisterBroadcastStream(IScope scope, String name, IBroadcastStream bs) {
         if (log.isDebugEnabled()) {
-            log.debug("Unregistering - name: {} stream: {} scope: {}", new Object[] { name, bs, scope });
+            log.debug("Unregistering - name: {} stream: {} scope: {}", new Object[]{name, bs, scope});
             ((Scope) scope).dump();
         }
         IBroadcastScope broadcastScope = scope.getBroadcastScope(name);
@@ -176,6 +177,7 @@ public class ProviderService implements IProviderService {
         return scope.getBasicScope(ScopeType.BROADCAST, name) == null;
     }
 
+    @SneakyThrows
     private File getStreamFile(IScope scope, String name) {
         if (log.isDebugEnabled()) {
             log.debug("getStreamFile - name: {}", name);
@@ -205,24 +207,29 @@ public class ProviderService implements IProviderService {
         // start life as null and only update upon positive outcome
         File file = null;
         // get ahead of the game with the direct check first
-		File tmp = Paths.get(filename).toFile();
-		// most likely case first
-		if (tmp.exists()) {
-		    file = tmp;
-		} else if (!filenameGenerator.resolvesToAbsolutePath()) {
-		    String appScopeName = ScopeUtils.findApplication(scope).getName();
-			file = new File(String.format("%s/webapps/%s/%s", System.getProperty("red5.root"), appScopeName, filename));
-		   // file = scope.getContext().getResource(filename).getFile();
-		}
+        File tmp = Paths.get(filename).toFile();
+        // most likely case first
+        if (tmp.exists()) {
+            file = tmp;
+        } else if (!filenameGenerator.resolvesToAbsolutePath()) {
+            String appScopeName = ScopeUtils.findApplication(scope).getName();
+            file = new File(String.format("%s/webapps/%s/%s", System.getProperty("red5.root"), appScopeName, filename));
+            // file = scope.getContext().getResource(filename).getFile();
+        }
+
+        if (!file.exists()) {
+            throw new FileNotFoundException(file.getPath());
+        }
+
         return file;
     }
 
-    
+
     public boolean isLiveWaitSupport() {
         return liveWaitSupport;
     }
 
-    
+
     public void setLiveWaitSupport(boolean liveWaitSupport) {
         this.liveWaitSupport = liveWaitSupport;
     }

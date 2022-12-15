@@ -21,7 +21,7 @@ package org.tl.nettyServer.media.net.rtmp.handler.packet;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.net.rtmp.session.SessionFacade;
+import org.tl.nettyServer.media.session.SessionFacade;
 
 /**
  * RTMP events handler

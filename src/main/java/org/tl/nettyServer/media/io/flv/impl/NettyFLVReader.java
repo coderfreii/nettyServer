@@ -1,9 +1,6 @@
 package org.tl.nettyServer.media.io.flv.impl;
 
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
@@ -29,7 +26,7 @@ import java.util.Map;
  * NOTE: This class is not implemented as threading-safe. The caller
  * should make sure the threading-safety.
  */
-public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INettyTagReader, Closeable {
+public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader, Closeable {
 
     /**
      * Logger
@@ -486,7 +483,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
     /**
      * Create tag for metadata event.
      */
-    private INettyTag createFileMeta() {
+    private ITag createFileMeta() {
         // Create tag for onMetaData event
         BufFacade buf = BufFacade.buffer(0);
         Output out = new Output(buf);
@@ -517,16 +514,16 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
         props.put("canSeekToEnd", true);
         out.writeMap(props);
 
-        INettyTag result = new NettyTag(IoConstants.TYPE_METADATA, 0, buf.capacity(), null, 0);
+        ITag result = new NettyTag(IoConstants.TYPE_METADATA, 0, buf.capacity(), null, 0);
         result.setBody(buf);
         //
         out = null;
         return result;
     }
 
-    public synchronized INettyTag readTag() {
+    public synchronized ITag readTag() {
         long oldPos = getCurrentPosition();
-        INettyTag tag = readTagHeader();
+        ITag tag = readTagHeader();
         if (tag != null) {
             boolean isMetaData = tag.getDataType() == TYPE_METADATA;
             log.debug("readTag, oldPos: {}, tag header: \n{}", oldPos, tag);
@@ -623,7 +620,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
         while (hasMoreTags()) {
             long pos = getCurrentPosition();
             // Read tag header and duration
-            INettyTag tmpTag = this.readTagHeader();
+            ITag tmpTag = this.readTagHeader();
             if (tmpTag != null) {
                 totalValidTags++;
             } else {
@@ -729,7 +726,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
     /**
      * Read only header part of a tag.
      */
-    private INettyTag readTagHeader() {
+    private ITag readTagHeader() {
         // previous tag size (4 bytes) + flv tag header size (11 bytes)
         fillBuffer(15);
 //        		if (log.isDebugEnabled()) {
@@ -800,7 +797,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
                     // attempt to read the metadata
                     flv.seek(13);
                     byte tagType = flv.readByte();
-                    if (tagType == INettyTag.TYPE_METADATA) {
+                    if (tagType == ITag.TYPE_METADATA) {
                         ByteBuffer buf = ByteBuffer.allocate(3);
                         flv.getChannel().read(buf);
                         int bodySize = IOUtils.readMediumInt(buf);
@@ -848,7 +845,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, INett
     }
 
     @Override
-    public INettyTagReader copy() {
+    public ITagReader copy() {
         return null;
     }
 

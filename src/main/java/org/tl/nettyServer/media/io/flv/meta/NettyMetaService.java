@@ -18,17 +18,14 @@
 
 package org.tl.nettyServer.media.io.flv.meta;
 
-import io.netty.buffer.ByteBuf;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.io.NettyTag;
 import org.tl.nettyServer.media.io.amf.Input;
 import org.tl.nettyServer.media.io.amf.Output;
-import org.tl.nettyServer.media.io.flv.INettyFLV;
 import org.tl.nettyServer.media.io.flv.impl.FLVWriter;
 import org.tl.nettyServer.media.io.flv.impl.NettyFLVReader;
 import org.tl.nettyServer.media.io.object.Deserializer;
@@ -79,7 +76,7 @@ public class NettyMetaService implements INettyMetaService {
         IMetaCue[] metaArr = meta.getMetaCue();
         NettyFLVReader reader = new NettyFLVReader(file, false);
         FLVWriter writer = new FLVWriter(file, false);
-        INettyTag tag = null;
+        ITag tag = null;
         // Read first tag
         if (reader.hasMoreTags()) {
             tag = reader.readTag();
@@ -96,7 +93,7 @@ public class NettyMetaService implements INettyMetaService {
         meta.setVideoCodecId(reader.getVideoCodecId());
         meta.setAudioCodecId(reader.getAudioCodecId());
 
-        INettyTag injectedTag = injectMetaData(meta, tag);
+        ITag injectedTag = injectMetaData(meta, tag);
         injectedTag.setPreviousTagSize(0);
         tag.setPreviousTagSize(injectedTag.getBodySize());
 
@@ -211,7 +208,7 @@ public class NettyMetaService implements INettyMetaService {
      *            Tag
      * @return New tag with injected metadata
      */
-    private static INettyTag injectMetaData(IMetaData<?, ?> meta, INettyTag tag) {
+    private static ITag injectMetaData(IMetaData<?, ?> meta, ITag tag) {
         BufFacade bb = BufFacade.buffer(1000);
         Output out = new Output(bb);
         Serializer.serialize(out, "onMetaData");
@@ -229,9 +226,9 @@ public class NettyMetaService implements INettyMetaService {
      *            Metadata (cue points)
      * @param tag
      *            Tag
-     * @return INettyTag tag New tag with injected metadata
+     * @return ITag tag New tag with injected metadata
      */
-    private static INettyTag injectMetaCue(IMetaCue meta, INettyTag tag) {
+    private static ITag injectMetaCue(IMetaCue meta, ITag tag) {
         // IMeta meta = (MetaCue) cue;
         Output out = new Output(BufFacade.buffer(1000));
         Serializer.serialize(out, "onCuePoint");

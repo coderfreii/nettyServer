@@ -20,7 +20,7 @@ package org.tl.nettyServer.media.io.flv;
 
 
 import org.tl.nettyServer.media.cache.ICacheStore;
-import org.tl.nettyServer.media.io.INettyTagReader;
+import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.flv.meta.IMetaData;
@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * Represents FLV file
  */
-public interface INettyFLV extends IStreamableFile {
+public interface IFLV extends IStreamableFile {
  
     public boolean hasMetaData();
  
@@ -57,7 +57,7 @@ public interface INettyFLV extends IStreamableFile {
  
     public void flushHeaders() throws IOException;
  
-    public INettyTagReader readerFromNearestKeyFrame(int seekPoint);
+    public ITagReader readerFromNearestKeyFrame(int seekPoint);
  
     public ITagWriter writerFromNearestKeyFrame(int seekPoint);
  

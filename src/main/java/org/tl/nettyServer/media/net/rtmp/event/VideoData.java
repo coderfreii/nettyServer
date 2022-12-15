@@ -20,7 +20,7 @@ package org.tl.nettyServer.media.net.rtmp.event;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.stream.IStreamData;
@@ -132,7 +132,7 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
         if (data != null && data.readableBytes() > 0) {
             data.markReaderIndex();
             int firstByte = data.readByte() & 0xff;
-            codecId = firstByte & INettyTag.MASK_VIDEO_CODEC;
+            codecId = firstByte & ITag.MASK_VIDEO_CODEC;
             if (codecId == VideoCodec.AVC.getId()) {
                 int secondByte = data.readByte() & 0xff;
                 config = (secondByte == 0);

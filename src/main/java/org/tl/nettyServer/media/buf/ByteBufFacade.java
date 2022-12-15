@@ -218,6 +218,158 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     }
 
     @Override
+    public BufFacade<ByteBuf> setBoolean(int index, boolean value) {
+        this.target.setBoolean(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setByte(int index, int value) {
+        this.target.setByte(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setShort(int index, int value) {
+        this.target.setShort(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setShortLE(int index, int value) {
+        this.target.setShortLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setMedium(int index, int value) {
+        this.target.setMedium(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setMediumLE(int index, int value) {
+        this.target.setMediumLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setInt(int index, int value) {
+        this.target.setInt(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setIntLE(int index, int value) {
+        this.target.setIntLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setLong(int index, long value) {
+        this.target.setLong(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setLongLE(int index, long value) {
+        this.target.setLongLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setChar(int index, int value) {
+        this.target.setChar(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setFloat(int index, float value) {
+        this.target.setFloat(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setFloatLE(int index, float value) {
+        this.target.setFloatLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setDouble(int index, double value) {
+        this.target.setDouble(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setDoubleLE(int index, double value) {
+        this.target.setDoubleLE(index, value);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, BufFacade<ByteBuf> src) {
+        this.target.setBytes(index, src.getBuf());
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, BufFacade<ByteBuf> src, int length) {
+        this.target.setBytes(index, src.getBuf(), length);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, BufFacade<ByteBuf> src, int srcIndex, int length) {
+        this.target.setBytes(index, src.getBuf(), length);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, byte[] src) {
+        this.target.setBytes(index, src);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, byte[] src, int srcIndex, int length) {
+        this.target.setBytes(index, src, srcIndex, length);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setBytes(int index, ByteBuffer src) {
+        this.target.setBytes(index, src);
+        return this;
+    }
+
+    @Override
+    public int setBytes(int index, InputStream in, int length) throws IOException {
+        return this.target.setBytes(index, in, length);
+    }
+
+    @Override
+    public int setBytes(int index, ScatteringByteChannel in, int length) throws IOException {
+        return this.target.setBytes(index, in, length);
+    }
+
+    @Override
+    public int setBytes(int index, FileChannel in, long position, int length) throws IOException {
+        return this.target.setBytes(index, in, position, length);
+    }
+
+    @Override
+    public BufFacade<ByteBuf> setZero(int index, int length) {
+        this.target.setZero(index, length);
+        return this;
+    }
+
+    @Override
+    public int setCharSequence(int index, CharSequence sequence, Charset charset) {
+        return this.setCharSequence(index, sequence, charset);
+    }
+
+    @Override
     public OutputStream asOutputStream() {
         return new OutputStream() {
             @Override
@@ -530,7 +682,8 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
 
     @Override
     public boolean release() {
-        return this.target.release();
+        return true;
+//        return this.target.release();
     }
 
     @Override

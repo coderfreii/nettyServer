@@ -33,7 +33,7 @@ public class FLVService extends BaseStreamableFileService implements IFLVService
  
 	@Override
 	public IStreamableFile getStreamableFile(File file) throws IOException {
-		return new NettyFLV(file, generateMetadata);
+		return new FLV(file, generateMetadata);
 	}
 
 	/**

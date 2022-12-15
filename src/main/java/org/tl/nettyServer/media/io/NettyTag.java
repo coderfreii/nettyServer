@@ -30,7 +30,7 @@ import org.tl.nettyServer.media.buf.BufFacade;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @see <a href="https://code.google.com/p/red5/wiki/FLV#FLV_Tag">FLV Tag</a>
  */
-public class NettyTag implements INettyTag {
+public class NettyTag implements ITag {
 
     private byte type;
 

@@ -20,7 +20,7 @@ package org.tl.nettyServer.media.net.rtmp.event;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.stream.IStreamData;
 import org.tl.nettyServer.media.stream.IStreamPacket;
@@ -101,7 +101,7 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
     public void setData(BufFacade data) {
         if (data != null && data.capacity() > 0) {
             data.markReaderIndex();
-            codecId = ((data.readByte() & 0xff) & INettyTag.MASK_SOUND_FORMAT) >> 4;
+            codecId = ((data.readByte() & 0xff) & ITag.MASK_SOUND_FORMAT) >> 4;
             if (codecId == AudioCodec.AAC.getId()) {
                 config = (data.readByte() == 0);
             }

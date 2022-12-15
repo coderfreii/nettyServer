@@ -4,7 +4,7 @@ package org.tl.nettyServer.media.stream.consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.flv.impl.FLVWriter;
 import org.tl.nettyServer.media.messaging.*;
@@ -83,13 +83,13 @@ public class FileConsumer implements Constants, IPushableConsumer, IPipeConnecti
     /**
      * Video decoder configuration
      */
-    private INettyTag videoConfigurationTag;
+    private ITag videoConfigurationTag;
 
     /**
      * Audio decoder configuration
      */
     @SuppressWarnings("unused")
-    private INettyTag audioConfigurationTag;
+    private ITag audioConfigurationTag;
 
     /**
      * Keeps track of the last spawned write worker.
@@ -241,7 +241,7 @@ public class FileConsumer implements Constants, IPushableConsumer, IPipeConnecti
                                         byte dataType = queued.getDataType();
                                         // get timestamp
                                         int timestamp = queued.getTimestamp();
-                                        INettyTag tag = queued.getData();
+                                        ITag tag = queued.getData();
                                         // ensure that our first video frame written is a key frame
                                         if (queued.isVideo()) {
                                             if (log.isTraceEnabled()) {
@@ -432,10 +432,10 @@ public class FileConsumer implements Constants, IPushableConsumer, IPipeConnecti
      * @param
      *            queued data for write
      */
-    private final void write(byte dataType, int timestamp, INettyTag tag) {
+    private final void write(byte dataType, int timestamp, ITag tag) {
         if (tag != null) {
             // only allow blank tags if they are of audio type
-            if (tag.getBodySize() > 0 || dataType == INettyTag.TYPE_AUDIO) {
+            if (tag.getBodySize() > 0 || dataType == ITag.TYPE_AUDIO) {
                 try {
                     if (timestamp >= 0) {
                         if (!writer.writeTag(tag)) {

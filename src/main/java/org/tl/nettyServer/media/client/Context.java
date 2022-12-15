@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@ import org.tl.nettyServer.media.service.IServiceInvoker;
 import org.tl.nettyServer.media.service.ServiceNotFoundException;
 
 import javax.management.openmbean.CompositeData;
-import java.beans.ConstructorProperties;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -93,22 +92,19 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
     private IPersistenceStore persistanceStore;
 
     private ScopeContextBean ctxBean;
+
     /**
      * Initializes core context bean factory using red5.core bean factory from red5.xml context
      */
-    @ConstructorProperties(value = { "" })
     public Context() {
     }
 
     /**
      * Initializes app context and context path from given parameters
-     * 
-     * @param context
-     *            Application context
-     * @param contextPath
-     *            Context path
+     *
+     * @param context     Application context
+     * @param contextPath Context path
      */
-    @ConstructorProperties({ "context", "contextPath" })
     public Context(ApplicationContext context, String contextPath) {
         setApplicationContext(context);
         this.contextPath = contextPath;
@@ -116,7 +112,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return global scope
-     * 
+     *
      * @return Global scope
      */
     public IGlobalScope getGlobalScope() {
@@ -127,7 +123,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return scope resolver
-     * 
+     *
      * @return scope resolver
      */
     public IScopeResolver getScopeResolver() {
@@ -136,9 +132,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Resolves scope using scope resolver collaborator
-     * 
-     * @param path
-     *            Path to resolve
+     *
+     * @param path Path to resolve
      * @return Scope resolution result
      */
     public IScope resolveScope(String path) {
@@ -147,11 +142,9 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Resolves scope from given root using scope resolver.
-     * 
-     * @param root
-     *            Scope to start from.
-     * @param path
-     *            Path to resolve.
+     *
+     * @param root Scope to start from.
+     * @param path Path to resolve.
      * @return Scope resolution result.
      */
     public IScope resolveScope(IScope root, String path) {
@@ -160,9 +153,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for client registry
-     * 
-     * @param clientRegistry
-     *            Client registry
+     *
+     * @param clientRegistry Client registry
      */
     public void setClientRegistry(IClientRegistry clientRegistry) {
         this.clientRegistry = clientRegistry;
@@ -170,9 +162,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for mapping strategy
-     * 
-     * @param mappingStrategy
-     *            Mapping strategy
+     *
+     * @param mappingStrategy Mapping strategy
      */
     public void setMappingStrategy(IMappingStrategy mappingStrategy) {
         this.mappingStrategy = mappingStrategy;
@@ -180,9 +171,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for scope resolver
-     * 
-     * @param scopeResolver
-     *            Scope resolver used to resolve scopes
+     *
+     * @param scopeResolver Scope resolver used to resolve scopes
      */
     public void setScopeResolver(IScopeResolver scopeResolver) {
         this.scopeResolver = scopeResolver;
@@ -190,9 +180,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for service invoker
-     * 
-     * @param serviceInvoker
-     *            Service invoker object
+     *
+     * @param serviceInvoker Service invoker object
      */
     public void setServiceInvoker(IServiceInvoker serviceInvoker) {
         this.serviceInvoker = serviceInvoker;
@@ -200,7 +189,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return persistence store
-     * 
+     *
      * @return Persistence store
      */
     public IPersistenceStore getPersistanceStore() {
@@ -209,9 +198,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for persistence store
-     * 
-     * @param persistanceStore
-     *            Persistence store
+     *
+     * @param persistanceStore Persistence store
      */
     public void setPersistanceStore(IPersistenceStore persistanceStore) {
         this.persistanceStore = persistanceStore;
@@ -219,11 +207,10 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for application context
-     * 
-     * @param context
-     *            App context
+     *
+     * @param context App context
      */
-    public void setApplicationContext(ApplicationContext context) { 
+    public void setApplicationContext(ApplicationContext context) {
         this.applicationContext = context;
         String deploymentType = System.getProperty("red5.deployment.type");
         logger.debug("Deployment type: " + deploymentType);
@@ -233,7 +220,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
             if (config == null) {
                 config = "red5.xml";
             }
-           // coreContext = ContextSingletonBeanFactoryLocator.getInstance(config).useBeanFactory("red5.core").getFactory();
+            // coreContext = ContextSingletonBeanFactoryLocator.getInstance(config).useBeanFactory("red5.core").getFactory();
         } else {
             logger.info("Setting parent bean factory as core");
             coreContext = applicationContext.getParentBeanFactory();
@@ -242,7 +229,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return application context
-     * 
+     *
      * @return App context
      */
     public ApplicationContext getApplicationContext() {
@@ -251,9 +238,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Setter for context path. Adds a slash at the end of path if there isn't one
-     * 
-     * @param contextPath
-     *            Context path
+     *
+     * @param contextPath Context path
      */
     public void setContextPath(String contextPath) {
         if (!contextPath.endsWith("/")) {
@@ -264,7 +250,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return client registry
-     * 
+     *
      * @return Client registry
      */
     public IClientRegistry getClientRegistry() {
@@ -273,7 +259,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return scope
-     * 
+     *
      * @return null
      */
     public IScope getScope() {
@@ -282,7 +268,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return service invoker
-     * 
+     *
      * @return Service invoker
      */
     public IServiceInvoker getServiceInvoker() {
@@ -291,14 +277,11 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Look up service by name
-     * 
-     * @param serviceName
-     *            Service name
+     *
+     * @param serviceName Service name
      * @return Service object
-     * @throws ServiceNotFoundException
-     *             When service found but null
-     * @throws NoSuchBeanDefinitionException
-     *             When bean with given name doesn't exist
+     * @throws ServiceNotFoundException      When service found but null
+     * @throws NoSuchBeanDefinitionException When bean with given name doesn't exist
      */
     public Object lookupService(String serviceName) {
         serviceName = getMappingStrategy().mapServiceName(serviceName);
@@ -316,12 +299,10 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Look up scope handler for context path
-     * 
-     * @param contextPath
-     *            Context path
+     *
+     * @param contextPath Context path
      * @return Scope handler
-     * @throws ScopeHandlerNotFoundException
-     *             If there's no handler for given context path
+     * @throws ScopeHandlerNotFoundException If there's no handler for given context path
      */
     public IScopeHandler lookupScopeHandler(String contextPath) {
         // Get target scope handler name
@@ -337,7 +318,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return mapping strategy used by this context. Mapping strategy define naming rules (prefixes, postfixes, default application name, etc) for all named objects in context.
-     * 
+     *
      * @return Mapping strategy
      */
     public IMappingStrategy getMappingStrategy() {
@@ -346,13 +327,10 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return array or resource that match given pattern
-     * 
-     * @param pattern
-     *            Pattern to check against
+     *
+     * @param pattern Pattern to check against
      * @return Array of Resource objects
-     * @throws IOException
-     *             On I/O exception
-     * 
+     * @throws IOException On I/O exception
      * @see Resource
      */
     public Resource[] getResources(String pattern) throws IOException {
@@ -361,11 +339,9 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return resource by path
-     * 
-     * @param path
-     *            Resource path
+     *
+     * @param path Resource path
      * @return Resource
-     * 
      * @see Resource
      */
     public Resource getResource(String path) {
@@ -374,13 +350,10 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Resolve scope from host and path
-     * 
-     * @param host
-     *            Host
-     * @param path
-     *            Path
+     *
+     * @param host Host
+     * @param path Path
      * @return Scope
-     * 
      * @see IScope
      * @see org.tl.nettyServer.media.scope.Scope
      */
@@ -397,11 +370,9 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return bean instantiated by bean factory
-     * 
-     * @param beanId
-     *            Bean name
+     *
+     * @param beanId Bean name
      * @return Instantiated bean
-     * 
      * @see BeanFactory
      */
     public Object getBean(String beanId) {
@@ -422,11 +393,9 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return core Red5 service instantiated by core context bean factory
-     * 
-     * @param beanId
-     *            Bean name
+     *
+     * @param beanId Bean name
      * @return Core Red5 service instantiated
-     * 
      * @see BeanFactory
      */
     public Object getCoreService(String beanId) {
@@ -439,7 +408,7 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Return current thread's context classloader
-     * 
+     *
      * @return Classloder context of current thread
      */
     public ClassLoader getClassLoader() {
@@ -448,9 +417,8 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
 
     /**
      * Allows for reconstruction via CompositeData.
-     * 
-     * @param cd
-     *            composite data
+     *
+     * @param cd composite data
      * @return Context class instance
      */
     public static Context from(CompositeData cd) {
@@ -465,38 +433,38 @@ public class Context implements IContext, ApplicationContextAware, ContextMXBean
         return instance;
     }
 
-   
-	@Override
-	public ScopeContextBean getScopeCtxBean() {
-		return this.ctxBean;
-	}
 
-	@Override
-	public void setBean(ScopeContextBean ctxBean) {
-		this.ctxBean = ctxBean;
-	}
+    @Override
+    public ScopeContextBean getScopeCtxBean() {
+        return this.ctxBean;
+    }
 
-	@Override
-	public Object getService(String clazz) {
-		ContextBean contextBean = ctxBean.getClazz(clazz);
-		if(contextBean == null) return null;
-		Map<String, String> proMap = contextBean.getPropertyMap();
-		Class<?> bean = null;
-		Object servicBean = null;
-		try {
-			bean = Class.forName(contextBean.getClassName());
-			Method method = bean.getMethod("getInstance");
-			servicBean = method.invoke(bean, (Object[]) null);
-			
-			for(String key : proMap.keySet()) {
-				
-				BeanUtils.setProperty(servicBean, key, proMap.get(key));
-			}
-			
-		} catch (Exception e) {
-			logger.error("Bean not found in context {} : {}", clazz, e);
-		}
-		return servicBean;
-	}
+    @Override
+    public void setBean(ScopeContextBean ctxBean) {
+        this.ctxBean = ctxBean;
+    }
+
+    @Override
+    public Object getService(String clazz) {
+        ContextBean contextBean = ctxBean.getClazz(clazz);
+        if (contextBean == null) return null;
+        Map<String, String> proMap = contextBean.getPropertyMap();
+        Class<?> bean = null;
+        Object servicBean = null;
+        try {
+            bean = Class.forName(contextBean.getClassName());
+            Method method = bean.getMethod("getInstance");
+            servicBean = method.invoke(bean, (Object[]) null);
+
+            for (String key : proMap.keySet()) {
+
+                BeanUtils.setProperty(servicBean, key, proMap.get(key));
+            }
+
+        } catch (Exception e) {
+            logger.error("Bean not found in context {} : {}", clazz, e);
+        }
+        return servicBean;
+    }
 
 }

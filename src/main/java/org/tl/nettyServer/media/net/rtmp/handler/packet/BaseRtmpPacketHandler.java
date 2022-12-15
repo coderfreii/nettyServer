@@ -99,8 +99,9 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
                 case TYPE_SHARED_OBJECT:
                     onSharedObject(conn, channel, header, (SharedObjectMessage) message);
                     break;
-                case TYPE_INVOKE:
-                case TYPE_FLEX_MESSAGE:
+                case TYPE_INVOKE:  //AFM0
+                    log.trace("AFM0");
+                case TYPE_FLEX_MESSAGE: //AFM3
                     onCommand(conn, channel, header, (Invoke) message);
                     IPendingServiceCall call = ((Invoke) message).getCall();
                     if (message.getHeader().getStreamId().intValue() != 0 && call.getServiceName() == null && StreamAction.PUBLISH.equals(call.getServiceMethodName())) {
@@ -143,6 +144,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
             if (message instanceof Unknown) {
                 log.info("Message type unknown: {}", message);
             }
+            log.debug("headerDataType {}", headerDataType);
         } catch (Throwable t) {
             log.error("Exception", t);
         }
@@ -150,7 +152,6 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
         if (message != null) {
             message.release();
         }
-
     }
 
     public void messageSent(RTMPConnection conn, Packet packet) {
@@ -197,7 +198,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
     }
 
     /**
-     * 	挂起调用结果的处理程序。将结果分派给所有挂起的调用处理程序。
+     * 挂起调用结果的处理程序。将结果分派给所有挂起的调用处理程序。
      */
     protected void handlePendingCallResult(RTMPConnection conn, Notify invoke) {
         final IServiceCall call = invoke.getCall();
@@ -229,6 +230,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
      * Chunk size change event handler. Abstract, to be implemented in subclasses.
      */
     protected abstract void onChunkSize(RTMPConnection conn, Channel channel, Header source, ChunkSize chunkSize);
+
     /**
      * Invocation event handler.
      */
@@ -247,9 +249,11 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
     /**
      * Server bandwidth / Window ACK size event handler.
      */
-    protected void onServerBandwidth(RTMPConnection conn, Channel channel, ServerBW message) {}
+    protected void onServerBandwidth(RTMPConnection conn, Channel channel, ServerBW message) {
+    }
 
-    protected void onClientBandwidth(RTMPConnection conn, Channel channel, ClientBW message) {}
+    protected void onClientBandwidth(RTMPConnection conn, Channel channel, ClientBW message) {
+    }
 
     protected void onStreamBytesRead(RTMPConnection conn, Channel channel, Header source, BytesRead streamBytesRead) {
         conn.receivedBytesRead(streamBytesRead.getBytesRead());

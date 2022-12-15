@@ -186,7 +186,7 @@ public class Header implements Constants, Cloneable, Externalizable {
         }
     }
 
-    private boolean tsCollapsed = false;
+    private transient boolean tsCollapsed = false;
 
     public void collapseTimeStamps() {
         if (tsCollapsed == false) {

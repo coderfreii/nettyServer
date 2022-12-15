@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.scheduling;
 
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.tl.nettyServer.media.jmx.mxbeans.JDKSchedulingServiceMXBean;
 
 import java.util.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 @Slf4j
-public class JDKSchedulingService implements ISchedulingService, JDKSchedulingServiceMXBean {
+public class JDKSchedulingService implements ISchedulingService, JDKSchedulingServiceMXBean, InitializingBean {
 
 
     /**

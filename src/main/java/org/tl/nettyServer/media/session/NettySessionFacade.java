@@ -1,4 +1,4 @@
-package org.tl.nettyServer.media.net.rtmp.session;
+package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -59,6 +59,12 @@ public class NettySessionFacade implements SessionFacade<ChannelHandlerContext, 
 
     @Override
     public ChannelFuture write(Object o) {
-        return context.write(o);
+        return context.writeAndFlush(o);
+    }
+
+    @Override
+    public void closeOnFlush() {
+        this.context.flush();
+        this.context.close();
     }
 }

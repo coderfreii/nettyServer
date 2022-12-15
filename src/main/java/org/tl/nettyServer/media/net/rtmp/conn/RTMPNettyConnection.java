@@ -27,7 +27,7 @@ import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
 import org.tl.nettyServer.media.net.rtmp.event.ClientBW;
 import org.tl.nettyServer.media.net.rtmp.event.ServerBW;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.net.rtmp.session.SessionFacade;
+import org.tl.nettyServer.media.session.SessionFacade;
 import org.tl.nettyServer.media.scope.IScope;
 
 import javax.management.MBeanServer;

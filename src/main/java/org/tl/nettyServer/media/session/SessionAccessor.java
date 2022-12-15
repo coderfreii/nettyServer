@@ -1,4 +1,4 @@
-package org.tl.nettyServer.media.net.rtmp.session;
+package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.Attribute;

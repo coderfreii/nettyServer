@@ -353,7 +353,7 @@ public class ScopeUtils {
             try {
                 key = intf.getField("BEAN_NAME");
                 serviceName = key.get(null);
-                //log.debug("serviceName {}", serviceName);
+                log.debug("serviceName {}", serviceName);
                 handler = getScopeService(scope, serviceName.toString(), defaultClass);
             } catch (Exception e) {
                 if (log.isDebugEnabled()) {

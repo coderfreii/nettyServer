@@ -10,9 +10,9 @@ import org.tl.nettyServer.media.net.rtmp.handler.packet.RtmpPacketHandler;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.net.rtmp.session.SessionAccessor;
 import org.tl.nettyServer.media.net.rtmp.task.ReceivedMessageTask;
 import org.tl.nettyServer.media.net.rtmp.task.ReceivedMessageTaskQueue;
+import org.tl.nettyServer.media.session.SessionAccessor;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
@@ -40,7 +40,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                 case Constants.TYPE_CHUNK_SIZE:
                 case Constants.TYPE_CLIENT_BANDWIDTH:
                 case Constants.TYPE_SERVER_BANDWIDTH:
-                    out.add(packet);
+                    handler.messageReceived(conn,packet);
                     break;
                 default:
                     final String messageType = getMessageType(packet);
@@ -70,7 +70,8 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
             log.debug("Executor is null on {} state: {}", sessionId, RTMP.states[conn.getStateCode()]);
             // pass message to the handler
             try {
-                out.add(packet);
+                //将消息传递给处理程序
+                handler.messageReceived(conn, packet);
             } catch (Exception e) {
                 log.error("Error processing received message {} state: {}", sessionId, RTMP.states[conn.getStateCode()], e);
             }

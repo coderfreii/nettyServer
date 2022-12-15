@@ -5,12 +5,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.Attribute;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.conf.ExtConfiguration;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnManager;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPNettyConnection;
-import org.tl.nettyServer.media.net.rtmp.session.NettySessionFacade;
+import org.tl.nettyServer.media.session.NettySessionFacade;
+
 
 public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
@@ -33,7 +33,7 @@ public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
             attr.set(connection);
             initialSession(connection);
         }
-        super.channelRead(ctx, BufFacade.wrapperAndCast(msg));
+        super.channelRead(ctx, msg);
     }
 
     @Override

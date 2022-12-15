@@ -213,7 +213,7 @@ public class WebScope extends Scope implements ServletContextAware, WebScopeMXBe
      */
     public void register() {
         if (registered.compareAndSet(false, true)) {
-            log.debug("Webscope registering: {}", contextPath);
+            log.debug("Web scope registering: {}", contextPath);
             getAppContext();
             appLoader = LoaderBase.getApplicationLoader();
             //get the parent name

@@ -9,8 +9,8 @@ import org.tl.nettyServer.media.net.rtmp.codec.HandShake;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
-import org.tl.nettyServer.media.net.rtmp.session.SessionAccessor;
-import org.tl.nettyServer.media.net.rtmp.session.SessionFacade;
+import org.tl.nettyServer.media.session.SessionAccessor;
+import org.tl.nettyServer.media.session.SessionFacade;
 
 import java.util.List;
 

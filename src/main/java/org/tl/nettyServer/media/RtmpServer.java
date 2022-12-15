@@ -16,10 +16,13 @@ public class RtmpServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new ConnInboundHandler())
+                        .addLast(new BufFacadeDecoder())
+                        .addLast(new RtmpPacketToByteHandler())
+                        .addLast(new ByteBufEncoder())
+                        .addLast(new ConnInboundHandler()) //
                         .addLast(new HandshakeHandler())
                         .addLast(new RTMPEHandler())
-                        .addLast(new RtmpDecodeToPacketHandler())
+                        .addLast(new RtmpByteToPacketHandler())
                         .addLast(new RtmpPacketMayAsyncDecoder())
                 ;
             }

@@ -135,7 +135,7 @@ public class StatusObjectService implements StatusCodes {
             if (log.isTraceEnabled()) {
 //                log.trace(HexDump.formatHexDump(out.getHexDump()));
             }
-            byte[] cachedBytes = new byte[out.capacity()];
+            byte[] cachedBytes = new byte[out.readableBytes()];
             out.readBytes(cachedBytes);
             out.clear();
             cachedStatusObjects.put(statusCode, cachedBytes);

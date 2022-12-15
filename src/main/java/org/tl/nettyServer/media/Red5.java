@@ -134,9 +134,10 @@ public class Red5 {
         if (connection != null) {
             connThreadLocal.set(new WeakReference<IConnection>(connection));
             IScope scope = connection.getScope();
-            if (scope != null) {
-                Thread.currentThread().setContextClassLoader(scope.getClassLoader());
-            }
+            //TODO
+//            if (scope != null) {
+//                Thread.currentThread().setContextClassLoader(scope.getClassLoader());
+//            }
         } else {
             // use null to clear the value
             connThreadLocal.remove();

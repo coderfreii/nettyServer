@@ -55,9 +55,9 @@ public class Input extends BaseInput implements IInput {
 
     protected static Map<String, String> classAliases = new HashMap<String, String>(3) {
         {
-            put("DSA", "org.red5.compatibility.flex.messaging.messages.AsyncMessageExt");
-            put("DSC", "org.red5.compatibility.flex.messaging.messages.CommandMessageExt");
-            put("DSK", "org.red5.compatibility.flex.messaging.messages.AcknowledgeMessageExt");
+            put("DSA", "org.tl.nettyServer.media.flex.messaging.messages.AsyncMessageExt");
+            put("DSC", "org.tl.nettyServer.media.flex.messaging.messages.CommandMessageExt");
+            put("DSK", "org.tl.nettyServer.media.flex.messaging.messages.AcknowledgeMessageExt");
         }
     };
 

@@ -1,4 +1,4 @@
-package org.tl.nettyServer.media.net.rtmp.session;
+package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelFuture;
 
@@ -33,5 +33,5 @@ public interface SessionFacade<T, S> {
     Cipher getCipherOut();
 
 
-
+    void closeOnFlush();
 }

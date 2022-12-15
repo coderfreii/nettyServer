@@ -95,7 +95,7 @@ public interface ITagWriter {
      * @throws IOException
      *             I/O exception
      */
-    public boolean writeTag(INettyTag tag) throws IOException;
+    public boolean writeTag(ITag tag) throws IOException;
 
     /**
      * Adds a post-process for execution once the instance completes.

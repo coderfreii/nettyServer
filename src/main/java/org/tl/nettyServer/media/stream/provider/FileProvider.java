@@ -25,8 +25,8 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tl.nettyServer.media.io.INettyTag;
-import org.tl.nettyServer.media.io.INettyTagReader;
+import org.tl.nettyServer.media.io.ITag;
+import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.messaging.*;
@@ -73,7 +73,7 @@ public class FileProvider implements IPassive, ISeekableProvider, IPullableProvi
     /**
      * Tag reader
      */
-    private INettyTagReader reader;
+    private ITagReader reader;
 
     /**
      * Keyframe metadata
@@ -122,7 +122,7 @@ public class FileProvider implements IPassive, ISeekableProvider, IPullableProvi
             }
             if (reader.hasMoreTags()) {
                 IRTMPEvent msg = null;
-                INettyTag tag = reader.readTag();
+                ITag tag = reader.readTag();
                 if (tag != null) {
                     int timestamp = tag.getTimestamp();
                     switch (tag.getDataType()) {

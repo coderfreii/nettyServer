@@ -10,7 +10,7 @@ import org.tl.nettyServer.media.io.*;
 
 import org.tl.nettyServer.media.io.amf.Output;
 import org.tl.nettyServer.media.io.flv.FLVHeader;
-import org.tl.nettyServer.media.io.flv.INettyFLV;
+import org.tl.nettyServer.media.io.flv.IFLV;
 import org.tl.nettyServer.media.media.processor.IPostProcessor;
 import org.tl.nettyServer.media.util.IOUtils;
 
@@ -51,7 +51,7 @@ public class FLVWriter implements ITagWriter {
 	/**
 	 * FLV object
 	 */
-	private INettyFLV flv;
+	private IFLV flv;
 
 	/**
 	 * Number of bytes written
@@ -176,7 +176,7 @@ public class FLVWriter implements ITagWriter {
 	 * @param flv  FLV source
 	 *
 	 */
-	public void setFLV(INettyFLV flv) {
+	public void setFLV(IFLV flv) {
 		this.flv = flv;
 	}
 
@@ -205,7 +205,7 @@ public class FLVWriter implements ITagWriter {
 	/** 
 	 * {@inheritDoc}
 	 */
-	public boolean writeTag(INettyTag tag) throws IOException {
+	public boolean writeTag(ITag tag) throws IOException {
 		/*
 		 * Tag header = 11 bytes
 		 * |-|---|----|---|
@@ -220,7 +220,7 @@ public class FLVWriter implements ITagWriter {
 		log.trace("Tag: {}", tag);
 		if(this.getBytesWritten()<14 && !metaWritten){
 			 writeMetadataTag(0, videoCodecId, audioCodecId);
-			 if(tag.getDataType()==INettyTag.TYPE_METADATA) return true;
+			 if(tag.getDataType()== ITag.TYPE_METADATA) return true;
 		}
 		long prevBytesWritten = bytesWritten;
 		// skip tags with no data
@@ -239,8 +239,8 @@ public class FLVWriter implements ITagWriter {
 				long fileOffset = channel.position();
 				log.debug("Current file offset: {} expected offset: {}", fileOffset, prevBytesWritten);
 				// if we're writing non-meta tags do seeking and tag size update
-				if (dataType != INettyTag.TYPE_METADATA) {
-					if (fileOffset < prevBytesWritten && dataType != INettyTag.TYPE_METADATA) {
+				if (dataType != ITag.TYPE_METADATA) {
+					if (fileOffset < prevBytesWritten && dataType != ITag.TYPE_METADATA) {
 						log.debug("Seeking to expected offset");
 						// it's necessary to seek to the length of the file
 						// so that we can append new tags
@@ -258,13 +258,13 @@ public class FLVWriter implements ITagWriter {
 				// put the bytes into the array
 				tag.getBody().readBytes(bodyBuf);
 				// get the audio or video codec identifier
-				if (dataType == INettyTag.TYPE_AUDIO && audioCodecId == -1) {
+				if (dataType == ITag.TYPE_AUDIO && audioCodecId == -1) {
 					int id = bodyBuf[0] & 0xff; // must be unsigned
-					audioCodecId = (id & INettyTag.MASK_SOUND_FORMAT) >> 4;
+					audioCodecId = (id & ITag.MASK_SOUND_FORMAT) >> 4;
 					log.debug("Audio codec id: {}", audioCodecId);
-				} else if (dataType == INettyTag.TYPE_VIDEO && videoCodecId == -1) {
+				} else if (dataType == ITag.TYPE_VIDEO && videoCodecId == -1) {
 					int id = bodyBuf[0] & 0xff; // must be unsigned
-					videoCodecId = id & INettyTag.MASK_VIDEO_CODEC;
+					videoCodecId = id & ITag.MASK_VIDEO_CODEC;
 					log.debug("Video codec id: {}", videoCodecId);
 				}
 				// Data Type
@@ -407,7 +407,7 @@ public class FLVWriter implements ITagWriter {
 			fileMetaSize = buf.readableBytes();
 		}
 		log.debug("Metadata size: {}", fileMetaSize);
-		INettyTag onMetaData = new NettyTag(INettyTag.TYPE_METADATA, 0, fileMetaSize, buf, 0);
+		ITag onMetaData = new NettyTag(ITag.TYPE_METADATA, 0, fileMetaSize, buf, 0);
 		metaWritten=true;
 		writeTag(onMetaData);
 	}
@@ -415,7 +415,7 @@ public class FLVWriter implements ITagWriter {
 	public void testFLV() {
 		log.debug("testFLV");
 		try {
-			INettyTagReader reader = null;
+			ITagReader reader = null;
 			if (flv != null) {
 				reader = flv.getReader();
 			}
@@ -427,7 +427,7 @@ public class FLVWriter implements ITagWriter {
 			}
 			log.trace("reader: {}", reader);
 			log.debug("Has more tags: {}", reader.hasMoreTags());
-			INettyTag tag = null;
+			ITag tag = null;
 			while (reader.hasMoreTags()) {
 				tag = reader.readTag();
 				log.debug("\n{}", tag);

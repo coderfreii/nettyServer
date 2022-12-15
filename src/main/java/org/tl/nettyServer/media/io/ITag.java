@@ -28,7 +28,7 @@ import org.tl.nettyServer.media.buf.BufFacade;
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public interface INettyTag extends IoConstants {
+public interface ITag extends IoConstants {
 
     public BufFacade getBody();
 

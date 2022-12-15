@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,26 +77,19 @@ public class Server implements IServer {
 
     private static final class SingletonHolder {
 
-		private static final Server INSTANCE = new Server();
-	}
+        private static final Server INSTANCE = new Server();
+    }
 
-	public static Server getInstance() {
+    public static Server getInstance() {
 
-		return SingletonHolder.INSTANCE;
-	}
-    
-
-
-
-
+        return SingletonHolder.INSTANCE;
+    }
 
     /**
      * Return scope key. Scope key consists of host name concatenated with context path by slash symbol
-     * 
-     * @param hostName
-     *            Host name
-     * @param contextPath
-     *            Context path
+     *
+     * @param hostName    Host name
+     * @param contextPath Context path
      * @return Scope key as string
      */
     protected String getKey(String hostName, String contextPath) {
@@ -105,11 +98,9 @@ public class Server implements IServer {
 
     /**
      * Does global scope lookup for host name and context path
-     * 
-     * @param hostName
-     *            Host name
-     * @param contextPath
-     *            Context path
+     *
+     * @param hostName    Host name
+     * @param contextPath Context path
      * @return Global scope
      */
     public IGlobalScope lookupGlobal(String hostName, String contextPath) {
@@ -118,13 +109,15 @@ public class Server implements IServer {
         // Init mappings key
         String key = getKey(hostName, contextPath);
         // If context path contains slashes get complex key and look for it in mappings
+
+        String globalName = mapping.get(key);
+        if (globalName != null) {
+            return getGlobal(globalName);
+        }
+
         while (contextPath.indexOf(SLASH) != -1) {
             key = getKey(hostName, contextPath);
             log.trace("Check: {}", key);
-            String globalName = mapping.get(key);
-            if (globalName != null) {
-                return getGlobal(globalName);
-            }
             final int slashIndex = contextPath.lastIndexOf(SLASH);
             // Context path is substring from the beginning and till last slash index
             contextPath = contextPath.substring(0, slashIndex);
@@ -133,22 +126,25 @@ public class Server implements IServer {
         key = getKey(hostName, contextPath);
         log.trace("Check host and path: {}", key);
         // Look up for global scope switching keys if still not found
-        String globalName = mapping.get(key);
+        globalName = mapping.get(key);
         if (globalName != null) {
             return getGlobal(globalName);
         }
+
         key = getKey(EMPTY, contextPath);
         log.trace("Check wildcard host with path: {}", key);
         globalName = mapping.get(key);
         if (globalName != null) {
             return getGlobal(globalName);
         }
+
         key = getKey(hostName, EMPTY);
         log.trace("Check host with no path: {}", key);
         globalName = mapping.get(key);
         if (globalName != null) {
             return getGlobal(globalName);
         }
+
         key = getKey(EMPTY, EMPTY);
         log.trace("Check default host, default path: {}", key);
         return getGlobal(mapping.get(key));
@@ -156,9 +152,8 @@ public class Server implements IServer {
 
     /**
      * Return global scope by name
-     * 
-     * @param name
-     *            Global scope name
+     *
+     * @param name Global scope name
      * @return Global scope
      */
     public IGlobalScope getGlobal(String name) {
@@ -170,9 +165,8 @@ public class Server implements IServer {
 
     /**
      * Register global scope
-     * 
-     * @param scope
-     *            Global scope to register
+     *
+     * @param scope Global scope to register
      */
     public void registerGlobal(IGlobalScope scope) {
         log.trace("Registering global scope: {}", scope.getName(), scope);
@@ -181,17 +175,14 @@ public class Server implements IServer {
 
     /**
      * Map key (host + / + context path) and global scope name
-     * 
-     * @param hostName
-     *            Host name
-     * @param contextPath
-     *            Context path
-     * @param globalName
-     *            Global scope name
+     *
+     * @param hostName    Host name
+     * @param contextPath Context path
+     * @param globalName  Global scope name
      * @return true if mapping was added, false if already exist
      */
     public boolean addMapping(String hostName, String contextPath, String globalName) {
-        log.info("Add mapping global: {} host: {} context: {}", new Object[] { globalName, hostName, contextPath });
+        log.info("Add mapping global: {} host: {} context: {}", new Object[]{globalName, hostName, contextPath});
         final String key = getKey(hostName, contextPath);
         log.debug("Add mapping: {} => {}", key, globalName);
         return (mapping.putIfAbsent(key, globalName) == null);
@@ -199,11 +190,9 @@ public class Server implements IServer {
 
     /**
      * Remove mapping with given key
-     * 
-     * @param hostName
-     *            Host name
-     * @param contextPath
-     *            Context path
+     *
+     * @param hostName    Host name
+     * @param contextPath Context path
      * @return true if mapping was removed, false if key doesn't exist
      */
     public boolean removeMapping(String hostName, String contextPath) {
@@ -215,21 +204,17 @@ public class Server implements IServer {
 
     /**
      * Remove all mappings with given context path
-     * 
-     * @param contextPath
-     *            Context path
+     *
+     * @param contextPath Context path
      * @return true if mapping was removed, false if key doesn't exist
      */
     public boolean removeMapping(String contextPath) {
-        log.info("Remove mapping context: {}", contextPath);
-        final String key = getKey("", contextPath);
-        log.debug("Remove mapping: {}", key);
-        return (mapping.remove(key) != null);
+        return removeMapping("", contextPath);
     }
 
     /**
      * Return mapping
-     * 
+     *
      * @return Map of "scope key / scope name" pairs
      */
     public Map<String, String> getMappingTable() {
@@ -238,7 +223,7 @@ public class Server implements IServer {
 
     /**
      * Return global scope names set iterator
-     * 
+     *
      * @return Iterator
      */
     public Iterator<String> getGlobalNames() {
@@ -247,7 +232,7 @@ public class Server implements IServer {
 
     /**
      * Return global scopes set iterator
-     * 
+     *
      * @return Iterator
      */
     public Iterator<IGlobalScope> getGlobalScopes() {
@@ -256,7 +241,7 @@ public class Server implements IServer {
 
     /**
      * String representation of server
-     * 
+     *
      * @return String representation of server
      */
     @Override
@@ -264,31 +249,38 @@ public class Server implements IServer {
         return new ToStringCreator(this).append(mapping).toString();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addListener(IScopeListener listener) {
         scopeListeners.add(listener);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void addListener(IConnectionListener listener) {
         connectionListeners.add(listener);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void removeListener(IScopeListener listener) {
         scopeListeners.remove(listener);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void removeListener(IConnectionListener listener) {
         connectionListeners.remove(listener);
     }
 
     /**
      * Notify listeners about a newly created scope.
-     * 
-     * @param scope
-     *            the scope that was created
+     *
+     * @param scope the scope that was created
      */
     public void notifyScopeCreated(IScope scope) {
         schedulingService.addScheduledOnceJob(10, new ScopeCreatedJob(scope));
@@ -296,9 +288,8 @@ public class Server implements IServer {
 
     /**
      * Notify listeners that a scope was removed.
-     * 
-     * @param scope
-     *            the scope that was removed
+     *
+     * @param scope the scope that was removed
      */
     public void notifyScopeRemoved(IScope scope) {
         schedulingService.addScheduledOnceJob(10, new ScopeRemovedJob(scope));
@@ -306,9 +297,8 @@ public class Server implements IServer {
 
     /**
      * Notify listeners that a new connection was established.
-     * 
-     * @param conn
-     *            the new connection
+     *
+     * @param conn the new connection
      */
     public void notifyConnected(IConnection conn) {
         schedulingService.addScheduledOnceJob(10, new ConnectedJob(conn));
@@ -316,9 +306,8 @@ public class Server implements IServer {
 
     /**
      * Notify listeners that a connection was disconnected.
-     * 
-     * @param conn
-     *            the disconnected connection
+     *
+     * @param conn the disconnected connection
      */
     public void notifyDisconnected(final IConnection conn) {
         schedulingService.addScheduledOnceJob(10, new DisconnectedJob(conn));

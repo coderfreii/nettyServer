@@ -24,11 +24,11 @@ import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.cache.ICacheStore;
 import org.tl.nettyServer.media.cache.ICacheable;
 import org.tl.nettyServer.media.cache.impl.NoCacheImpl;
-import org.tl.nettyServer.media.io.INettyTag;
-import org.tl.nettyServer.media.io.INettyTagReader;
+import org.tl.nettyServer.media.io.ITag;
+import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.IoConstants;
-import org.tl.nettyServer.media.io.flv.INettyFLV;
+import org.tl.nettyServer.media.io.flv.IFLV;
 import org.tl.nettyServer.media.io.flv.meta.IMetaData;
 import org.tl.nettyServer.media.io.flv.meta.INettyMetaService;
 import org.tl.nettyServer.media.io.flv.meta.MetaData;
@@ -51,9 +51,9 @@ import java.util.Set;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class NettyFLV implements INettyFLV {
+public class FLV implements IFLV {
 
-    protected static Logger log = LoggerFactory.getLogger(NettyFLV.class);
+    protected static Logger log = LoggerFactory.getLogger(FLV.class);
 
     private static ICacheStore cache;
 
@@ -87,26 +87,26 @@ public class NettyFLV implements INettyFLV {
     /**
      * Default constructor, used by Spring so that parameters may be injected.
      */
-    public NettyFLV() {
+    public FLV() {
     }
 
     /**
      * Create FLV from given file source
      */
-    public NettyFLV(File file) {
+    public FLV(File file) {
         this(file, false);
     }
 
     /**
      * Create FLV from given file source and with specified metadata generation option
      */
-    public NettyFLV(File file, boolean generateMetadata) {
+    public FLV(File file, boolean generateMetadata) {
         this.file = file;
         this.generateMetadata = generateMetadata;
         if (generateMetadata) {
             try {
                 NettyFLVReader reader = new NettyFLVReader(this.file);
-                INettyTag tag = null;
+                ITag tag = null;
                 int count = 0;
                 while (reader.hasMoreTags() && (++count < 5)) {
                     tag = reader.readTag();
@@ -129,7 +129,7 @@ public class NettyFLV implements INettyFLV {
      */
     @Override
     public void setCache(ICacheStore cache) {
-        NettyFLV.cache = cache;
+        FLV.cache = cache;
     }
 
     /**
@@ -236,7 +236,7 @@ public class NettyFLV implements INettyFLV {
     }
 
     @Override
-    public INettyTagReader getReader() throws IOException {
+    public ITagReader getReader() throws IOException {
         NettyFLVReader reader = null;
         BufFacade fileData;
         String fileName = file.getName();
@@ -271,7 +271,7 @@ public class NettyFLV implements INettyFLV {
     }
 
     @Override
-    public INettyTagReader readerFromNearestKeyFrame(int seekPoint) {
+    public ITagReader readerFromNearestKeyFrame(int seekPoint) {
         return null;
     }
 

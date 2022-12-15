@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 
 import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.flv.impl.FLVWriter;
@@ -128,12 +128,12 @@ public class SlicedFileConsumer implements Constants, IPushableConsumer, IPipeCo
     /**
      * Video decoder configuration
      */
-    private INettyTag videoConfigurationTag;
+    private ITag videoConfigurationTag;
 
     /**
      * Audio decoder configuration
      */
-    private INettyTag audioConfigurationTag;
+    private ITag audioConfigurationTag;
 
     /**
      * Number of queued items needed before writes are initiated
@@ -588,9 +588,9 @@ public class SlicedFileConsumer implements Constants, IPushableConsumer, IPipeCo
     //                timestamp -= startTimestamp;
     //            }
     //            // create a tag
-    //            INettyTag tag = ImmutableTag.build(dataType, timestamp, data, 0);
+    //            ITag tag = ImmutableTag.build(dataType, timestamp, data, 0);
     //            // only allow blank tags if they are of audio type
-    //            if (tag.getBodySize() > 0 || dataType == INettyTag.TYPE_AUDIO) {
+    //            if (tag.getBodySize() > 0 || dataType == ITag.TYPE_AUDIO) {
     //                try {
     //                    if (timestamp >= 0) {
     //                        if (!writer.writeTag(tag)) {
@@ -624,10 +624,10 @@ public class SlicedFileConsumer implements Constants, IPushableConsumer, IPipeCo
         int timestamp = queued.getTimestamp();
         log.debug("Write - timestamp: {} type: {}", timestamp, dataType);
         // get queued
-        INettyTag tag = queued.getData();
+        ITag tag = queued.getData();
         if (tag != null) {
             // only allow blank tags if they are of audio type
-            if (tag.getBodySize() > 0 || dataType == INettyTag.TYPE_AUDIO) {
+            if (tag.getBodySize() > 0 || dataType == ITag.TYPE_AUDIO) {
                 // if the last message was a reset or we just started, use the header timer
                 if (startTimestamp == -1) {
                     startTimestamp = timestamp;

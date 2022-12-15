@@ -21,7 +21,7 @@ package org.tl.nettyServer.media.media.processor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.io.flv.impl.NettyFLVReader;
 
@@ -51,7 +51,7 @@ public class GenericWriterPostProcessor implements IPostProcessor {
         if (file != null) {
             try {
                 NettyFLVReader reader = new NettyFLVReader(file);
-                INettyTag tag = null;
+                ITag tag = null;
                 int audio = 0, video = 0, meta = 0;
                 while (reader.hasMoreTags()) {
                     tag = reader.readTag();

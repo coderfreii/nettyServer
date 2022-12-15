@@ -42,7 +42,7 @@ public interface IStreamableFile {
      * @return the reader Tag reader
      * @throws IOException I/O exception
      */
-    public INettyTagReader getReader() throws IOException;
+    public ITagReader getReader() throws IOException;
 
     /**
      * Returns a writer that creates a new file or truncates existing contents.

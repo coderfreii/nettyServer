@@ -131,7 +131,7 @@ public class Channel {
         header.setStreamId(streamId);
         header.setDataType(event.getDataType());
         // should use RTMPConnection specific method.. 
-        //log.trace("Connection type for write: {}", connection.getClass().getName());
+        log.trace("Connection type for write: {}", connection.getClass().getName());
         connection.write(packet);
     }
 

@@ -2,14 +2,14 @@ package org.tl.nettyServer.media.stream.consumer;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.INettyTag;
+import org.tl.nettyServer.media.io.ITag;
 
 /**
  * An ImmutableTag represents immutable encapsulation of flash media data. The <tt>timestamp</tt> is the only mutable field.
  *
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public class ImmutableTag implements INettyTag {
+public class ImmutableTag implements ITag {
 
     /**
      * Tag data type

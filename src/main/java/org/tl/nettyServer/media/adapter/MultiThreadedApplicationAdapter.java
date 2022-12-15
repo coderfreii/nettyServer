@@ -24,7 +24,7 @@ import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.client.IClient;
 import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.exception.ClientRejectedException;
-import org.tl.nettyServer.media.io.INettyTagReader;
+import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.jmx.mxbeans.ApplicationMXBean;
 import org.tl.nettyServer.media.messaging.AbstractPipe;
@@ -1000,7 +1000,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
             IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils.getScopeService(scope, IStreamableFileFactory.class, StreamableFileFactory.class);
             IStreamableFileService service = factory.getService(file);
             if (service != null) {
-                INettyTagReader reader = null;
+                ITagReader reader = null;
                 try {
                     IStreamableFile streamFile = service.getStreamableFile(file);
                     reader = streamFile.getReader();

@@ -20,7 +20,7 @@ package org.tl.nettyServer.media.io;
 
 
 
-public interface INettyTagReader {
+public interface ITagReader {
 
     /**
      * Closes the reader and free any allocated memory.
@@ -93,9 +93,9 @@ public interface INettyTagReader {
      *
      * @return Tag
      */
-    public INettyTag readTag();
+    public ITag readTag();
 
-    public INettyTagReader copy();
+    public ITagReader copy();
 
 
     void setMetaSent(boolean metaSent);

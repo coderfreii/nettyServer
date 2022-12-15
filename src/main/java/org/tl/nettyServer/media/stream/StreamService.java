@@ -49,7 +49,7 @@ import java.util.Set;
  * Stream service
  * 流服务
  */
-public class StreamService {
+public class StreamService implements IStreamService  {
 
     private static Logger log = LoggerFactory.getLogger(StreamService.class);
 

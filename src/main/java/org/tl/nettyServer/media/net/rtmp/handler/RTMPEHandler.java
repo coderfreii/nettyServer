@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
-import org.tl.nettyServer.media.net.rtmp.session.NettySessionFacade;
-import org.tl.nettyServer.media.net.rtmp.session.SessionFacade;
+import org.tl.nettyServer.media.session.NettySessionFacade;
+import org.tl.nettyServer.media.session.SessionFacade;
 
 import javax.crypto.Cipher;
 import java.util.List;
