@@ -23,7 +23,6 @@ public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
         SessionFacade session = connection.getSession();
         RTMP state = connection.getState();
 
-
         switch (state.getState()) {
             case RTMP.STATE_CONNECTED:
                 // assuming majority of connections will not be encrypted
@@ -34,7 +33,6 @@ public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
                     if (cipher != null) {
                         byte[] encrypted = new byte[in.readableBytes()];
                         in.readBytes(encrypted);
-                        in.clear();
                         in.release();
                         byte[] plain = cipher.update(encrypted);
                         BufFacade messageDecrypted = BufFacade.wrappedBuffer(plain);
@@ -50,8 +48,10 @@ public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
             case RTMP.STATE_DISCONNECTED:
                 // do nothing, really
                 log.debug("Nothing to do, connection state: {}", state);
+                in.release();
                 break;
             default:
+                in.release();
                 throw new IllegalStateException("Invalid RTMP state: " + state);
         }
     }

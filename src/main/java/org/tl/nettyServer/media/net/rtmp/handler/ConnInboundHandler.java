@@ -36,11 +36,6 @@ public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
         super.channelRead(ctx, msg);
     }
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        super.exceptionCaught(ctx, cause);
-    }
-
 
     void initialSession(RTMPNettyConnection connection) {
         connection.setDeadlockGuardScheduler(deadlockGuardScheduler());

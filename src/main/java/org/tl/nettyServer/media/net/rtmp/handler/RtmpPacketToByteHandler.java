@@ -41,9 +41,8 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
             try {
                 lock.acquire();
                 log.trace("Encoder lock acquired {}", conn.getSessionId());
-
+                //将message的信息全部写进buf
                 BufFacade buf = rtmpProtocolEncoder.encode(msg);
-
                 if (buf != null) {
                     int requestedWriteChunkSize = conn.getState().getWriteChunkSize();
                     log.trace("Requested chunk size: {} target chunk size: {}", requestedWriteChunkSize, targetChunkSize);
@@ -51,6 +50,7 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
                         log.trace("Writing output data");
                         out.add(buf);
                     } else {
+                        //过大则分开发送
                         int sentChunks = Chunk.chunkAndWrite(out, buf, requestedWriteChunkSize, targetChunkSize);
                         log.trace("Wrote {} chunks", sentChunks);
                     }
@@ -102,6 +102,15 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
             return chunks;
         }
 
+        /**
+         * message 分割写入chunk
+         *
+         * @param out         出
+         * @param message     消息
+         * @param chunkSize   块大小
+         * @param desiredSize 想要尺寸
+         * @return int
+         */
         public static int chunkAndWrite(List<Object> out, BufFacade message, int chunkSize, int desiredSize) {
             int sentChunks = 0;
             int targetSize = desiredSize > chunkSize ? desiredSize : chunkSize;
@@ -120,9 +129,12 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
                     length = remaining;
                 }
                 // send it
-                out.add(message.slice(0, length));
+                BufFacade<Object> buffer = BufFacade.buffer(length);
+                message.readBytes(buffer);
+                out.add(buffer);
                 sentChunks++;
             } while (message.readable());
+            message.release();
             return sentChunks;
         }
 

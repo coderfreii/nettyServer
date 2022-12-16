@@ -25,6 +25,7 @@ import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.net.rtmp.IAttributeStore;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.plugin.PluginDescriptor;
+import org.tl.nettyServer.media.scope.AbstractScopeAdapter;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.scope.IScopeAware;
 

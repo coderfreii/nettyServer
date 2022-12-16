@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.tl.nettyServer.media.adapter;
+package org.tl.nettyServer.media.scope;
 
 
 import org.tl.nettyServer.media.client.IClient;

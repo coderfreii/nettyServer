@@ -1,6 +1,7 @@
 package org.tl.nettyServer.media.buf;
 
 import io.netty.buffer.ByteBuf;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +11,19 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 public class ByteBufFacade implements BufFacade<ByteBuf> {
     private ByteBuf target;
+
+    @Override
+    public String hex() {
+        this.markReaderIndex();
+        byte[] dst = new byte[this.readableBytes()];
+        this.readBytes(dst);
+        this.resetReaderIndex();
+        return Hex.toHexString(dst).toUpperCase(Locale.ROOT);
+    }
 
     @Override
     public ByteBuf getBuf() {
@@ -680,10 +691,13 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
         return this;
     }
 
+    private boolean free = false;
+
     @Override
     public boolean release() {
-        return true;
-//        return this.target.release();
+        if (free == false) free = true;
+        return this.target.release();
+//        return true;
     }
 
     @Override

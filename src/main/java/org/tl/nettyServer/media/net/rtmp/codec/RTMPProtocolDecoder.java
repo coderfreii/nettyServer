@@ -55,6 +55,8 @@ public class RTMPProtocolDecoder implements Constants {
     // maximum size for an RTMP packet in Mb
     protected static int MAX_PACKET_SIZE = 3145728; // 3MB
 
+    private BufFacade bufFacadeStore;
+
     /**
      * Constructs a new RTMPProtocolDecoder.
      */
@@ -127,7 +129,6 @@ public class RTMPProtocolDecoder implements Constants {
                 if (log.isTraceEnabled()) {
                     log.trace("decodeBuffer - post decode input buffer position: {} remaining: {}", buffer.readerIndex(), buffer.readableBytes());
                 }
-                buffer.slice();
             }
         } else {
             log.error("Decoding buffer failed, no current connection!?");
@@ -245,7 +246,7 @@ public class RTMPProtocolDecoder implements Constants {
         if (in.readableBytes() < length) {
             log.debug("Chunk too small, buffering ({},{})", in.readableBytes(), length);
             // how much more data we need to continue?
-            state.bufferDecoding(length + in.readerIndex() - position);
+            state.bufferDecoding(length + in.readerIndex() - position - 1);
             // we need to move back position so header will be available during another decode round
             in.resetReaderIndex();
             return null;

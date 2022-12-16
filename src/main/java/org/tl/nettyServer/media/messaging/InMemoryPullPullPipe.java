@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,13 +27,16 @@ import java.util.Map;
 /**
  * A simple in-memory version of pull-pull pipe. It is triggered by an active consumer that pulls messages through it from a pullable provider.
  * 一个简单的内存版本的拉管。它由一个活动的消费者触发，该消费者从一个可拉的提供者那里通过它拉消息。
+ *
  * @author The Red5 Project
  * @author Steven Gong (steven.gong@gmail.com)
  */
 public class InMemoryPullPullPipe extends AbstractPipe {
     private static final Logger log = LoggerFactory.getLogger(InMemoryPullPullPipe.class);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean subscribe(IConsumer consumer, Map<String, Object> paramMap) {
         boolean success = super.subscribe(consumer, paramMap);
@@ -44,7 +47,9 @@ public class InMemoryPullPullPipe extends AbstractPipe {
         return success;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean subscribe(IProvider provider, Map<String, Object> paramMap) {
         if (provider instanceof IPullableProvider) {
@@ -59,7 +64,11 @@ public class InMemoryPullPullPipe extends AbstractPipe {
         }
     }
 
-    /** {@inheritDoc} */
+    private int a = 0;
+
+    /**
+     * {@inheritDoc}
+     */
     public IMessage pullMessage() throws IOException {
         IMessage message = null;
         for (IProvider provider : providers) {
@@ -69,6 +78,7 @@ public class InMemoryPullPullPipe extends AbstractPipe {
                     /* 从生产者中拉取消息 */
                     message = ((IPullableProvider) provider).pullMessage(this);
                     if (message != null) {
+//                        System.out.println("pull : " + a++);
                         break;
                     }
                 } catch (Throwable t) {
@@ -83,7 +93,9 @@ public class InMemoryPullPullPipe extends AbstractPipe {
         return message;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public IMessage pullMessage(long wait) {
         IMessage message = null;
         // divided evenly
@@ -106,7 +118,9 @@ public class InMemoryPullPullPipe extends AbstractPipe {
         return message;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void pushMessage(IMessage message) {
         // push mode ignored
     }

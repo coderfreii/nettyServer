@@ -34,6 +34,7 @@ import org.tl.nettyServer.media.plugin.*;
 import org.tl.nettyServer.media.scheduling.IScheduledJob;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scheduling.QuartzSchedulingService;
+import org.tl.nettyServer.media.scope.AbstractScopeAdapter;
 import org.tl.nettyServer.media.scope.IBroadcastScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.*;

@@ -95,7 +95,7 @@ public interface IApplication {
      * Called every time client disconnects from the application
      * 
      * @param conn
-     *            Connection object See {@link org.red5.server.api.IConnection}
+     *            Connection object See {@link IConnection}
      */
     public void appDisconnect(IConnection conn);
 

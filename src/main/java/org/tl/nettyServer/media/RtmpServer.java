@@ -7,6 +7,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.tl.nettyServer.media.net.rtmp.handler.*;
 
+import java.util.concurrent.ThreadFactory;
+
 public class RtmpServer {
     static private EventLoopGroup bossGroup;
     static private EventLoopGroup workerGroup;
@@ -16,8 +18,18 @@ public class RtmpServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new BufFacadeDecoder())
-                        .addLast(new RtmpPacketToByteHandler())
+                        .addLast(new NioEventLoopGroup(new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "BufFacade");
+                            }
+                        }), new BufFacadeDecoder())
+                        .addLast(new NioEventLoopGroup(new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "RtmpPacketToByte");
+                            }
+                        }), new RtmpPacketToByteHandler())
                         .addLast(new ByteBufEncoder())
                         .addLast(new ConnInboundHandler()) //
                         .addLast(new HandshakeHandler())
@@ -30,8 +42,18 @@ public class RtmpServer {
 
 
         //创建两个线程组 boosGroup、workerGroup
-        bossGroup = new NioEventLoopGroup();
-        workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "boss");
+            }
+        });
+        workerGroup = new NioEventLoopGroup(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                return new Thread(r, "worker");
+            }
+        });
         try {
             //创建服务端的启动对象，设置参数
             ServerBootstrap bootstrap = new ServerBootstrap();

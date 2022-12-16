@@ -44,6 +44,8 @@ public interface BufFacade<T> {
         return (T) transfer(target, currentByteBuf);
     }
 
+    String hex();
+
     T getBuf();
 
     void markReaderIndex();

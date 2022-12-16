@@ -42,7 +42,7 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
                     // set state to indicate we're waiting for C2
                     BufFacade s0s1s2 = handshake.decodeClientRequest1(BufFacade.wrappedBuffer(dst));
                     //
-                    ctx.writeAndFlush(s0s1s2.getBuf());
+                    ctx.writeAndFlush(s0s1s2);
                     //设置连接状态
                     state.setState(RTMP.STATE_HANDSHAKE);
                 }
@@ -70,9 +70,10 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
                         }
                         // remove handshake from session now that we are connected
                         ctx.channel().pipeline().remove(this);
-
                         if (in.readable()) {
                             ctx.fireChannelRead(in.discardReadBytes());
+                        } else {
+                            in.release();
                         }
                     } else {
                         log.warn("Client was rejected due to invalid handshake");

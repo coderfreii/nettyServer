@@ -133,15 +133,14 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 rtmp.setLastWritePacket(channelId, packet);
                 // ensure we're at the beginning
                 if (data.readerIndex() != 0) {
-                } else {
                     data.rewind();
                 }
                 // length of the data to be chunked
                 int dataLen = data.readableBytes();
                 header.setSize(dataLen);
-                //if (log.isTraceEnabled()) {
-                //log.trace("Message: {}", data);
-                //}
+                if (log.isTraceEnabled()) {
+                    log.trace("Message: {}", data);
+                }
                 // chunk size for writing
                 int chunkSize = rtmp.getWriteChunkSize();
                 // number of chunks to write
@@ -153,7 +152,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 }
                 // attempt to properly guess the size of the buffer we'll need
                 int bufSize = dataLen + 18 + (numChunks * 2);
-                //log.trace("Allocated buffer size: {}", bufSize);
+                log.trace("Allocated buffer size: {}", bufSize);
                 out = BufFacade.buffer(bufSize);
                 do {
                     // encode the header
@@ -172,10 +171,12 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 lastHeader.setTimerDelta(0);
                 // set last write header
                 rtmp.setLastWriteHeader(channelId, lastHeader);
-                data.release();
+                //这里也不能release  RELEASE
+                //data.release();
                 data = null;
             }
         }
+        //信息写入out 这里可以release
         message.release();
         return out;
     }

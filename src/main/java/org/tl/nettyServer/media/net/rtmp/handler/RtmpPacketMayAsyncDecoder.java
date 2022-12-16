@@ -5,6 +5,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.packet.RtmpPacketHandler;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
@@ -20,6 +21,15 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
     private RtmpPacketHandler handler = new RtmpPacketHandler();
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        IConnection iConnection = SessionAccessor.resolveConn(ctx);
+        if (iConnection != null) {
+            handler.connectionClosed((RTMPConnection) iConnection);
+        }
+        super.channelInactive(ctx);
+    }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Packet msg, List<Object> out) throws Exception {
@@ -40,7 +50,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                 case Constants.TYPE_CHUNK_SIZE:
                 case Constants.TYPE_CLIENT_BANDWIDTH:
                 case Constants.TYPE_SERVER_BANDWIDTH:
-                    handler.messageReceived(conn,packet);
+                    handler.messageReceived(conn, packet);
                     break;
                 default:
                     final String messageType = getMessageType(packet);
