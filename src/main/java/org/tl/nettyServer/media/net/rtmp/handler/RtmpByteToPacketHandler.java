@@ -16,6 +16,7 @@ import java.util.List;
 public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
     private RTMPProtocolDecoder decoder = new RTMPProtocolDecoder();
 
+    //放到connection里面
     private BufFacade bufFacadeStore;
 
     @Override
@@ -28,7 +29,7 @@ public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<B
         }
         length += msg.readableBytes();
         BufFacade<ByteBuf> in = BufFacade.buffer(length);
-        if (this.bufFacadeStore != null) {
+        if (this.bufFacadeStore != null || this.bufFacadeStore.readable()) {
             log.info("withdraw {}  bytes", this.bufFacadeStore.readableBytes());
             in.writeBytes(this.bufFacadeStore);
         }
