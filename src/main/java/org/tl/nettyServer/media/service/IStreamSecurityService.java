@@ -19,8 +19,8 @@
 package org.tl.nettyServer.media.service;
 
 import org.tl.nettyServer.media.scope.IScopeService;
-import org.tl.nettyServer.media.stream.IStreamPlaybackSecurity;
-import org.tl.nettyServer.media.stream.IStreamPublishSecurity;
+import org.tl.nettyServer.media.stream.support.IStreamPlaybackSecurity;
+import org.tl.nettyServer.media.stream.support.IStreamPublishSecurity;
 
 import java.util.Set;
 

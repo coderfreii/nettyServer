@@ -38,8 +38,18 @@ import org.tl.nettyServer.media.scope.AbstractScopeAdapter;
 import org.tl.nettyServer.media.scope.IBroadcastScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.*;
+import org.tl.nettyServer.media.service.provider.IProviderService;
+import org.tl.nettyServer.media.service.provider.ProviderService;
+import org.tl.nettyServer.media.service.stream.*;
 import org.tl.nettyServer.media.so.*;
 import org.tl.nettyServer.media.stream.*;
+import org.tl.nettyServer.media.stream.base.IBroadcastStream;
+import org.tl.nettyServer.media.stream.base.IOnDemandStream;
+import org.tl.nettyServer.media.stream.client.ISubscriberStream;
+import org.tl.nettyServer.media.stream.client.PlaylistSubscriberStream;
+import org.tl.nettyServer.media.stream.playlist.IPlayItem;
+import org.tl.nettyServer.media.stream.support.IStreamPlaybackSecurity;
+import org.tl.nettyServer.media.stream.support.IStreamPublishSecurity;
 import org.tl.nettyServer.media.util.ScopeUtils;
 import org.tl.nettyServer.media.util.ServiceUtils;
 
@@ -998,7 +1008,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
         IProviderService provider = (IProviderService) ScopeUtils.getScopeService(scope, IProviderService.class, ProviderService.class);
         File file = provider.getVODProviderFile(scope, name);
         if (file != null && file.canRead()) {
-            IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils.getScopeService(scope, IStreamableFileFactory.class, StreamableFileFactory.class);
+            IStreamableFileServiceFactory factory = (IStreamableFileServiceFactory) ScopeUtils.getScopeService(scope, IStreamableFileServiceFactory.class, StreamableFileServiceFactory.class);
             IStreamableFileService service = factory.getService(file);
             if (service != null) {
                 ITagReader reader = null;

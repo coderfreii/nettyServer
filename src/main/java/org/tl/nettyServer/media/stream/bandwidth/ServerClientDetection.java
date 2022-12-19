@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
-import org.tl.nettyServer.media.service.Call;
-import org.tl.nettyServer.media.service.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.IPendingServiceCallback;
 import org.tl.nettyServer.media.service.IServiceCapableConnection;
 
@@ -107,12 +107,12 @@ public class ServerClientDetection implements IPendingServiceCallback, IBandwidt
      */
     public void resultReceived(IPendingServiceCall call) {
         // if we aren't connection, skip any further testing
-        if (Call.STATUS_NOT_CONNECTED != call.getStatus()) {
+        if (ServiceCall.STATUS_NOT_CONNECTED != call.getStatus()) {
             // receive time using nanos
             long now = System.nanoTime();
             // increment received
             int received = packetsReceived.incrementAndGet();
-            log.debug("Call time stamps - write: {} read: {}", call.getWriteTime(), call.getReadTime());
+            log.debug("ServiceCall time stamps - write: {} read: {}", call.getWriteTime(), call.getReadTime());
             // time passed is in milliseconds
             timePassed = (now - startTime) / 1000000;
             log.debug("Received count: {} sent: {} timePassed: {} ms", new Object[] { received, packetsSent.get(), timePassed });

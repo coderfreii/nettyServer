@@ -25,7 +25,7 @@ import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.scope.IBasicScope;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.service.IServiceCall;
+import org.tl.nettyServer.media.service.call.IServiceCall;
 
 import javax.management.MXBean;
 

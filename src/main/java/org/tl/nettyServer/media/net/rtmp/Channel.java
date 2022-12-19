@@ -30,11 +30,11 @@ import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.service.Call;
-import org.tl.nettyServer.media.service.PendingCall;
-import org.tl.nettyServer.media.stream.IClientStream;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.call.PendingCall;
+import org.tl.nettyServer.media.stream.base.IClientStream;
 import org.tl.nettyServer.media.stream.IRtmpSampleAccess;
-import org.tl.nettyServer.media.stream.IStreamData;
+import org.tl.nettyServer.media.stream.data.IStreamData;
 
 /**
  * Identified connection that transfers packets.
@@ -172,7 +172,7 @@ public class Channel {
                         boolean videoAccess = sampleAccess.isVideoAllowed(scope);
                         boolean audioAccess = sampleAccess.isAudioAllowed(scope);
                         if (videoAccess || audioAccess) {
-                            final Call call2 = new Call(null, "|RtmpSampleAccess", null);
+                            final ServiceCall call2 = new ServiceCall(null, "|RtmpSampleAccess", null);
                             Notify notify = new Notify();
                             notify.setCall(call2);
                             notify.setData(BufFacade.wrappedBuffer(new byte[]{0x01, (byte) (audioAccess ? 0x01 : 0x00), 0x01, (byte) (videoAccess ? 0x01 : 0x00)}));
@@ -182,7 +182,7 @@ public class Channel {
                 }
                 event.setCall(call);
             } else {
-                final Call call = new Call(null, CALL_ON_STATUS, new Object[]{status});
+                final ServiceCall call = new ServiceCall(null, CALL_ON_STATUS, new Object[]{status});
                 event.setCall(call);
             }
             // send directly to the corresponding stream as for some status codes, no stream has been created  and thus "getStreamByChannelId" will fail

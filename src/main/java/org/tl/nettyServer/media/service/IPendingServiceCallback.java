@@ -18,6 +18,8 @@
 
 package org.tl.nettyServer.media.service;
 
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
+
 /**
  * 在收到挂起服务调用的结果时将执行的回调。
  * 

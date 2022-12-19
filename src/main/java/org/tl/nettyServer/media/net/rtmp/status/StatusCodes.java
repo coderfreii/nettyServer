@@ -25,12 +25,12 @@ public interface StatusCodes {
     /**
      * The NetConnection.call method was not able to invoke the server-side method or command.
      */
-    public static final String NC_CALL_FAILED = "NetConnection.Call.Failed";
+    public static final String NC_CALL_FAILED = "NetConnection.ServiceCall.Failed";
 
     /**
      * The URI specified in the NetConnection.connect method did not specify 'rtmp' as the protocol. 'rtmp' must be specified when connecting to FMS and Red5. Either not supported version of AMF was used (3 when only 0 is supported)
      */
-    public static final String NC_CALL_BADVERSION = "NetConnection.Call.BadVersion";
+    public static final String NC_CALL_BADVERSION = "NetConnection.ServiceCall.BadVersion";
 
     /**
      * The application has been shut down (for example, if the application is out of memory resources and must shut down to prevent the server from crashing) or the server has shut down.

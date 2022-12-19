@@ -23,7 +23,7 @@ import org.springframework.core.io.support.ResourcePatternResolver;
 import org.tl.nettyServer.media.client.IClient;
 import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
-import org.tl.nettyServer.media.service.IServiceHandlerProvider;
+import org.tl.nettyServer.media.service.resolver.IServiceHandlerProvider;
 import org.tl.nettyServer.media.statistics.IScopeStatistics;
 
 import java.util.Collection;

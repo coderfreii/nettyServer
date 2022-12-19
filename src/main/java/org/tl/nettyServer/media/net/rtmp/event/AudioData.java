@@ -22,8 +22,8 @@ package org.tl.nettyServer.media.net.rtmp.event;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
-import org.tl.nettyServer.media.stream.IStreamData;
-import org.tl.nettyServer.media.stream.IStreamPacket;
+import org.tl.nettyServer.media.stream.data.IStreamData;
+import org.tl.nettyServer.media.stream.data.IStreamPacket;
 
 import java.io.*;
 

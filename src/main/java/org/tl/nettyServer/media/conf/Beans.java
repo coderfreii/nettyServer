@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Scope;
 import org.tl.nettyServer.media.io.flv.impl.FLVService;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scheduling.JDKSchedulingService;
-import org.tl.nettyServer.media.service.IConsumerService;
-import org.tl.nettyServer.media.service.IProviderService;
 import org.tl.nettyServer.media.service.IStreamableFileService;
-import org.tl.nettyServer.media.service.ProviderService;
-import org.tl.nettyServer.media.stream.ConsumerService;
-import org.tl.nettyServer.media.stream.PlaylistSubscriberStream;
-import org.tl.nettyServer.media.stream.StreamableFileFactory;
+import org.tl.nettyServer.media.service.StreamableFileServiceFactory;
+import org.tl.nettyServer.media.service.consumer.ConsumerService;
+import org.tl.nettyServer.media.service.consumer.IConsumerService;
+import org.tl.nettyServer.media.service.provider.IProviderService;
+import org.tl.nettyServer.media.service.provider.ProviderService;
+import org.tl.nettyServer.media.stream.client.PlaylistSubscriberStream;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +28,8 @@ public class Beans {
 
 
     @Bean(name = "streamableFileFactory")
-    public StreamableFileFactory streamableFileFactory() {
-        StreamableFileFactory factory = new StreamableFileFactory();
+    public StreamableFileServiceFactory streamableFileFactory() {
+        StreamableFileServiceFactory factory = new StreamableFileServiceFactory();
         Set<IStreamableFileService> services = new HashSet<>();
 
         FLVService flv = new FLVService();
@@ -49,6 +49,7 @@ public class Beans {
         PlaylistSubscriberStream cache = new PlaylistSubscriberStream();
         cache.setBufferCheckInterval(ExtConfiguration.INTERVAL);
         cache.setUnderrunTrigger(ExtConfiguration.TRIGGER);
+        cache.setRepeat(true);
         return cache;
     }
 

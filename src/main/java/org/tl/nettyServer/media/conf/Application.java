@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.adapter.ApplicationAdapter;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.stream.IBroadcastStream;
-import org.tl.nettyServer.media.stream.IServerStream;
+import org.tl.nettyServer.media.stream.base.IBroadcastStream;
+import org.tl.nettyServer.media.stream.server.IServerPlaylistBroadcastStream;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class Application extends ApplicationAdapter {
 
     private IScope appScope;
 
-    private IServerStream serverStream;
+    private IServerPlaylistBroadcastStream serverStream;
 
     /**
      * {@inheritDoc}

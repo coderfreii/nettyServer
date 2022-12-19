@@ -27,7 +27,7 @@ import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
-import org.tl.nettyServer.media.stream.IClientStream;
+import org.tl.nettyServer.media.stream.base.IClientStream;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.stream.message.ResetMessage;
 import org.tl.nettyServer.media.stream.message.StatusMessage;

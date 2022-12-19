@@ -19,7 +19,7 @@
 package org.tl.nettyServer.media.net.rtmp.event;
 
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.stream.IStreamPacket;
+import org.tl.nettyServer.media.stream.data.IStreamPacket;
 
 /**
  * Provides a means for storage of RTMP events.

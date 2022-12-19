@@ -576,7 +576,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
     }
 
     /**
-     * Call handlers and check if connection to the existing SO is allowed.
+     * ServiceCall handlers and check if connection to the existing SO is allowed.
      *
      * @return is connection allowed
      */
@@ -601,7 +601,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
     }
 
     /**
-     * Call handlers and check if writing to the SO is allowed.
+     * ServiceCall handlers and check if writing to the SO is allowed.
      *
      * @param key   key
      * @param value value
@@ -628,7 +628,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
     }
 
     /**
-     * Call handlers and check if deleting a property from the SO is allowed.
+     * ServiceCall handlers and check if deleting a property from the SO is allowed.
      *
      * @param key key
      * @return is delete allowed
@@ -654,7 +654,7 @@ public class SharedObjectScope extends BasicScope implements ISharedObject, Stat
     }
 
     /**
-     * Call handlers and check if sending a message to the clients connected to the SO is allowed.
+     * ServiceCall handlers and check if sending a message to the clients connected to the SO is allowed.
      *
      * @param message   message
      * @param arguments arguments

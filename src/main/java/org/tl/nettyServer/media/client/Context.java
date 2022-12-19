@@ -33,8 +33,8 @@ import org.tl.nettyServer.media.scope.IGlobalScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.scope.IScopeHandler;
 import org.tl.nettyServer.media.scope.IScopeResolver;
-import org.tl.nettyServer.media.service.IServiceInvoker;
 import org.tl.nettyServer.media.service.ServiceNotFoundException;
+import org.tl.nettyServer.media.service.invoker.IServiceInvoker;
 
 import javax.management.openmbean.CompositeData;
 import java.io.IOException;

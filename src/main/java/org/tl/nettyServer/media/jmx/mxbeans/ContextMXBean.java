@@ -25,7 +25,7 @@ import org.tl.nettyServer.media.client.IMappingStrategy;
 import org.tl.nettyServer.media.persistence.IPersistenceStore;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.scope.IScopeHandler;
-import org.tl.nettyServer.media.service.IServiceInvoker;
+import org.tl.nettyServer.media.service.invoker.IServiceInvoker;
 
 import javax.management.MXBean;
 import java.io.IOException;

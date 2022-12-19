@@ -30,10 +30,19 @@ import org.tl.nettyServer.media.net.rtmp.task.ReceivedMessageTaskQueue;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.*;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.IServiceCall;
+import org.tl.nettyServer.media.service.call.PendingCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.stream.IStreamService;
+import org.tl.nettyServer.media.service.stream.StreamService;
 import org.tl.nettyServer.media.so.FlexSharedObjectMessage;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.SharedObjectMessage;
 import org.tl.nettyServer.media.stream.*;
+import org.tl.nettyServer.media.stream.client.*;
+import org.tl.nettyServer.media.stream.base.IClientStream;
+import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
@@ -898,7 +907,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
                 log.debug("Connection calls pending: {}", pendingCalls.size());
             }
             for (IPendingServiceCall call : pendingCalls.values()) {
-                call.setStatus(Call.STATUS_NOT_CONNECTED);
+                call.setStatus(ServiceCall.STATUS_NOT_CONNECTED);
                 for (IPendingServiceCallback callback : call.getCallbacks()) {
                     callback.resultReceived(call);
                 }
@@ -1032,7 +1041,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 
 
     public void notify(String method, Object[] params) {
-        IServiceCall call = new Call(method, params);
+        IServiceCall call = new ServiceCall(method, params);
         notify(call);
     }
 

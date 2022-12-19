@@ -22,10 +22,7 @@ package org.tl.nettyServer.media.scope;
 import org.tl.nettyServer.media.client.IClient;
 import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
-import org.tl.nettyServer.media.scope.IBasicScope;
-import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.scope.IScopeHandler;
-import org.tl.nettyServer.media.service.IServiceCall;
+import org.tl.nettyServer.media.service.call.IServiceCall;
 
 import java.util.Map;
 

@@ -45,11 +45,15 @@ import org.tl.nettyServer.media.scope.IBroadcastScope;
 import org.tl.nettyServer.media.scope.IGlobalScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.scope.IScopeHandler;
-import org.tl.nettyServer.media.service.Call;
-import org.tl.nettyServer.media.service.IPendingServiceCall;
-import org.tl.nettyServer.media.service.IServiceCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.IServiceCall;
+import org.tl.nettyServer.media.service.stream.IStreamService;
+import org.tl.nettyServer.media.service.stream.StreamService;
 import org.tl.nettyServer.media.so.*;
 import org.tl.nettyServer.media.stream.*;
+import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
+import org.tl.nettyServer.media.stream.base.IClientStream;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
 import java.util.HashMap;
@@ -183,7 +187,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
         }
 
         log.debug("Command type Invoke");
-        if ((source.getStreamId().intValue() != 0) && (call.getStatus() == Call.STATUS_SUCCESS_VOID || call.getStatus() == Call.STATUS_SUCCESS_NULL)) {
+        if ((source.getStreamId().intValue() != 0) && (call.getStatus() == ServiceCall.STATUS_SUCCESS_VOID || call.getStatus() == ServiceCall.STATUS_SUCCESS_NULL)) {
             // This fixes a bug in the FP on Intel Macs.
             log.debug("Method does not have return value, do not reply");
             return;
@@ -230,7 +234,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
         try {
             disconnectOnReturn = doConnect0(command, conn, host, path, disconnectOnReturn);
         } catch (RuntimeException e) {
-            call.setStatus(Call.STATUS_GENERAL_EXCEPTION);
+            call.setStatus(ServiceCall.STATUS_GENERAL_EXCEPTION);
             if (call instanceof IPendingServiceCall) {
                 IPendingServiceCall pc = (IPendingServiceCall) call;
                 pc.setResult(getStatus(NC_CONNECT_FAILED));
@@ -374,7 +378,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             }
                             if (connectSuccess) {
                                 log.debug("Connected - {}", conn.getClient());
-                                call.setStatus(Call.STATUS_SUCCESS_RESULT);
+                                call.setStatus(ServiceCall.STATUS_SUCCESS_RESULT);
                                 if (call instanceof IPendingServiceCall) {
                                     IPendingServiceCall pc = (IPendingServiceCall) call;
                                     //send fmsver and capabilities
@@ -389,7 +393,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                                 conn.ping(new Ping(Ping.STREAM_BEGIN, 0, -1));
                             } else {
                                 log.debug("Connect failed");
-                                call.setStatus(Call.STATUS_ACCESS_DENIED);
+                                call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                                 if (call instanceof IPendingServiceCall) {
                                     IPendingServiceCall pc = (IPendingServiceCall) call;
                                     pc.setResult(getStatus(NC_CONNECT_REJECTED));
@@ -398,7 +402,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             }
                         } catch (ClientRejectedException rejected) {
                             log.debug("Connect rejected");
-                            call.setStatus(Call.STATUS_ACCESS_DENIED);
+                            call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                             if (call instanceof IPendingServiceCall) {
                                 IPendingServiceCall pc = (IPendingServiceCall) call;
                                 StatusObject status = getStatus(NC_CONNECT_REJECTED);
@@ -415,7 +419,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                     } else {
                         // connection to specified scope is not allowed
                         log.debug("Connect to specified scope is not allowed");
-                        call.setStatus(Call.STATUS_ACCESS_DENIED);
+                        call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                         if (call instanceof IPendingServiceCall) {
                             IPendingServiceCall pc = (IPendingServiceCall) call;
                             StatusObject status = getStatus(NC_CONNECT_REJECTED);
@@ -427,7 +431,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                 }
             } catch (ScopeNotFoundException err) {
                 log.warn("Scope not found", err);
-                call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+                call.setStatus(ServiceCall.STATUS_SERVICE_NOT_FOUND);
                 if (call instanceof IPendingServiceCall) {
                     StatusObject status = getStatus(NC_CONNECT_REJECTED);
                     status.setDescription(String.format("No scope '%s' on this server.", path));
@@ -437,7 +441,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                 disconnectOnReturn = true;
             } catch (ScopeShuttingDownException err) {
                 log.warn("Scope shutting down", err);
-                call.setStatus(Call.STATUS_APP_SHUTTING_DOWN);
+                call.setStatus(ServiceCall.STATUS_APP_SHUTTING_DOWN);
                 if (call instanceof IPendingServiceCall) {
                     StatusObject status = getStatus(NC_CONNECT_APPSHUTDOWN);
                     status.setDescription(String.format("Application at '%s' is currently shutting down.", path));
@@ -448,7 +452,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
             }
         } else {
             log.warn("Scope {} not found", path);
-            call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+            call.setStatus(ServiceCall.STATUS_SERVICE_NOT_FOUND);
             if (call instanceof IPendingServiceCall) {
                 StatusObject status = getStatus(NC_CONNECT_INVALID_APPLICATION);
                 status.setDescription(String.format("No scope '%s' on this server.", path));
@@ -643,7 +647,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             scope = context.resolveScope(global, path);
                             //if global scope connection is not allowed, reject
                             if (scope.getDepth() < 1 && !globalScopeConnectionAllowed) {
-                                call.setStatus(Call.STATUS_ACCESS_DENIED);
+                                call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                                 if (call instanceof IPendingServiceCall) {
                                     IPendingServiceCall pc = (IPendingServiceCall) call;
                                     StatusObject status = getStatus(NC_CONNECT_REJECTED);
@@ -653,7 +657,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                                 disconnectOnReturn = true;
                             }
                         } catch (ScopeNotFoundException err) {
-                            call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+                            call.setStatus(ServiceCall.STATUS_SERVICE_NOT_FOUND);
                             if (call instanceof IPendingServiceCall) {
                                 StatusObject status = getStatus(NC_CONNECT_REJECTED);
                                 status.setDescription(String.format("No scope '%s' on this server.", path));
@@ -662,7 +666,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             log.info("Scope {} not found on {}", path, host);
                             disconnectOnReturn = true;
                         } catch (ScopeShuttingDownException err) {
-                            call.setStatus(Call.STATUS_APP_SHUTTING_DOWN);
+                            call.setStatus(ServiceCall.STATUS_APP_SHUTTING_DOWN);
                             if (call instanceof IPendingServiceCall) {
                                 StatusObject status = getStatus(NC_CONNECT_APPSHUTDOWN);
                                 status.setDescription(String.format("Application at '%s' is currently shutting down.", path));
@@ -676,7 +680,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             boolean okayToConnect;
                             try {
                                 log.debug("Conn {}, scope {}, call {}", new Object[]{conn, scope, call});
-                                log.debug("Call args {}", call.getArguments());
+                                log.debug("ServiceCall args {}", call.getArguments());
                                 if (call.getArguments() != null) {
                                     okayToConnect = conn.connect(scope, call.getArguments());
                                 } else {
@@ -684,7 +688,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                                 }
                                 if (okayToConnect) {
                                     log.debug("Connected - Client: {}", conn.getClient());
-                                    call.setStatus(Call.STATUS_SUCCESS_RESULT);
+                                    call.setStatus(ServiceCall.STATUS_SUCCESS_RESULT);
                                     if (call instanceof IPendingServiceCall) {
                                         IPendingServiceCall pc = (IPendingServiceCall) call;
                                         //send fmsver and capabilities
@@ -700,7 +704,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                                     conn.startRoundTripMeasurement();
                                 } else {
                                     log.debug("Connect failed");
-                                    call.setStatus(Call.STATUS_ACCESS_DENIED);
+                                    call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                                     if (call instanceof IPendingServiceCall) {
                                         IPendingServiceCall pc = (IPendingServiceCall) call;
                                         pc.setResult(getStatus(NC_CONNECT_REJECTED));
@@ -709,7 +713,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                                 }
                             } catch (ClientRejectedException rejected) {
                                 log.debug("Connect rejected");
-                                call.setStatus(Call.STATUS_ACCESS_DENIED);
+                                call.setStatus(ServiceCall.STATUS_ACCESS_DENIED);
                                 if (call instanceof IPendingServiceCall) {
                                     IPendingServiceCall pc = (IPendingServiceCall) call;
                                     StatusObject status = getStatus(NC_CONNECT_REJECTED);
@@ -725,7 +729,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                             }
                         }
                     } else {
-                        call.setStatus(Call.STATUS_SERVICE_NOT_FOUND);
+                        call.setStatus(ServiceCall.STATUS_SERVICE_NOT_FOUND);
                         if (call instanceof IPendingServiceCall) {
                             StatusObject status = getStatus(NC_CONNECT_INVALID_APPLICATION);
                             status.setDescription(String.format("No scope '%s' on this server.", path));
@@ -735,7 +739,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                         disconnectOnReturn = true;
                     }
                 } catch (RuntimeException e) {
-                    call.setStatus(Call.STATUS_GENERAL_EXCEPTION);
+                    call.setStatus(ServiceCall.STATUS_GENERAL_EXCEPTION);
                     if (call instanceof IPendingServiceCall) {
                         IPendingServiceCall pc = (IPendingServiceCall) call;
                         pc.setResult(getStatus(NC_CONNECT_FAILED));
@@ -818,7 +822,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
         }
 
         if (invoke instanceof Invoke) {
-            if ((source.getStreamId() != null) && (call.getStatus() == Call.STATUS_SUCCESS_VOID || call.getStatus() == Call.STATUS_SUCCESS_NULL)) {
+            if ((source.getStreamId() != null) && (call.getStatus() == ServiceCall.STATUS_SUCCESS_VOID || call.getStatus() == ServiceCall.STATUS_SUCCESS_NULL)) {
                 // This fixes a bug in the FP on Intel Macs.
                 log.debug("Method does not have return value, do not reply");
                 return;

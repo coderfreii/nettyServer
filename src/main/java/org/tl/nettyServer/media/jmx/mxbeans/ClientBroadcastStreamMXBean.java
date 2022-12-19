@@ -19,8 +19,8 @@
 package org.tl.nettyServer.media.jmx.mxbeans;
 
 
-import org.tl.nettyServer.media.stream.ResourceExistException;
-import org.tl.nettyServer.media.stream.ResourceNotFoundException;
+import org.tl.nettyServer.media.exception.ResourceExistException;
+import org.tl.nettyServer.media.exception.ResourceNotFoundException;
 
 import javax.management.MXBean;
 import java.io.IOException;

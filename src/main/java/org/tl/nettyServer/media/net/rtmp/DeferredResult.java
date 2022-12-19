@@ -22,7 +22,7 @@ package org.tl.nettyServer.media.net.rtmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.net.rtmp.event.Invoke;
-import org.tl.nettyServer.media.service.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 
 import java.lang.ref.WeakReference;
 

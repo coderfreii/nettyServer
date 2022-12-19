@@ -34,7 +34,7 @@ import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.stream.StreamAction;
-import org.tl.nettyServer.media.stream.StreamService;
+import org.tl.nettyServer.media.service.stream.StreamService;
 
 import java.util.Arrays;
 import java.util.LinkedList;

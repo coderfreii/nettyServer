@@ -20,8 +20,6 @@ package org.tl.nettyServer.media.stream.support;
 
 
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.stream.IStreamPlaybackSecurity;
-import org.tl.nettyServer.media.stream.IStreamPublishSecurity;
 
 /**
  * Stream security handler that denies access to all streams.

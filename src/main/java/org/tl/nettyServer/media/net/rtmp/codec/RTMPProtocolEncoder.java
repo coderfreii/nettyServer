@@ -39,9 +39,9 @@ import org.tl.nettyServer.media.net.rtmp.message.SharedObjectTypeMapping;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.net.rtmp.status.StatusObject;
-import org.tl.nettyServer.media.service.Call;
-import org.tl.nettyServer.media.service.IPendingServiceCall;
-import org.tl.nettyServer.media.service.IServiceCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.ISharedObjectMessage;
 
@@ -790,10 +790,10 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
         // TODO: tidy up here
         Output output = new Output(out);
         final IServiceCall call = command.getCall();
-        final boolean isPending = (call.getStatus() == Call.STATUS_PENDING);
-        log.debug("Call: {} pending: {}", call, isPending);
+        final boolean isPending = (call.getStatus() == ServiceCall.STATUS_PENDING);
+        log.debug("ServiceCall: {} pending: {}", call, isPending);
         if (!isPending) {
-            log.debug("Call has been executed, send result");
+            log.debug("ServiceCall has been executed, send result");
             Serializer.serialize(output, call.isSuccess() ? "_result" : "_error");
         } else {
             log.debug("This is a pending call, send request");
@@ -817,7 +817,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
         if (!isPending && (command instanceof Invoke)) {
             IPendingServiceCall pendingCall = (IPendingServiceCall) call;
             if (!call.isSuccess() && (call.getException() != null || pendingCall.getResult() == null)) {
-                log.debug("Call was not successful");
+                log.debug("ServiceCall was not successful");
                 StatusObject status = generateErrorResult(StatusCodes.NC_CALL_FAILED, call.getException());
                 pendingCall.setResult(status);
             }

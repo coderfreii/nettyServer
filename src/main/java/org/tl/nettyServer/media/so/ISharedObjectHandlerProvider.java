@@ -18,7 +18,7 @@
 
 package org.tl.nettyServer.media.so;
 
-import org.tl.nettyServer.media.service.IServiceHandlerProvider;
+import org.tl.nettyServer.media.service.resolver.IServiceHandlerProvider;
 
 /**
  * Supports registration and lookup of shared object handlers.

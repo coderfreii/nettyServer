@@ -12,6 +12,11 @@ import org.tl.nettyServer.media.client.Server;
 import org.tl.nettyServer.media.net.rtmp.status.StatusObjectService;
 import org.tl.nettyServer.media.scope.*;
 import org.tl.nettyServer.media.service.*;
+import org.tl.nettyServer.media.service.invoker.ServiceInvoker;
+import org.tl.nettyServer.media.service.resolver.ContextServiceResolver;
+import org.tl.nettyServer.media.service.resolver.HandlerServiceResolver;
+import org.tl.nettyServer.media.service.resolver.IServiceResolver;
+import org.tl.nettyServer.media.service.resolver.ScopeServiceResolver;
 
 import java.io.File;
 import java.util.HashSet;

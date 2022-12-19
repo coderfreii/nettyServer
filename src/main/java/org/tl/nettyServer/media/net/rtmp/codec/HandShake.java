@@ -74,10 +74,9 @@ public class HandShake {
         byte[] c1 = new byte[Constants.HANDSHAKE_SIZE];
         in.readBytes(c1);
 
-        // holder for S1
+        //S1
         byte[] handshakeBytes = createHandshakeBytesForS1();
         s1 = new byte[Constants.HANDSHAKE_SIZE];
-        //放入s1
         System.arraycopy(handshakeBytes, 0, s1, 0, Constants.HANDSHAKE_SIZE);
         if (log.isDebugEnabled()) {
             log.debug("Flash player version {}", Hex.encodeHexString(Arrays.copyOfRange(c1, 4, 8)));
@@ -125,6 +124,7 @@ public class HandShake {
         // 计算服务端hash同时添加到握手数据中
         calculateDigest(digestPosServer, handshakeBytes, 0, GENUINE_FMS_KEY, 36, s1, digestPosServer);
         log.debug("Server digest: {}", Hex.encodeHexString(Arrays.copyOfRange(s1, digestPosServer, digestPosServer + Constants.DIGEST_LENGTH)));
+
         // get the client digest
         log.trace("Trying algorithm: {}", algorithm);
         int digestPosClient = getDigestOffset(algorithm, c1, 0);
@@ -162,7 +162,7 @@ public class HandShake {
         calculateHMAC_SHA256(c1, 0, (Constants.HANDSHAKE_SIZE - Constants.DIGEST_LENGTH), digestResp, digestResp.length, signatureResponse, 0);
         log.debug("Signature response: {}", Hex.encodeHexString(signatureResponse));
 
-        //加密先省略
+        //加密
         if (useEncryption()) {
             switch (handshakeType) {
                 case RTMPConnection.RTMP_ENCRYPTED_XTEA:

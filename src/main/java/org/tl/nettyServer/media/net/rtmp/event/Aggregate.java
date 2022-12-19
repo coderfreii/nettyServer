@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
-import org.tl.nettyServer.media.stream.IStreamData;
-import org.tl.nettyServer.media.stream.IStreamPacket;
+import org.tl.nettyServer.media.stream.data.IStreamData;
+import org.tl.nettyServer.media.stream.data.IStreamPacket;
 
 import java.io.*;
 import java.util.LinkedList;

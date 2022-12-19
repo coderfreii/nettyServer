@@ -32,17 +32,16 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.65.Final</version>
         </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-core</artifactId>-->
-<!--            <version>5.3.22</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-context</artifactId>-->
-<!--            <version>5.3.22</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-core</artifactId>-->
+        <!--            <version>5.3.22</version>-->
+        <!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework</groupId>-->
+        <!--            <artifactId>spring-context</artifactId>-->
+        <!--            <version>5.3.22</version>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -91,17 +90,17 @@
         </dependency>
 
 
-<!--        <dependency>-->
-<!--            <groupId>org.ehcache</groupId>-->
-<!--            <artifactId>ehcache</artifactId>-->
-<!--            <version>${ehcache.version}</version>&lt;!&ndash;$NO-MVN-MAN-VER$&ndash;&gt;-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.glassfish.jaxb</groupId>-->
-<!--                    <artifactId>jaxb-runtime</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.ehcache</groupId>-->
+        <!--            <artifactId>ehcache</artifactId>-->
+        <!--            <version>${ehcache.version}</version>&lt;!&ndash;$NO-MVN-MAN-VER$&ndash;&gt;-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    <groupId>org.glassfish.jaxb</groupId>-->
+        <!--                    <artifactId>jaxb-runtime</artifactId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>net.sf.ehcache</groupId>

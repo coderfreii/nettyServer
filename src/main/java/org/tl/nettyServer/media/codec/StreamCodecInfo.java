@@ -18,7 +18,7 @@
 
 package org.tl.nettyServer.media.codec;
 
-import org.tl.nettyServer.media.stream.IStreamCodecInfo;
+import org.tl.nettyServer.media.stream.codec.IStreamCodecInfo;
 
 public class StreamCodecInfo implements IStreamCodecInfo {
 

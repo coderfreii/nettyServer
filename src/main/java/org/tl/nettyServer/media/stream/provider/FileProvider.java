@@ -34,10 +34,8 @@ import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.IStreamableFileService;
-import org.tl.nettyServer.media.stream.ISeekableProvider;
-import org.tl.nettyServer.media.stream.IStreamTypeAwareProvider;
-import org.tl.nettyServer.media.stream.IStreamableFileFactory;
-import org.tl.nettyServer.media.stream.StreamableFileFactory;
+import org.tl.nettyServer.media.service.IStreamableFileServiceFactory;
+import org.tl.nettyServer.media.service.StreamableFileServiceFactory;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
@@ -217,7 +215,7 @@ public class FileProvider implements IPassive, ISeekableProvider, IPullableProvi
      * Initializes file provider. Creates streamable file factory and service, seeks to start position
      */
     private void init() throws IOException {
-        IStreamableFileFactory factory = (IStreamableFileFactory) ScopeUtils.getScopeService(scope, IStreamableFileFactory.class, StreamableFileFactory.class);
+        IStreamableFileServiceFactory factory = (IStreamableFileServiceFactory) ScopeUtils.getScopeService(scope, IStreamableFileServiceFactory.class, StreamableFileServiceFactory.class);
         IStreamableFileService service = factory.getService(file);
         if (service == null) {
             log.error("No service found for {}", file.getAbsolutePath());

@@ -22,10 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
-import org.tl.nettyServer.media.service.Call;
-import org.tl.nettyServer.media.service.IPendingServiceCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.IPendingServiceCallback;
-import org.tl.nettyServer.media.stream.IStreamCapableConnection;
+import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ public class ClientServerDetection implements IPendingServiceCallback {
      */
     public void resultReceived(IPendingServiceCall call) {
         // if we aren't connection, skip any further testing
-        if (Call.STATUS_NOT_CONNECTED != call.getStatus()) {
+        if (ServiceCall.STATUS_NOT_CONNECTED != call.getStatus()) {
 
         } else {
             log.debug("Pending call skipped due to being no longer connected");

@@ -19,6 +19,9 @@
 package org.tl.nettyServer.media.stream;
 
 import org.tl.nettyServer.media.scope.IScopeHandler;
+import org.tl.nettyServer.media.stream.base.IBroadcastStream;
+import org.tl.nettyServer.media.stream.client.ISubscriberStream;
+import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 
 /**
  * A scope handler that is stream aware.

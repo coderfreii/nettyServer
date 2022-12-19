@@ -40,7 +40,7 @@ public interface INettyMetaService {
     // Pass CuePoint array into MetaData
     // read in current MetaData if there is MetaData
     // if there isn't MetaData, write new MetaData
-    // Call writeMetaData method on MetaService
+    // ServiceCall writeMetaData method on MetaService
     // that in turn will write the current metadata
     // and the cuepoint data
     // after that, call writeMetaCue()

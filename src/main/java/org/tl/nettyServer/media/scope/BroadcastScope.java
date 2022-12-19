@@ -21,8 +21,8 @@ package org.tl.nettyServer.media.scope;
 
 
 import org.tl.nettyServer.media.messaging.*;
-import org.tl.nettyServer.media.service.IProviderService;
-import org.tl.nettyServer.media.stream.IClientBroadcastStream;
+import org.tl.nettyServer.media.service.provider.IProviderService;
+import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
 
 import java.io.IOException;
 import java.util.List;

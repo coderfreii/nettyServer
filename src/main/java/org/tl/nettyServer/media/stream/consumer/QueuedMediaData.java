@@ -2,7 +2,7 @@ package org.tl.nettyServer.media.stream.consumer;
 
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
-import org.tl.nettyServer.media.stream.IStreamData;
+import org.tl.nettyServer.media.stream.data.IStreamData;
 
 /**
  * Queued data wrapper.

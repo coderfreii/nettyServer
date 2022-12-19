@@ -18,7 +18,7 @@
 package org.tl.nettyServer.media.scope;
 
 import org.tl.nettyServer.media.messaging.IPipe;
-import org.tl.nettyServer.media.stream.IClientBroadcastStream;
+import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
 
 /**
  * Broadcast scope is marker interface that represents object that works as basic scope and has pipe connection event dispatching capabilities.

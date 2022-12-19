@@ -25,7 +25,7 @@ import org.tl.nettyServer.media.persistence.IPersistenceStore;
 import org.tl.nettyServer.media.scope.IGlobalScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.scope.IScopeHandler;
-import org.tl.nettyServer.media.service.IServiceInvoker;
+import org.tl.nettyServer.media.service.invoker.IServiceInvoker;
 
 /**
  * The current context, this object basically wraps the Spring context or in the case of the .Net version, any similar system.
