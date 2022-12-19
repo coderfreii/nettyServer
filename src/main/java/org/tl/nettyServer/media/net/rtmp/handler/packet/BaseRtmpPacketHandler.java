@@ -84,7 +84,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
             }
             switch (headerDataType) {
                 case TYPE_AGGREGATE:
-                    log.debug("Aggregate type data - header timer: {} size: {}", header.getTimer(), header.getSize());
+                    log.debug("Aggregate type data - header timer: {} size: {}", header.getTimer(), header.getDataSize());
                 case TYPE_AUDIO_DATA:
                 case TYPE_VIDEO_DATA:
                     // 将事件标记为来自实时源

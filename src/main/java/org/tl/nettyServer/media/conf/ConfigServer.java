@@ -151,6 +151,7 @@ public class ConfigServer implements ApplicationContextAware {
         scope.setContext(contextOflaDemo());
         scope.setHandler(handlerOflaDemo());
         scope.setContextPath("/oflaDemo");
+        //形成mapping
         scope.setVirtualHosts("*, 0.0.0.0, localhost:5080, 127.0.0.1:5080");
 //		context.addChildScope(new BroadcastScope(context,"live_123.flv"));
         scope.register();

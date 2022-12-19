@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.RTMPUtils;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
+import org.tl.nettyServer.media.net.rtmp.consts.ConstPack;
+import org.tl.nettyServer.media.net.rtmp.consts.FormatMessageType;
 import org.tl.nettyServer.media.net.rtmp.event.Abort;
 import org.tl.nettyServer.media.net.rtmp.event.ChunkSize;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
@@ -36,15 +38,15 @@ import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.stream.StreamAction;
 import org.tl.nettyServer.media.service.stream.StreamService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * RTMP protocol decoder.
  */
 public class RTMPProtocolDecoder implements Constants {
-    private RtmpPacketToMessageDecoder rtmpPacketToMessageDecoder = new RtmpPacketToMessageDecoder();
+    private final RtmpPacketToMessageDecoder rtmpPacketToMessageDecoder = new RtmpPacketToMessageDecoder();
 
 
     protected static final Logger log = LoggerFactory.getLogger(RTMPProtocolDecoder.class);
@@ -52,8 +54,7 @@ public class RTMPProtocolDecoder implements Constants {
     // close when header errors occur
     protected boolean closeOnHeaderError;
 
-    // maximum size for an RTMP packet in Mb
-    protected static int MAX_PACKET_SIZE = 3145728; // 3MB
+    protected static int MAX_PACKET_SIZE = ConstPack.DEFAULT_MAX_PACKET_SIZE; // 3MB
 
     private BufFacade bufFacadeStore;
 
@@ -64,25 +65,25 @@ public class RTMPProtocolDecoder implements Constants {
     }
 
     /**
-     * Decode all available objects in buffer.
+     * Decode all available objects in in.
      *
-     * @param conn   RTMP connection
-     * @param buffer BufFacade of data to be decoded
+     * @param conn RTMP connection
+     * @param in   BufFacade of data to be decoded
      * @return a list of decoded objects, may be empty if nothing could be decoded
      */
-    public List<Object> decodeBuffer(RTMPConnection conn, BufFacade buffer) {
+    public List<Object> decodeBuffer(RTMPConnection conn, BufFacade in) {
         //buffer当前所在的操作位置
-        final int position = buffer.readerIndex();
+        final int position = in.readerIndex();
         if (log.isTraceEnabled()) {
-            log.trace("decodeBuffer: {}", Hex.encodeHexString(Arrays.copyOfRange(buffer.array(), position, buffer.capacity())));
+            log.trace("decodeBuffer: {}", Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.capacity())));
         }
         // decoded results
         List<Object> result = null;
         if (conn != null) {
-            //log.trace("Decoding for connection - session id: {}", conn.getSessionId());
+            log.trace("Decoding for connection - session id: {}", conn.getSessionId());
             try {
                 // instance list to hold results
-                result = new LinkedList<>();
+                result = new ArrayList<>();
                 // get the local decode state
                 RTMPDecodeState state = conn.getDecoderState();
                 if (log.isTraceEnabled()) {
@@ -94,7 +95,7 @@ public class RTMPProtocolDecoder implements Constants {
                 // buffer剩余
                 int remaining;
                 // buffer可操作空间要大于0
-                while ((remaining = buffer.readableBytes()) > 0) {
+                while ((remaining = in.readableBytes()) > 0) {
                     // 通过decoderBufferAmount判断是否可以进行解码
                     if (state.canStartDecoding(remaining)) {
                         log.trace("Can start decoding");
@@ -103,7 +104,7 @@ public class RTMPProtocolDecoder implements Constants {
                         log.trace("Cannot start decoding");
                         break;
                     }
-                    final Object decodedObject = decode(conn, state, buffer);
+                    final Object decodedObject = decode(conn, state, in);
                     if (state.hasDecodedObject()) {
                         log.trace("Has decoded object");
                         if (decodedObject != null) {
@@ -118,20 +119,20 @@ public class RTMPProtocolDecoder implements Constants {
                     }
                 }
             } catch (Exception ex) {
-                log.warn("Failed to decodeBuffer: pos {}, capacity {}, chunk size {}, buffer {}", position, buffer.capacity(), conn.getState().getReadChunkSize(), Hex.encodeHexString(Arrays.copyOfRange(buffer.array(), position, buffer.capacity())));
+                log.warn("Failed to decodeBuffer: pos {}, capacity {}, chunk size {}, in {}", position, in.capacity(), conn.getState().getReadChunkSize(), Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.capacity())));
                 // catch any non-handshake exception in the decoding; close the connection
                 log.warn("Closing connection because decoding failed: {}", conn, ex);
-                // clear the buffer to eliminate memory leaks when we can't parse protocol
-                buffer.clear();
+                // clear the in to eliminate memory leaks when we can't parse protocol
+                in.clear();
                 // close connection because we can't parse data from it
                 conn.close();
             } finally {
                 if (log.isTraceEnabled()) {
-                    log.trace("decodeBuffer - post decode input buffer position: {} remaining: {}", buffer.readerIndex(), buffer.readableBytes());
+                    log.trace("decodeBuffer - post decode input in position: {} remaining: {}", in.readerIndex(), in.readableBytes());
                 }
             }
         } else {
-            log.error("Decoding buffer failed, no current connection!?");
+            log.error("Decoding in failed, no current connection!?");
         }
         return result;
     }
@@ -192,7 +193,6 @@ public class RTMPProtocolDecoder implements Constants {
     public Packet decodePacket(RTMPConnection conn, RTMPDecodeState state, BufFacade in) {
         int position = in.readerIndex();
         in.markReaderIndex();
-
         // get RTMP state holder
         RTMP rtmp = conn.getState();
 
@@ -215,7 +215,6 @@ public class RTMPProtocolDecoder implements Constants {
             }
             // clear / slice the input and close the channel
             in.clear();
-            in.slice();
             // send a NetStream.Failed message
             StreamService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Bad data on channel: " + channelId, "no-name", Status.ERROR, conn.getStreamIdForChannelId(channelId));
             // close the channel on which the issue occurred, until we find a way to exclude the current data
@@ -224,19 +223,19 @@ public class RTMPProtocolDecoder implements Constants {
             return null;
         }
         // ensure that we don't exceed maximum packet size
-        int size = latestHeader.getSize();
+        int size = latestHeader.getDataSize();
         if (size > MAX_PACKET_SIZE) {
             // Reject packets that are too big, to protect against OOM when decoding has failed in some way
-            log.warn("Packet size exceeded. size={}, max={}, connId={}", latestHeader.getSize(), MAX_PACKET_SIZE, conn.getSessionId());
+            log.warn("Packet size exceeded. size={}, max={}, connId={}", latestHeader.getDataSize(), MAX_PACKET_SIZE, conn.getSessionId());
             // send a NetStream.Failed message
             StreamService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Data exceeded maximum allowed by " + (size - MAX_PACKET_SIZE) + " bytes", "no-name", Status.ERROR, conn.getStreamIdForChannelId(latestHeader.getCsId()));
-            throw new ProtocolException(String.format("Packet size exceeded. size: %s", latestHeader.getSize()));
+            throw new ProtocolException(String.format("Packet size exceeded. size: %s", latestHeader.getDataSize()));
         }
 
         Packet packet = resolveAPacketToComplete(rtmp, latestHeader);
         BufFacade data = packet.getData();
         if (log.isTraceEnabled()) {
-            log.trace("Source buffer position: {}, capacity: {}, packet-buf.position {}, packet size: {}", new Object[]{in.readerIndex(), in.capacity(), data.readerIndex(), latestHeader.getSize()});
+            log.trace("Source buffer position: {}, capacity: {}, packet-buf.position {}, packet size: {}", in.readerIndex(), in.capacity(), data.readerIndex(), latestHeader.getDataSize());
         }
         // read chunk
         // check in buf size
@@ -262,7 +261,7 @@ public class RTMPProtocolDecoder implements Constants {
         // put the chunk into the packet
         data.writeBytes(chunk);
 
-        // 检查是否写完（没写完 message 要大于 chunk size）
+        // 检查是否写完（没写完的 message 要大于 chunk size）
         if (data.writeable()) {
             if (log.isTraceEnabled()) {
                 log.trace("Packet is incomplete ({},{})", data.readableBytes(), data.capacity());
@@ -272,7 +271,6 @@ public class RTMPProtocolDecoder implements Constants {
         }
 
         decodeMessage(conn, packet);
-
         postProcessMessage(rtmp, packet);
         return packet;
     }
@@ -358,7 +356,7 @@ public class RTMPProtocolDecoder implements Constants {
             log.trace("{} lastHeader: {}", Header.HeaderType.values()[format], lastHeader);
         }
         // got a non-new header for a channel which has no last-read header
-        if (format != HEADER_NEW && lastHeader == null) {
+        if (format != FormatMessageType.FULL && lastHeader == null) {
             String detail = String.format("Last header null: %s, csId %s", Header.HeaderType.values()[format], csId);
             log.debug("{}", detail);
             // if the op prefers to exit or kill the connection, we should allow based on configuration param
@@ -382,10 +380,10 @@ public class RTMPProtocolDecoder implements Constants {
         Header header = new Header();
         header.setCsId(csId);
         switch (format) {
-            case HEADER_NEW: // type 0
+            case FormatMessageType.FULL: // type 0
                 // an absolute time value
                 timeBase = RTMPUtils.readUnsignedMediumInt(in);
-                header.setSize(RTMPUtils.readUnsignedMediumInt(in));
+                header.setDataSize(RTMPUtils.readUnsignedMediumInt(in));
                 header.setDataType(in.readByte());
                 header.setStreamId(RTMPUtils.readReverseInt(in));
                 // read the extended timestamp if we have the indication that it exists
@@ -400,12 +398,12 @@ public class RTMPProtocolDecoder implements Constants {
                 header.setTimerBase(timeBase);
                 header.setTimerDelta(timeDelta);
                 break;
-            case HEADER_SAME_SOURCE: // type 1
+            case FormatMessageType.RELATIVE_LARGE: // type 1
                 // time base from last header
                 timeBase = lastHeader.getTimerBase();
                 // a delta time value
                 timeDelta = RTMPUtils.readUnsignedMediumInt(in);
-                header.setSize(RTMPUtils.readUnsignedMediumInt(in));
+                header.setDataSize(RTMPUtils.readUnsignedMediumInt(in));
                 header.setDataType(in.readByte());
                 header.setStreamId(lastHeader.getStreamId());
                 // read the extended timestamp if we have the indication that it exists
@@ -417,12 +415,12 @@ public class RTMPProtocolDecoder implements Constants {
                 header.setTimerBase(timeBase);
                 header.setTimerDelta(timeDelta);
                 break;
-            case HEADER_TIMER_CHANGE: // type 2
+            case FormatMessageType.RELATIVE_TIMESTAMP_ONLY: // type 2
                 // time base from last header
                 timeBase = lastHeader.getTimerBase();
                 // a delta time value
                 timeDelta = RTMPUtils.readUnsignedMediumInt(in);
-                header.setSize(lastHeader.getSize());
+                header.setDataSize(lastHeader.getDataSize());
                 header.setDataType(lastHeader.getDataType());
                 header.setStreamId(lastHeader.getStreamId());
                 // read the extended timestamp if we have the indication that it exists
@@ -434,11 +432,11 @@ public class RTMPProtocolDecoder implements Constants {
                 header.setTimerBase(timeBase);
                 header.setTimerDelta(timeDelta);
                 break;
-            case HEADER_CONTINUE: // type 3
+            case FormatMessageType.RELATIVE_SINGLE_BYTE: // type 3
                 // time base from last header
                 timeBase = lastHeader.getTimerBase();
                 timeDelta = lastHeader.getTimerDelta();
-                header.setSize(lastHeader.getSize());
+                header.setDataSize(lastHeader.getDataSize());
                 header.setDataType(lastHeader.getDataType());
                 header.setStreamId(lastHeader.getStreamId());
                 // read the extended timestamp if we have the indication that it exists

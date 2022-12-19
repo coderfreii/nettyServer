@@ -70,7 +70,7 @@ public class Packet implements Externalizable {
 
     public Packet(Header header) {
         this.header = header;
-        data = BufFacade.buffer(header.getSize());
+        data = BufFacade.buffer(header.getDataSize());
     }
 
     public Packet(Header header, IRTMPEvent event) {

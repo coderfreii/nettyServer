@@ -12,8 +12,9 @@ import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.io.object.IInput;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
+import org.tl.nettyServer.media.net.rtmp.consts.MessageType;
+import org.tl.nettyServer.media.net.rtmp.consts.SourceType;
 import org.tl.nettyServer.media.net.rtmp.event.*;
-import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.message.SharedObjectTypeMapping;
@@ -25,8 +26,6 @@ import org.tl.nettyServer.media.so.SharedObjectMessage;
 
 import java.util.*;
 
-import static org.tl.nettyServer.media.net.rtmp.message.Constants.*;
-
 @Slf4j
 public class RtmpPacketToMessageDecoder implements IEventDecoder {
     public IRTMPEvent decode(RTMPConnection conn, Packet packet) {
@@ -37,30 +36,30 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         IRTMPEvent message;
         byte dataType = header.getDataType();
         switch (dataType) {
-            case TYPE_AUDIO_DATA:
+            case MessageType.TYPE_AUDIO_DATA:
                 message = decodeAudioData(in);
-                message.setSourceType(Constants.SOURCE_TYPE_LIVE);
+                message.setSourceType(SourceType.SOURCE_TYPE_LIVE);
                 break;
-            case TYPE_VIDEO_DATA:
+            case MessageType.TYPE_VIDEO_DATA:
                 message = decodeVideoData(in);
-                message.setSourceType(Constants.SOURCE_TYPE_LIVE);
+                message.setSourceType(SourceType.SOURCE_TYPE_LIVE);
                 break;
-            case TYPE_AGGREGATE:
+            case MessageType.TYPE_AGGREGATE:
                 message = decodeAggregate(in);
                 break;
-            case TYPE_FLEX_SHARED_OBJECT: // represents an SO in an AMF3 container
+            case MessageType.TYPE_FLEX_SHARED_OBJECT: // represents an SO in an AMF3 container
                 message = decodeFlexSharedObject(in);
                 break;
-            case TYPE_SHARED_OBJECT:
+            case MessageType.TYPE_SHARED_OBJECT:
                 message = decodeSharedObject(in);
                 break;
-            case TYPE_FLEX_MESSAGE:
+            case MessageType.TYPE_FLEX_MESSAGE:
                 message = decodeFlexMessage(in);
                 break;
-            case TYPE_INVOKE:
+            case MessageType.TYPE_INVOKE:
                 message = decodeAction(conn.getEncoding(), in, header);
                 break;
-            case TYPE_FLEX_STREAM_SEND:
+            case MessageType.TYPE_FLEX_STREAM_SEND:
                 if (log.isTraceEnabled()) {
                     log.trace("Decoding flex stream send on stream id: {}", header.getStreamId());
                 }
@@ -69,7 +68,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                 // decode stream data; slice from the current position
                 message = decodeStreamData(in.slice(), conn.getEncoding());
                 break;
-            case TYPE_NOTIFY:
+            case MessageType.TYPE_NOTIFY:
                 if (log.isTraceEnabled()) {
                     log.trace("Decoding notify on stream id: {}", header.getStreamId());
                 }
@@ -79,22 +78,22 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                     message = decodeAction(conn.getEncoding(), in, header);
                 }
                 break;
-            case TYPE_PING:
+            case MessageType.TYPE_PING:
                 message = decodePing(in);
                 break;
-            case TYPE_BYTES_READ:
+            case MessageType.TYPE_BYTES_READ:
                 message = decodeBytesRead(in);
                 break;
-            case TYPE_CHUNK_SIZE:
+            case MessageType.TYPE_CHUNK_SIZE:
                 message = decodeChunkSize(in);
                 break;
-            case TYPE_SERVER_BANDWIDTH:
+            case MessageType.TYPE_SERVER_BANDWIDTH:
                 message = decodeServerBW(in);
                 break;
-            case TYPE_CLIENT_BANDWIDTH:
+            case MessageType.TYPE_CLIENT_BANDWIDTH:
                 message = decodeClientBW(in);
                 break;
-            case TYPE_ABORT:
+            case MessageType.TYPE_ABORT:
                 message = decodeAbort(in);
                 break;
             default:
@@ -376,8 +375,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         Ping ping = null;
         if (log.isTraceEnabled()) {
             // gets the raw data as hex without changing the data or pointer
-//            String hexDump = in.getHexDump();
-//            log.trace("Ping dump: {}", hexDump);
+            log.trace("Ping dump: {}", in.hex());
         }
         // control type
         short type = in.readShort();

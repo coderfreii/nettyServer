@@ -6,69 +6,85 @@
 	<file>
 
 		<name>
-  		FLV File One
+  		FLV File One
+
+
         </name>
 
-		<size>
-  		333333333333
-        </size>
+		<dataSize>
+  		333333333333
+
+
+        </dataSize>
 
 		<modified>
-  		modified time
+  		modified time
+
+
         </modified>
 
 		<meta>
 
 			<position>
-Position1
+Position1
+
             </position>
 
 			<timestamp>
-TimeStamp1
+TimeStamp1
+
             </timestamp>
 		</meta>
 
 		<meta>
 
 			<position>
-Position2
+Position2
+
             </position>
 
 			<timestamp>
-TimeStamp2
+TimeStamp2
+
             </timestamp>
 		</meta>
 
 		<meta>
 
 			<position>
-Position3
+Position3
+
             </position>
 
 			<timestamp>
-TimeStamp3
+TimeStamp3
+
             </timestamp>
 		</meta>
 
 		<meta>
 
 			<position>
-Position4
+Position4
+
             </position>
 
 			<timestamp>
-TimeStamp4
+TimeStamp4
+
             </timestamp>
 		</meta>
 
 		<meta>
 
 			<position>
-Position5
+Position5
+
             </position>
 
 			<timestamp>
-TimeStamp5
+TimeStamp5
+
             </timestamp>
 		</meta>
 	</file>
@@ -76,25 +92,33 @@ TimeStamp5
 	<file>
 
 		<name>
-  		FLV File Two
+  		FLV File Two
+
+
         </name>
 
-		<size>
-  		333333333333333
-        </size>
+		<dataSize>
+  		333333333333333
+
+
+        </dataSize>
 
 		<modified>
-  		modified time
+  		modified time
+
+
         </modified>
 
 		<meta>
 
 			<position>
-Position
+Position
+
             </position>
 
 			<timestamp>
-TimeStamp
+TimeStamp
+
             </timestamp>
 		</meta>
 	</file>

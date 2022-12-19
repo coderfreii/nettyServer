@@ -140,7 +140,7 @@ public class Aggregate extends BaseEvent implements IoConstants, IStreamData<Agg
                 Header partHeader = new Header();
                 partHeader.setCsId(header.getCsId());
                 partHeader.setDataType(subType);
-                partHeader.setSize(size);
+                partHeader.setDataSize(size);
                 // use the stream id from the aggregate's header
                 partHeader.setStreamId(header.getStreamId());
                 partHeader.setTimer(timestamp);

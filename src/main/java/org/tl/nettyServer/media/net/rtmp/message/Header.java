@@ -40,7 +40,7 @@ public class Header implements Constants, Cloneable, Externalizable {
 
     private int timerDelta;
 
-    private int size;
+    private int dataSize;
 
     private byte dataType;
 
@@ -64,12 +64,12 @@ public class Header implements Constants, Cloneable, Externalizable {
         this.dataType = dataType;
     }
 
-    public int getSize() {
-        return size;
+    public int getDataSize() {
+        return dataSize;
     }
 
-    public void setSize(int size) {
-        this.size = size;
+    public void setDataSize(int dataSize) {
+        this.dataSize = dataSize;
     }
 
     public Number getStreamId() {
@@ -118,7 +118,7 @@ public class Header implements Constants, Cloneable, Externalizable {
     }
 
     public boolean isEmpty() {
-        return !((csId + dataType + size + streamId.doubleValue()) > 0d);
+        return !((csId + dataType + dataSize + streamId.doubleValue()) > 0d);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class Header implements Constants, Cloneable, Externalizable {
         int result = 1;
         result = prime * result + csId;
         result = prime * result + dataType;
-        result = prime * result + size;
+        result = prime * result + dataSize;
         result = prime * result + streamId.intValue();
         result = prime * result + getTimer();
         return result;
@@ -139,7 +139,7 @@ public class Header implements Constants, Cloneable, Externalizable {
             return false;
         }
         final Header header = (Header) other;
-        return (header.getCsId() == csId && header.getDataType() == dataType && header.getSize() == size && header.getTimer() == this.getTimer() && header.getStreamId() == streamId);
+        return (header.getCsId() == csId && header.getDataType() == dataType && header.getDataSize() == dataSize && header.getTimer() == this.getTimer() && header.getStreamId() == streamId);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class Header implements Constants, Cloneable, Externalizable {
         final Header header = new Header();
         header.setDataType(dataType);
         header.setCsId(csId);
-        header.setSize(size);
+        header.setDataSize(dataSize);
         header.setStreamId(streamId);
         header.setExtended(extended);
         header.setTimerBase(timerBase);
@@ -159,7 +159,7 @@ public class Header implements Constants, Cloneable, Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         dataType = in.readByte();
         csId = in.readInt();
-        size = in.readInt();
+        dataSize = in.readInt();
         streamId = (Number) in.readDouble();
         extended = in.readBoolean();
         timerBase = in.readInt();
@@ -169,7 +169,7 @@ public class Header implements Constants, Cloneable, Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeByte(dataType);
         out.writeInt(csId);
-        out.writeInt(size);
+        out.writeInt(dataSize);
         out.writeDouble(streamId.doubleValue());
         out.writeBoolean(extended);
         out.writeInt(timerBase);
@@ -182,7 +182,7 @@ public class Header implements Constants, Cloneable, Externalizable {
         if (isEmpty()) {
             return "empty";
         } else {
-            return "Header [streamId=" + streamId + ", csId=" + csId + ", dataType=" + dataType + ", timerBase=" + timerBase + ", timerDelta=" + timerDelta + ", size=" + size + ", extended=" + extended + "]";
+            return "Header [streamId=" + streamId + ", csId=" + csId + ", dataType=" + dataType + ", timerBase=" + timerBase + ", timerDelta=" + timerDelta + ", dataSize=" + dataSize + ", extended=" + extended + "]";
         }
     }
 

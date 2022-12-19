@@ -137,7 +137,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 }
                 // length of the data to be chunked
                 int dataLen = data.readableBytes();
-                header.setSize(dataLen);
+                header.setDataSize(dataLen);
                 if (log.isTraceEnabled()) {
                     log.trace("Message: {}", data);
                 }
@@ -337,7 +337,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
         if (lastHeader == null || header.getStreamId() != lastHeader.getStreamId() || header.getTimer() < lastHeader.getTimer()) {
             // new header mark if header for another stream
             return HEADER_NEW;
-        } else if (header.getSize() != lastHeader.getSize() || header.getDataType() != lastHeader.getDataType()) {
+        } else if (header.getDataSize() != lastHeader.getDataSize() || header.getDataType() != lastHeader.getDataType()) {
             // same source header if last header data type or size differ
             return HEADER_SAME_SOURCE;
         } else if (header.getTimer() != lastHeader.getTimer()) {
@@ -405,7 +405,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
          may be either 24 or 32 bits long.
          */
         int timeBase = 0, timeDelta = 0;
-        int headerSize = header.getSize();
+        int headerSize = header.getDataSize();
         // encode the message header section
         switch (headerType) {
             case HEADER_NEW: // type 0 - 11 bytes
