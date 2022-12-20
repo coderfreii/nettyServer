@@ -18,13 +18,8 @@ public class RtmpServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new NioEventLoopGroup(new ThreadFactory() {
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                return new Thread(r, "BufFacade");
-                            }
-                        }), new BufFacadeDecoder())
-                        .addLast(new NioEventLoopGroup(2, new ThreadFactory() {
+                        .addLast(new BufFacadeDecoder())
+                        .addLast(new NioEventLoopGroup(10, new ThreadFactory() {
                             @Override
                             public Thread newThread(Runnable r) {
                                 return new Thread(r, "RtmpPacketToByte");
@@ -36,12 +31,7 @@ public class RtmpServer {
                         .addLast(new HandshakeHandler())
                         .addLast(new RTMPEHandler())
                         .addLast(new RtmpByteToPacketHandler())
-                        .addLast(new NioEventLoopGroup(2, new ThreadFactory() {
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                return new Thread(r, "RtmpPacketMayAsyncDecoder");
-                            }
-                        }), new RtmpPacketMayAsyncDecoder())
+                        .addLast(new RtmpPacketMayAsyncDecoder())
                 ;
             }
         };

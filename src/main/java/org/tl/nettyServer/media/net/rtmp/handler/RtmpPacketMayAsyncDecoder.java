@@ -93,7 +93,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
 
     void addTask(int streamId, ReceivedMessageTask task, RTMPConnection connection) {
         // 创建任务以设置处理消息
-        task.setPacketNumber(connection.getCurrentQueueSize().incrementAndGet());
+        task.setPacketNumber(connection.getPacketSequence().incrementAndGet());
         // 创建任务队列
         ReceivedMessageTaskQueue newStreamTaskQueue = new ReceivedMessageTaskQueue(streamId, connection);
         ConcurrentMap<Integer, ReceivedMessageTaskQueue> tasksByStreams = connection.getTasksByStreams();
