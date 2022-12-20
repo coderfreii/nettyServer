@@ -47,9 +47,9 @@ public class SharedObjectTypeMapping {
     };
 
     /**
-     * Convert byte value of RTMP marker to event type
+     * Convert byte value of RtmpProtocolState marker to event type
      *
-     * @param rtmpType RTMP marker value
+     * @param rtmpType RtmpProtocolState marker value
      * @return Corresponding Shared Object event type
      */
     public static ISharedObjectEvent.Type toType(byte rtmpType) {
@@ -57,7 +57,7 @@ public class SharedObjectTypeMapping {
     }
 
     /**
-     * Convert SO event type to byte representation that RTMP uses
+     * Convert SO event type to byte representation that RtmpProtocolState uses
      *
      * @param type Event type
      * @return Byte representation of given event type

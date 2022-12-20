@@ -39,9 +39,9 @@ import org.tl.nettyServer.media.net.rtmp.message.SharedObjectTypeMapping;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.net.rtmp.status.StatusObject;
-import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.call.IServiceCall;
+import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.ISharedObjectMessage;
 
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * RTMP protocol encoder encodes RTMP messages and packets to byte buffers.
+ * RtmpProtocolState protocol encoder encodes RtmpProtocolState messages and packets to byte buffers.
  */
 public class RTMPProtocolEncoder implements Constants, IEventEncoder {
 
@@ -110,7 +110,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     /**
      * Encode packet.
      *
-     * @param packet RTMP packet
+     * @param packet RtmpProtocolState packet
      * @return Encoded data
      */
     public BufFacade encodePacket(Packet packet) {
@@ -128,9 +128,9 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
             //log.trace("Header time: {} message timestamp: {}", header.getTimer(), message.getTimestamp());
             BufFacade data = encodeMessage(header, message);
             if (data != null) {
-                RTMP rtmp = ((RTMPConnection) Red5.getConnectionLocal()).getState();
+                RtmpProtocolState rtmpProtocolState = ((RTMPConnection) Red5.getConnectionLocal()).getState();
                 // set last write packet
-                rtmp.setLastWritePacket(channelId, packet);
+                rtmpProtocolState.setLastWritePacket(channelId, packet);
                 // ensure we're at the beginning
                 if (data.readerIndex() != 0) {
                     data.rewind();
@@ -142,11 +142,11 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                     log.trace("Message: {}", data);
                 }
                 // chunk size for writing
-                int chunkSize = rtmp.getWriteChunkSize();
+                int chunkSize = rtmpProtocolState.getWriteChunkSize();
                 // number of chunks to write
                 int numChunks = (int) Math.ceil(dataLen / (float) chunkSize);
                 // get last header
-                Header lastHeader = rtmp.getLastWriteHeader(channelId);
+                Header lastHeader = rtmpProtocolState.getLastWriteHeader(channelId);
                 if (log.isTraceEnabled()) {
                     log.trace("Channel id: {} chunkSize: {}", channelId, chunkSize);
                 }
@@ -170,14 +170,15 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 // clear the delta
                 lastHeader.setTimerDelta(0);
                 // set last write header
-                rtmp.setLastWriteHeader(channelId, lastHeader);
+                rtmpProtocolState.setLastWriteHeader(channelId, lastHeader);
                 //这里也不能release  RELEASE
                 //data.release();
                 data = null;
             }
         }
-        //信息写入out 这里可以release
-        message.release();
+        //这里不可以release
+//        //信息写入out 这里可以release
+//        message.release();
         return out;
     }
 
@@ -231,15 +232,15 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 String sourceType = (isLiveStream ? "LIVE" : "VOD");
                 log.debug("Connection: {} connType={}", conn.getSessionId(), sourceType);
             }
-            RTMP rtmp = conn.getState();
+            RtmpProtocolState rtmpProtocolState = conn.getState();
             long timestamp = (message.getTimestamp() & 0xFFFFFFFFL);
-            RTMP.LiveTimestampMapping mapping = rtmp.getLastTimestampMapping(channelId);
+            RtmpProtocolState.LiveTimestampMapping mapping = rtmpProtocolState.getLastTimestampMapping(channelId);
             long now = System.currentTimeMillis();
             if (mapping == null || timestamp < mapping.getLastStreamTime()) {
                 log.trace("Resetting clock time ({}) to stream time ({})", now, timestamp);
                 // either first time through, or time stamps were reset
-                mapping = rtmp.new LiveTimestampMapping(now, timestamp);
-                rtmp.setLastTimestampMapping(channelId, mapping);
+                mapping = rtmpProtocolState.new LiveTimestampMapping(now, timestamp);
+                rtmpProtocolState.setLastTimestampMapping(channelId, mapping);
             }
             mapping.setLastStreamTime(timestamp);
             // Calculate when this message should have arrived. Take the time when the stream started, add
@@ -328,7 +329,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     /**
      * Determine type of header to use.
      *
-     * @param header     RTMP message header
+     * @param header     RtmpProtocolState message header
      * @param lastHeader Previous header
      * @return Header type to use
      */
@@ -351,7 +352,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     /**
      * Calculate number of bytes necessary to encode the header.
      *
-     * @param header     RTMP message header
+     * @param header     RtmpProtocolState message header
      * @param lastHeader Previous header
      * @return Calculated size
      */
@@ -368,9 +369,9 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     }
 
     /**
-     * Encode RTMP header.
+     * Encode RtmpProtocolState header.
      *
-     * @param header     RTMP message header
+     * @param header     RtmpProtocolState message header
      * @param lastHeader Previous header
      * @return Encoded header data
      */
@@ -381,9 +382,9 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     }
 
     /**
-     * Encode RTMP header into given BufFacade.
+     * Encode RtmpProtocolState header into given BufFacade.
      *
-     * @param header     RTMP message header
+     * @param header     RtmpProtocolState message header
      * @param lastHeader Previous header
      * @param buf        Buffer for writing encoded header into
      */
@@ -394,11 +395,11 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
             log.trace("{} lastHeader: {}", Header.HeaderType.values()[headerType], lastHeader);
         }
         /*
-         Timestamps in RTMP are given as an integer number of milliseconds relative to an unspecified epoch. Typically, each stream will start
+         Timestamps in RtmpProtocolState are given as an integer number of milliseconds relative to an unspecified epoch. Typically, each stream will start
          with a timestamp of 0, but this is not required, as long as the two endpoints agree on the epoch. Note that this means that any
-         synchronization across multiple streams (especially from separate hosts) requires some additional mechanism outside of RTMP.
+         synchronization across multiple streams (especially from separate hosts) requires some additional mechanism outside of RtmpProtocolState.
          Because timestamps are 32 bits long, they roll over every 49 days, 17 hours, 2 minutes and 47.296 seconds. Because streams are allowed to
-         run continuously, potentially for years on end, an RTMP application SHOULD use serial number arithmetic [RFC1982] when processing
+         run continuously, potentially for years on end, an RtmpProtocolState application SHOULD use serial number arithmetic [RFC1982] when processing
          timestamps, and SHOULD be capable of handling wraparound. For example, an application assumes that all adjacent timestamps are
          within 2^31 - 1 milliseconds of each other, so 10000 comes after 4000000000, and 3000000000 comes before 4000000000.
          Timestamp deltas are also specified as an unsigned integer number of milliseconds, relative to the previous timestamp. Timestamp deltas
@@ -479,8 +480,8 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
     /**
      * Encode message.
      *
-     * @param header  RTMP message header
-     * @param message RTMP message (event)
+     * @param header  RtmpProtocolState message header
+     * @param message RtmpProtocolState message (event)
      * @return Encoded message data
      */
     public BufFacade encodeMessage(Header header, IRTMPEvent message) {
@@ -507,9 +508,9 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                                 //audio and video channels
                                 int[] channels = new int[]{5, 6};
                                 //if its a seek notification, reset the "mapping" for audio (5) and video (6)
-                                RTMP rtmp = ((RTMPConnection) Red5.getConnectionLocal()).getState();
+                                RtmpProtocolState rtmpProtocolState = ((RTMPConnection) Red5.getConnectionLocal()).getState();
                                 for (int channelId : channels) {
-                                    RTMP.LiveTimestampMapping mapping = rtmp.getLastTimestampMapping(channelId);
+                                    RtmpProtocolState.LiveTimestampMapping mapping = rtmpProtocolState.getLastTimestampMapping(channelId);
                                     if (mapping != null) {
                                         long timestamp = mapping.getClockStartTime() + (seekTime & 0xFFFFFFFFL);
                                         log.trace("Setting last stream time to: {}", timestamp);

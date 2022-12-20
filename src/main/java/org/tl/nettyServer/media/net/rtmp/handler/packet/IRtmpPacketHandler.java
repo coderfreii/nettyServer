@@ -18,13 +18,12 @@
 
 package org.tl.nettyServer.media.net.rtmp.handler.packet;
 
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.session.SessionFacade;
 
 /**
- * RTMP events handler
+ * RtmpProtocolState events handler
  */
 public interface IRtmpPacketHandler {
     public void messageReceived(RTMPConnection conn, Packet packet) throws Exception;
@@ -33,5 +32,5 @@ public interface IRtmpPacketHandler {
 
     public void connectionClosed(RTMPConnection conn);
 
-    public void connectionClosed(RTMPConnection conn, RTMP state);
+    public void connectionClosed(RTMPConnection conn, RtmpProtocolState state);
 }

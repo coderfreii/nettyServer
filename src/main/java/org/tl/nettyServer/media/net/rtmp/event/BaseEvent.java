@@ -32,7 +32,7 @@ import java.io.ObjectOutput;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Base abstract class for all RTMP events
+ * Base abstract class for all RtmpProtocolState events
  */
 public abstract class BaseEvent implements Constants, IRTMPEvent, Externalizable {
 
@@ -69,7 +69,7 @@ public abstract class BaseEvent implements Constants, IRTMPEvent, Externalizable
     protected int timestamp;
 
     /**
-     * Event RTMP packet header
+     * Event RtmpProtocolState packet header
      */
     protected Header header = null;
 

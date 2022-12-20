@@ -435,7 +435,7 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
 
             @Override
             public synchronized void reset() {
-                ByteBufFacade.this.setIndex(0, ByteBufFacade.this.writerIndex());
+                ByteBufFacade.this.rewind();
             }
 
             @Override
@@ -792,12 +792,24 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
 
     @Override
     public void rewind() {
-        this.target.setIndex(0, this.target.writerIndex());
+        this.target.readerIndex(0);
     }
 
     @Override
     public BufFacade<ByteBuf> discardReadBytes() {
         this.target.discardReadBytes();
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> readerIndex(int readerIndex) {
+        this.target.readerIndex(readerIndex);
+        return this;
+    }
+
+    @Override
+    public BufFacade<ByteBuf> writerIndex(int writerIndex) {
+        this.target.writerIndex(writerIndex);
         return this;
     }
 

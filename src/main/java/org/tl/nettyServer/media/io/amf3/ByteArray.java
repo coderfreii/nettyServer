@@ -136,7 +136,7 @@ public class ByteArray implements IDataInput, IDataOutput {
     public void compress() {
         BufFacade tmp = BufFacade.buffer(0);
         byte[] tmpData = new byte[data.capacity()];
-        data.setIndex(0, data.writerIndex());
+        data.rewind();
         data.readBytes(tmpData);
         try (DeflaterOutputStream deflater = new DeflaterOutputStream(tmp.asOutputStream(), new Deflater(Deflater.BEST_COMPRESSION))) {
             deflater.write(tmpData);
@@ -155,7 +155,7 @@ public class ByteArray implements IDataInput, IDataOutput {
      * Decompress contents using zlib.
      */
     public void uncompress() {
-        data.setIndex(0, data.writerIndex());
+        data.rewind();
         byte[] buffer = new byte[8192];
         BufFacade tmp = BufFacade.buffer(0);
         try (InflaterInputStream inflater = new InflaterInputStream(data.asInputStream())) {
@@ -463,7 +463,7 @@ public class ByteArray implements IDataInput, IDataOutput {
         if (data != null) {
             data.markReaderIndex();
             try {
-                data.setIndex(0, data.writerIndex());
+                data.rewind();
                 return data.readCharSequence(data.readableBytes(), Charset.defaultCharset()).toString();
             } finally {
                 data.resetReaderIndex();

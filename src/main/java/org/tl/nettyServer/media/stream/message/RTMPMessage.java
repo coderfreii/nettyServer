@@ -24,7 +24,7 @@ import org.tl.nettyServer.media.net.rtmp.RTMPType;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 
 /**
- * RTMP message
+ * RtmpProtocolState message
  */
 public class RTMPMessage extends AbstractMessage {
 
@@ -58,7 +58,7 @@ public class RTMPMessage extends AbstractMessage {
     }
 
     /**
-     * Return RTMP message body
+     * Return RtmpProtocolState message body
      *
      * @return Value for property 'body'.
      */

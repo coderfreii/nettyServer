@@ -30,10 +30,10 @@ import java.nio.ByteBuffer;
 public class SerializeUtils {
 
     public static byte[] ByteBufferToByteArray(BufFacade buf) {
-        byte[] byteBuf = new byte[buf.capacity()];
+        byte[] byteBuf = new byte[buf.readableBytes()];
         buf.markReaderIndex();
-        buf.setIndex(0, buf.writerIndex());
-        buf.writeBytes(byteBuf);
+        buf.readerIndex(0);
+        buf.readBytes(byteBuf);
         buf.resetReaderIndex();
         return byteBuf;
     }

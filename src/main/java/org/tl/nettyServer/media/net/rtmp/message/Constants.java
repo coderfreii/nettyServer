@@ -19,7 +19,7 @@
 package org.tl.nettyServer.media.net.rtmp.message;
 
 /**
- * Class for AMF and RTMP marker values constants
+ * Class for AMF and RtmpProtocolState marker values constants
  */
 public interface Constants {
 
@@ -39,7 +39,7 @@ public interface Constants {
     public static final int MEDIUM_INT_MAX = 16777215;
 
     /**
-     * RTMP chunk size constant
+     * RtmpProtocolState chunk size constant
      */
     public static final byte TYPE_CHUNK_SIZE = 0x01;
 

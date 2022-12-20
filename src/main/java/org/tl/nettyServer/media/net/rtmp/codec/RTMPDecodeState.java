@@ -48,7 +48,7 @@ public class RTMPDecodeState {
     public final String sessionId;
 
     /**
-     * Classes like the RTMP state object will extend this marker interface.
+     * Classes like the RtmpProtocolState state object will extend this marker interface.
      */
     private int decoderBufferAmount;
 

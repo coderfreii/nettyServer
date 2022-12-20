@@ -154,7 +154,7 @@ public class StatusObject implements Serializable, ICustomSerializable, External
     }
 
     /**
-     * Generate Status object that can be returned through a RTMP channel.
+     * Generate Status object that can be returned through a RtmpProtocolState channel.
      * 
      * @return status
      */

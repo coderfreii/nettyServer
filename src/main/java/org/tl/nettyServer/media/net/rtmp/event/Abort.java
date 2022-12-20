@@ -23,7 +23,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- * RTMP Abort event.
+ * RtmpProtocolState Abort event.
  * 
  * @author aclarke@xuggle.com
  */

@@ -40,7 +40,8 @@ import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.consumer.IConsumerService;
 import org.tl.nettyServer.media.statistics.IClientBroadcastStreamStatistics;
 import org.tl.nettyServer.media.statistics.StatisticsCounter;
-import org.tl.nettyServer.media.stream.*;
+import org.tl.nettyServer.media.stream.IStreamAwareScopeHandler;
+import org.tl.nettyServer.media.stream.StreamState;
 import org.tl.nettyServer.media.stream.codec.IStreamCodecInfo;
 import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 import org.tl.nettyServer.media.stream.data.IStreamData;
@@ -326,7 +327,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     try {
                         // route to live
                         if (livePipe != null) {
-                            // create new RTMP message, initialize it and push through pipe
+                            // create new RtmpProtocolState message, initialize it and push through pipe
                             RTMPMessage msg = RTMPMessage.build(rtmpEvent, eventTime);
                             livePipe.pushMessage(msg);
                         } else if (log.isDebugEnabled()) {
@@ -335,10 +336,23 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     } catch (IOException err) {
                         stop();
                     }
+
+                    //确保可读
+
                     // notify listeners about received packet
                     if (rtmpEvent instanceof IStreamPacket) {
                         for (IStreamListener listener : getStreamListeners()) {
                             try {
+                                if (rtmpEvent instanceof IStreamData) {
+                                    try {
+                                        rtmpEvent = (IRTMPEvent) ((IStreamData) rtmpEvent).duplicate();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (ClassNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
                                 listener.packetReceived(this, (IStreamPacket) rtmpEvent);
                             } catch (Exception e) {
                                 log.error("Error while notifying listener {}", listener, e);
@@ -602,7 +616,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                             try {
                                 listener.getFileConsumer().setVideoDecoderConfiguration(videoConf);
                             } finally {
-                                videoConf.release();
+                                //这里不能release
+                                //videoConf.release();
                             }
                         }
                     } else {
@@ -616,7 +631,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                             try {
                                 listener.getFileConsumer().setAudioDecoderConfiguration(audioConf);
                             } finally {
-                                audioConf.release();
+                                //这里不能release
+                                //audioConf.release();
                             }
                         }
                     } else {

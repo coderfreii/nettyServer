@@ -6,7 +6,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.codec.HandShake;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.session.SessionAccessor;
@@ -22,11 +22,11 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> in, List<Object> out) throws Exception {
         RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveConn(ctx);
         SessionFacade nettySessionFacade = connection.getSession();
-        RTMP state = connection.getState();
+        RtmpProtocolState state = connection.getState();
 
         switch (state.getState()) {
             //首次连接需要为握手做准备
-            case RTMP.STATE_CONNECT:
+            case RtmpProtocolState.STATE_CONNECT:
                 if (in.readableBytes() >= (Constants.HANDSHAKE_SIZE + 1)) {
                     log.debug("decodeHandshakeC0C1");
                     // set handshake to match client requested type
@@ -44,11 +44,11 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
                     //
                     ctx.writeAndFlush(s0s1s2);
                     //设置连接状态
-                    state.setState(RTMP.STATE_HANDSHAKE);
+                    state.setState(RtmpProtocolState.STATE_HANDSHAKE);
                 }
                 break;
             //进行握手
-            case RTMP.STATE_HANDSHAKE:
+            case RtmpProtocolState.STATE_HANDSHAKE:
                 if (in.readableBytes() >= Constants.HANDSHAKE_SIZE) {
                     log.debug("decodeHandshakeC2");
                     // create array for decode
@@ -59,7 +59,7 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
                         log.debug("Connected, removing handshake data and adding rtmp protocol filter");
                         // set state to indicate we're connected
                         //修改连接状态为 已连接
-                        state.setState(RTMP.STATE_CONNECTED);
+                        state.setState(RtmpProtocolState.STATE_CONNECTED);
                         // set encryption flag the rtmp state
                         // 设置rtmp是否为加密状态
                         if (handshake.useEncryption()) {
@@ -81,11 +81,11 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
                     }
                 }
                 break;
-            case RTMP.STATE_CONNECTED:
+            case RtmpProtocolState.STATE_CONNECTED:
                 ctx.fireChannelRead(in);
                 break;
             default:
-                throw new IllegalStateException("Invalid RTMP state: " + state);
+                throw new IllegalStateException("Invalid RtmpProtocolState state: " + state);
         }
     }
 

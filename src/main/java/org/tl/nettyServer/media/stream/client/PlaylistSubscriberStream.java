@@ -256,10 +256,12 @@ public class PlaylistSubscriberStream extends AbstractClientStream implements IP
                     moveToNext();
                     if (currentItemIndex == -1) {
                         // we reached the end
+                        log.info("StreamNotFoundException  {}", e.getClass().getSimpleName());
                         break;
                     }
                 } catch (IllegalStateException e) {
                     // an stream is already playing
+                    log.info("IllegalStateException  {}", e.getClass().getSimpleName());
                     break;
                 }
             }

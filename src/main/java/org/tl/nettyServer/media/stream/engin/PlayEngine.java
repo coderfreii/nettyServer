@@ -39,17 +39,17 @@ import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.consumer.IConsumerService;
 import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.service.stream.StreamService;
-import org.tl.nettyServer.media.stream.*;
+import org.tl.nettyServer.media.stream.StreamState;
 import org.tl.nettyServer.media.stream.base.IBroadcastStream;
+import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
 import org.tl.nettyServer.media.stream.client.ISubscriberStream;
 import org.tl.nettyServer.media.stream.codec.IStreamCodecInfo;
 import org.tl.nettyServer.media.stream.data.IStreamData;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.stream.message.ResetMessage;
 import org.tl.nettyServer.media.stream.message.StatusMessage;
-import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
-import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 import org.tl.nettyServer.media.stream.playlist.DynamicPlayItem;
+import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 import org.tl.nettyServer.media.stream.provider.ISeekableProvider;
 import org.tl.nettyServer.media.stream.provider.IStreamTypeAwareProvider;
 import org.tl.nettyServer.media.util.ObjectMap;
@@ -473,7 +473,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
                 log.debug("Keyframe is available");
                 VideoData video = new VideoData(keyframe.getFrame(), true);
                 log.debug("Pushing keyframe");
-                sendMessage(RTMPMessage.build(video, ts));
+                    sendMessage(RTMPMessage.build(video, ts));
             }
         } else {
             log.debug("No video decoder configuration available");
@@ -877,7 +877,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
     }
 
     /**
-     * Send an RTMP message
+     * Send an RtmpProtocolState message
      */
     private void sendMessage(RTMPMessage messageIn) {
         IRTMPEvent eventIn = messageIn.getBody();

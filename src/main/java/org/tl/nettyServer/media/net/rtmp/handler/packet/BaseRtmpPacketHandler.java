@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.ICommand;
 import org.tl.nettyServer.media.event.IEventDispatcher;
 import org.tl.nettyServer.media.net.rtmp.Channel;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
@@ -31,12 +31,12 @@ import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scheduling.QuartzSchedulingService;
-import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.IPendingServiceCallback;
+import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.so.SharedObjectMessage;
-import org.tl.nettyServer.media.stream.base.IClientStream;
 import org.tl.nettyServer.media.stream.StreamAction;
+import org.tl.nettyServer.media.stream.base.IClientStream;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -94,7 +94,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
                     if (stream != null) {
                         ((IEventDispatcher) stream).dispatchEvent(message);
                     }
-                    break;
+                    return;
                 case TYPE_FLEX_SHARED_OBJECT:
                 case TYPE_SHARED_OBJECT:
                     onSharedObject(conn, channel, header, (SharedObjectMessage) message);
@@ -150,7 +150,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
         }
         //如果以前的方法在缓冲之前没有进行复制，这可能会导致“丢失”数据
         if (message != null) {
-            message.release();
+//            message.release();
         }
     }
 
@@ -162,15 +162,15 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
 
     public void connectionClosed(RTMPConnection conn) {
         log.debug("connectionClosed: {}", conn.getSessionId());
-        if (conn.getStateCode() != RTMP.STATE_DISCONNECTED) {
+        if (conn.getStateCode() != RtmpProtocolState.STATE_DISCONNECTED) {
             // inform any callbacks for pending calls that the connection is closed
             conn.sendPendingServiceCallsCloseError();
             // close the connection
-            if (conn.getStateCode() != RTMP.STATE_DISCONNECTING) {
+            if (conn.getStateCode() != RtmpProtocolState.STATE_DISCONNECTING) {
                 conn.close();
             }
             // set as disconnected
-            conn.setStateCode(RTMP.STATE_DISCONNECTED);
+            conn.setStateCode(RtmpProtocolState.STATE_DISCONNECTED);
         }
         //TODO: 移除连接
         log.trace("connectionClosed: {}", conn);
@@ -234,7 +234,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
     /**
      * Invocation event handler.
      */
-    protected abstract void onInvoke(RTMPConnection conn, Channel channel, Header source, Notify invoke, RTMP rtmp);
+    protected abstract void onInvoke(RTMPConnection conn, Channel channel, Header source, Notify invoke, RtmpProtocolState rtmpProtocolState);
 
     /**
      * Command event handler, which current consists of an Invoke or Notify type object.
@@ -261,25 +261,25 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
 
     protected abstract void onSharedObject(RTMPConnection conn, Channel channel, Header source, SharedObjectMessage message);
 
-    public void connectionOpened(RTMPConnection conn, RTMP state) {
+    public void connectionOpened(RTMPConnection conn, RtmpProtocolState state) {
         log.trace("connectionOpened - conn: {} state: {}", conn, state);
-        if (state.getMode() == RTMP.MODE_SERVER /*&& appCtx != null*/) {
+        if (state.getMode() == RtmpProtocolState.MODE_SERVER /*&& appCtx != null*/) {
             ISchedulingService service = QuartzSchedulingService.getInstance();//(ISchedulingService) appCtx.getBean(ISchedulingService.BEAN_NAME);
 //            conn.startWaitForHandshake(service);
         }
     }
 
-    public void connectionClosed(RTMPConnection conn, RTMP state) {
+    public void connectionClosed(RTMPConnection conn, RtmpProtocolState state) {
         log.debug("connectionClosed: {}", conn.getSessionId());
-        if (conn.getStateCode() != RTMP.STATE_DISCONNECTED) {
+        if (conn.getStateCode() != RtmpProtocolState.STATE_DISCONNECTED) {
             // inform any callbacks for pending calls that the connection is closed
             conn.sendPendingServiceCallsCloseError();
             // close the connection
-            if (conn.getStateCode() != RTMP.STATE_DISCONNECTING) {
+            if (conn.getStateCode() != RtmpProtocolState.STATE_DISCONNECTING) {
                 conn.close();
             }
             // set as disconnected
-            conn.setStateCode(RTMP.STATE_DISCONNECTED);
+            conn.setStateCode(RtmpProtocolState.STATE_DISCONNECTED);
         }
         log.trace("connectionClosed: {}", conn);
     }

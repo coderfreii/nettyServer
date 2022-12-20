@@ -114,7 +114,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
      * Decodes server bandwidth.
      *
      * @param in BufFacade
-     * @return RTMP event
+     * @return RtmpProtocolState event
      */
     private IRTMPEvent decodeServerBW(BufFacade in) {
         return new ServerBW(in.readInt());
@@ -124,7 +124,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
      * Decodes client bandwidth.
      *
      * @param in Byte buffer
-     * @return RTMP event
+     * @return RtmpProtocolState event
      */
     private IRTMPEvent decodeClientBW(BufFacade in) {
         return new ClientBW(in.readInt(), in.readByte());
@@ -467,7 +467,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                 log.debug("Dataframe params type: {}", object);
                 Map<Object, Object> params = Collections.EMPTY_MAP;
                 if (object == DataTypes.CORE_MAP) {
-                    // the params are sent as a Mixed-Array. Required to support the RTMP publish provided by ffmpeg
+                    // the params are sent as a Mixed-Array. Required to support the RtmpProtocolState publish provided by ffmpeg
                     params = (Map<Object, Object>) input.readMap();
                 } else if (object == DataTypes.CORE_ARRAY) {
                     params = (Map<Object, Object>) input.readArray(Object[].class);

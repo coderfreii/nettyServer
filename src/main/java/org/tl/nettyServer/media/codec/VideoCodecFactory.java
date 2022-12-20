@@ -80,7 +80,7 @@ public class VideoCodecFactory {
                     result = (IVideoStreamCodec) Class.forName("org.red5.codec.ScreenVideo2").newInstance();
                     break;
                 case 7: //avc/h.264 video
-                    result = (IVideoStreamCodec) Class.forName("org.red5.codec.AVCVideo").newInstance();
+                    result = (IVideoStreamCodec) Class.forName("org.tl.nettyServer.media.codec.AVCVideo").newInstance();
                     break;
             }
         } catch (Exception ex) {

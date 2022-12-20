@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@
 package org.tl.nettyServer.media.service.stream;
 
 import org.apache.commons.lang3.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.Red5;
@@ -33,17 +32,17 @@ import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.scope.IBroadcastScope;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.service.IStreamSecurityService;
+import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.stream.base.IBroadcastStream;
-import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
 import org.tl.nettyServer.media.stream.base.IClientStream;
+import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
+import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
 import org.tl.nettyServer.media.stream.client.ISingleItemSubscriberStream;
 import org.tl.nettyServer.media.stream.client.ISubscriberStream;
-import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
 import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
-import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 import org.tl.nettyServer.media.stream.playlist.DynamicPlayItem;
+import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 import org.tl.nettyServer.media.stream.playlist.SimplePlayItem;
 import org.tl.nettyServer.media.stream.support.IStreamPlaybackSecurity;
 import org.tl.nettyServer.media.stream.support.IStreamPublishSecurity;
@@ -59,7 +58,7 @@ import java.util.Set;
  * Stream service
  * 流服务
  */
-public class StreamService implements IStreamService  {
+public class StreamService implements IStreamService {
 
     private static Logger log = LoggerFactory.getLogger(StreamService.class);
 
@@ -73,7 +72,9 @@ public class StreamService implements IStreamService  {
         }
     };
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Number createStream() {
         IConnection conn = Red5.getConnectionLocal();
         log.trace("createStream connection: {}", conn.getSessionId());
@@ -91,7 +92,9 @@ public class StreamService implements IStreamService  {
         return -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public Number createStream(Number streamId) {
         IConnection conn = Red5.getConnectionLocal();
         log.trace("createStream stream id: {} connection: {}", streamId, conn.getSessionId());
@@ -113,7 +116,9 @@ public class StreamService implements IStreamService  {
         return -1;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void initStream(Number streamId) {
         IConnection conn = Red5.getConnectionLocal();
         log.info("initStream stream id: {} current stream id: {} connection: {}", streamId, conn.getStreamId(), conn.getSessionId());
@@ -136,7 +141,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void initStream(Number streamId, Object idk) {
         log.info("initStream parameter #2: {}", idk);
         initStream(streamId);
@@ -154,9 +161,9 @@ public class StreamService implements IStreamService  {
      * Close stream. This method can close both IClientBroadcastStream (coming from Flash Player to Red5) and ISubscriberStream (from Red5
      * to Flash Player). Corresponding application handlers (streamSubscriberClose, etc.) are called as if close was initiated by Flash
      * Player.
-     * 
+     * <p>
      * It is recommended to remember stream id in application handlers, ex.:
-     * 
+     *
      * <pre>
      * public void streamBroadcastStart(IBroadcastStream stream) {
      *     super.streamBroadcastStart(stream);
@@ -166,21 +173,19 @@ public class StreamService implements IStreamService  {
      *     }
      * }
      * </pre>
-     * 
+     *
      * <pre>
      * public void streamPlaylistItemPlay(IPlaylistSubscriberStream stream, IPlayItem item, boolean isLive) {
      *     super.streamPlaylistItemPlay(stream, item, isLive);
      *     Red5.getConnectionLocal().setAttribute(WATCHED_STREAM_ID_ATTRIBUTE, stream.getStreamId());
      * }
      * </pre>
-     * 
+     * <p>
      * When stream is closed, corresponding NetStream status will be sent to stream provider / consumers. Implementation is based on Red5's
      * StreamService.close()
-     * 
-     * @param conn
-     *            client connection
-     * @param streamId
-     *            stream ID (number: 1,2,...)
+     *
+     * @param conn     client connection
+     * @param streamId stream ID (number: 1,2,...)
      */
     public void closeStream(IConnection conn, Number streamId) {
         log.info("closeStream  stream id: {} connection: {}", streamId, conn.getSessionId());
@@ -210,12 +215,16 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void releaseStream(String streamName) {
         // XXX: what to do here?
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void deleteStream(Number streamId) {
         IConnection conn = Red5.getConnectionLocal();
         if (conn instanceof IStreamCapableConnection) {
@@ -224,7 +233,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void deleteStream(IStreamCapableConnection conn, Number streamId) {
         IClientStream stream = conn.getStreamById(streamId);
         if (stream != null) {
@@ -240,7 +251,9 @@ public class StreamService implements IStreamService  {
         conn.unreserveStreamId(streamId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void pauseRaw(Boolean pausePlayback, int position) {
         log.trace("pauseRaw - pausePlayback:{} position:{}", pausePlayback, position);
         pause(pausePlayback, position);
@@ -248,11 +261,9 @@ public class StreamService implements IStreamService  {
 
     /**
      * Pause at given position. Required as "pausePlayback" can be "null" if no flag is passed by the client
-     * 
-     * @param pausePlayback
-     *            Pause playback or not
-     * @param position
-     *            Pause position
+     *
+     * @param pausePlayback Pause playback or not
+     * @param position      Pause position
      */
     public void pause(Boolean pausePlayback, int position) {
         IConnection conn = Red5.getConnectionLocal();
@@ -277,21 +288,17 @@ public class StreamService implements IStreamService  {
 
     /**
      * Plays back a stream based on the supplied name, from the specified position for the given length of time.
-     * 
-     * @param name
-     *            - The name of a recorded file, or the identifier for live data. If
-     * @param start
-     *            - The start time, in seconds. Allowed values are -2, -1, 0, or a positive number. The default value is -2, which looks for
-     *            a live stream, then a recorded stream, and if it finds neither, opens a live stream. If -1, plays only a live stream. If 0
-     *            or a positive number, plays a recorded stream, beginning start seconds in.
-     * @param length
-     *            - The duration of the playback, in seconds. Allowed values are -1, 0, or a positive number. The default value is -1, which
-     *            plays a live or recorded stream until it ends. If 0, plays a single frame that is start seconds from the beginning of a
-     *            recorded stream. If a positive number, plays a live or recorded stream for length seconds.
-     * @param reset
-     *            - Whether to clear a playlist. The default value is 1 or true, which clears any previous play calls and plays name
-     *            immediately. If 0 or false, adds the stream to a playlist. If 2, maintains the playlist and returns all stream messages at
-     *            once, rather than at intervals. If 3, clears the playlist and returns all stream messages at once.
+     *
+     * @param name   - The name of a recorded file, or the identifier for live data. If
+     * @param start  - The start time, in seconds. Allowed values are -2, -1, 0, or a positive number. The default value is -2, which looks for
+     *               a live stream, then a recorded stream, and if it finds neither, opens a live stream. If -1, plays only a live stream. If 0
+     *               or a positive number, plays a recorded stream, beginning start seconds in.
+     * @param length - The duration of the playback, in seconds. Allowed values are -1, 0, or a positive number. The default value is -1, which
+     *               plays a live or recorded stream until it ends. If 0, plays a single frame that is start seconds from the beginning of a
+     *               recorded stream. If a positive number, plays a live or recorded stream for length seconds.
+     * @param reset  - Whether to clear a playlist. The default value is 1 or true, which clears any previous play calls and plays name
+     *               immediately. If 0 or false, adds the stream to a playlist. If 2, maintains the playlist and returns all stream messages at
+     *               once, rather than at intervals. If 3, clears the playlist and returns all stream messages at once.
      */
     public void play(String name, int start, int length, Object reset) {
         if (reset instanceof Boolean) {
@@ -326,13 +333,16 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void play(String name, int start, int length, boolean flushPlaylist) {
-        log.debug("Play called - name: {} start: {} length: {} flush playlist: {}", new Object[] { name, start, length, flushPlaylist });
+        log.debug("Play called - name: {} start: {} length: {} flush playlist: {}", new Object[]{name, start, length, flushPlaylist});
         IConnection conn = Red5.getConnectionLocal();
         if (conn instanceof IStreamCapableConnection) {
             IScope scope = conn.getScope();
             IStreamCapableConnection streamConn = (IStreamCapableConnection) conn;
+            //这里的streamId就是createStream是传给客户端的Id
             Number streamId = conn.getStreamId();
             if (StringUtils.isEmpty(name)) {
                 log.warn("The stream name may not be empty");
@@ -414,22 +424,30 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void play(String name, int start, int length) {
         play(name, start, length, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void play(String name, int start) {
         play(name, start, -1000, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void play(String name) {
         play(name, -2000, -1000, true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void play(Boolean dontStop) {
         log.debug("Play without stop: {}", dontStop);
         if (!dontStop) {
@@ -448,18 +466,13 @@ public class StreamService implements IStreamService  {
     /**
      * Dynamic streaming play method. This is a convenience method.
      * 动态流媒体播放方法。这是一种方便的方法
-     * @param oldStreamName
-     *            old
-     * @param start
-     *            start pos
-     * @param transition
-     *            type of transition
-     * @param length
-     *            length to play
-     * @param offset
-     *            offset
-     * @param streamName
-     *            stream name
+     *
+     * @param oldStreamName old
+     * @param start         start pos
+     * @param transition    type of transition
+     * @param length        length to play
+     * @param offset        offset
+     * @param streamName    stream name
      */
     public void play2(String oldStreamName, int start, String transition, int length, double offset, String streamName) {
         Map<String, Object> playOptions = new HashMap<String, Object>();
@@ -473,9 +486,8 @@ public class StreamService implements IStreamService  {
 
     /**
      * Dynamic streaming play method. This is a convenience method.
-     * 
-     * @param params
-     *            play parameters
+     *
+     * @param params play parameters
      */
     @SuppressWarnings("rawtypes")
     public void play2(ObjectMap params) {
@@ -491,15 +503,15 @@ public class StreamService implements IStreamService  {
 
     /**
      * Dynamic streaming play method.
-     * 
+     * <p>
      * The following properties are supported on the play options:
-     * 
+     *
      * <pre>
      * streamName: String. The name of the stream to play or the new stream to switch to.
-     * oldStreamName: String. The name of the initial stream that needs to be switched out. This is not needed and ignored 
+     * oldStreamName: String. The name of the initial stream that needs to be switched out. This is not needed and ignored
      *                 when play2 is used for just playing the stream and not switching to a new stream.
-     * start: Number. The start time of the new stream to play, just as supported by the existing play API. and it has the 
-     *                same defaults. This is ignored when the method is called for switching (in other words, the transition 
+     * start: Number. The start time of the new stream to play, just as supported by the existing play API. and it has the
+     *                same defaults. This is ignored when the method is called for switching (in other words, the transition
      *                is either NetStreamPlayTransition.SWITCH or NetStreamPlayTransitions.SWAP)
      * len: Number. The duration of the playback, just as supported by the existing play API and has the same defaults.
      * transition: String. The transition mode for the playback command. It could be one of the following:
@@ -508,7 +520,7 @@ public class StreamService implements IStreamService  {
      *      NetStreamPlayTransitions.SWITCH
      *      NetStreamPlayTransitions.SWAP
      * </pre>
-     * 
+     * <p>
      * NetStreamPlayTransitions:
      * <pre>
      *      APPEND : String = "append" - Adds the stream to a playlist and begins playback with the first stream.
@@ -519,15 +531,14 @@ public class StreamService implements IStreamService  {
      *      SWAP : String = "swap" - Replaces a content stream with a different content stream and maintains the rest of the playlist.
      *      SWITCH : String = "switch" - Switches from playing one stream to another stream, typically with streams of the same content.
      * </pre>
-     * 
+     *
+     * @param playOptions play options
      * @see <a href="http://www.adobe.com/devnet/flashmediaserver/articles/dynstream_actionscript.html">ActionScript guide to dynamic
-     *      streaming</a>
+     * streaming</a>
      * @see <a href="http://www.adobe.com/devnet/flashmediaserver/articles/dynstream_advanced_pt1.html">Dynamic streaming in Flash Media
-     *      Server - Part 1: Overview of the new capabilities</a>
+     * Server - Part 1: Overview of the new capabilities</a>
      * @see <a
-     *      href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/NetStreamPlayTransitions.html">NetStreamPlayTransitions</a>
-     * @param playOptions
-     *            play options
+     * href="http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/net/NetStreamPlayTransitions.html">NetStreamPlayTransitions</a>
      */
     public void play2(Map<String, ?> playOptions) {
         log.debug("play2 options: {}", playOptions.toString());
@@ -594,7 +605,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void publish(Boolean dontStop) {
         // null is as good as false according to Boolean.valueOf() so if null, interpret as false
         if (dontStop == null || !dontStop) {
@@ -621,7 +634,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void publish(String name, String mode) {
         Map<String, String> params = null;
         if (name != null && name.contains("?")) {
@@ -726,12 +741,16 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void publish(String name) {
         publish(name, IClientStream.MODE_LIVE);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void seek(int position) {
         log.trace("seek - position:{}", position);
         IConnection conn = Red5.getConnectionLocal();
@@ -750,7 +769,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void receiveVideo(boolean receive) {
         IConnection conn = Red5.getConnectionLocal();
         if (conn instanceof IStreamCapableConnection) {
@@ -764,7 +785,9 @@ public class StreamService implements IStreamService  {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public void receiveAudio(boolean receive) {
         IConnection conn = Red5.getConnectionLocal();
         if (conn instanceof IStreamCapableConnection) {
@@ -780,11 +803,9 @@ public class StreamService implements IStreamService  {
 
     /**
      * Return broadcast scope object for given scope and child scope name.
-     * 
-     * @param scope
-     *            Scope object
-     * @param name
-     *            Child scope name
+     *
+     * @param scope Scope object
+     * @param name  Child scope name
      * @return Broadcast scope
      */
     public IBroadcastScope getBroadcastScope(IScope scope, String name) {
@@ -793,7 +814,7 @@ public class StreamService implements IStreamService  {
 
     /**
      * Send NetStream.Play.Failed to the client.
-     * 
+     *
      * @param conn
      * @param errorCode
      * @param description
@@ -806,10 +827,9 @@ public class StreamService implements IStreamService  {
 
     /**
      * Send NetStream.Status to the client.
-     * 
+     *
      * @param conn
-     * @param statusCode
-     *            see StatusCodes class
+     * @param statusCode  see StatusCodes class
      * @param description
      * @param name
      * @param streamId
@@ -820,25 +840,19 @@ public class StreamService implements IStreamService  {
 
     /**
      * Send NetStream.Status to the client.
-     * 
-     * @param conn
-     *            connection
-     * @param statusCode
-     *            NetStream status code
-     * @param description
-     *            description
-     * @param name
-     *            name
-     * @param status
-     *            The status - error, warning, or status
-     * @param streamId
-     *            stream id
+     *
+     * @param conn        connection
+     * @param statusCode  NetStream status code
+     * @param description description
+     * @param name        name
+     * @param status      The status - error, warning, or status
+     * @param streamId    stream id
      */
     public static void sendNetStreamStatus(IConnection conn, String statusCode, String description, String name, String status, Number streamId) {
         if (conn instanceof RTMPConnection) {
             Status s = new Status(statusCode);
             s.setClientid(streamId);
-            s.setDesciption(description);
+            s.setDesciption(statusCode + ": " + description);
             s.setDetails(name);
             s.setLevel(status);
             // get the channel

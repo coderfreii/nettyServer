@@ -119,12 +119,12 @@ public class Application extends ApplicationAdapter {
         super.streamPublishStart(stream);
 
         //保存流为文件
-        try {
-            stream.saveAs(stream.getPublishedName(), false);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            stream.saveAs(stream.getPublishedName(), false);
+//        } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
 
     @Override

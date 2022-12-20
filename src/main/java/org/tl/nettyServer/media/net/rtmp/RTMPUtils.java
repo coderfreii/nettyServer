@@ -23,7 +23,7 @@ import org.tl.nettyServer.media.net.rtmp.message.Constants;
 
 
 /**
- * RTMP utilities class.
+ * RtmpProtocolState utilities class.
  *
  * @author The Red5 Project
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
@@ -185,7 +185,7 @@ public class RTMPUtils implements Constants {
     }
 
     /**
-     * Compares two RTMP time stamps, accounting for time stamp wrapping.
+     * Compares two RtmpProtocolState time stamps, accounting for time stamp wrapping.
      *
      * @param a First time stamp
      * @param b Second time stamp

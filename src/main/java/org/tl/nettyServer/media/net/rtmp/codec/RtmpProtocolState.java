@@ -29,9 +29,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * RTMP是RTMP约定状态的描述
  * <p>
- * RTMP is the RTMP protocol state representation.
+ * RtmpProtocolState is the RtmpProtocolState protocol state representation.
  */
-public class RTMP {
+public class RtmpProtocolState {
 
     public static final String[] states = {"connect", "handshake", "connected", "error", "disconnecting", "disconnected"};
 
@@ -97,7 +97,7 @@ public class RTMP {
     public static final byte STATE_EDGE_DISCONNECTING = 0x13;
 
     /**
-     * RTMP state.
+     * RtmpProtocolState state.
      */
     private volatile byte state = STATE_CONNECT;
 
@@ -127,17 +127,17 @@ public class RTMP {
     private IConnection.Encoding encoding = IConnection.Encoding.AMF0;
 
     /**
-     * Creates RTMP object; essentially for storing session information.
+     * Creates RtmpProtocolState object; essentially for storing session information.
      */
-    public RTMP() {
+    public RtmpProtocolState() {
     }
 
     /**
-     * Creates RTMP object with initial mode.
+     * Creates RtmpProtocolState object with initial mode.
      *
      * @param mode Initial mode
      */
-    public RTMP(boolean mode) {
+    public RtmpProtocolState(boolean mode) {
         this.mode = mode;
     }
 
@@ -192,7 +192,7 @@ public class RTMP {
      *
      * @param packet Packet to release
      */
-    private void freePacket(Packet packet) {
+    public void freePacket(Packet packet) {
         if (packet != null && packet.getData() != null) {
             packet.clearData();
         }
@@ -273,8 +273,8 @@ public class RTMP {
         Packet prevPacket = info.getReadPacket();
         // set new one
         info.setReadPacket(packet);
-        // free the previous packet
-        freePacket(prevPacket);
+        // free the previous packet //不能free后面要用到
+        //freePacket(prevPacket);
     }
 
     /**
@@ -415,7 +415,7 @@ public class RTMP {
      */
     @Override
     public String toString() {
-        return "RTMP [state=" + states[state] + ", encrypted=" + encrypted + ", readChunkSize=" + readChunkSize + ", writeChunkSize=" + writeChunkSize + ", encoding=" + encoding + "]";
+        return "RtmpProtocolState [state=" + states[state] + ", encrypted=" + encrypted + ", readChunkSize=" + readChunkSize + ", writeChunkSize=" + writeChunkSize + ", encoding=" + encoding + "]";
     }
 
     /**

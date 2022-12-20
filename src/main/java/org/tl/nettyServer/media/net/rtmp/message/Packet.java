@@ -29,7 +29,7 @@ import java.io.ObjectOutput;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * RTMP packet. Consists of packet header, data and event context.
+ * RtmpProtocolState packet. Consists of packet header, data and event context.
  */
 public class Packet implements Externalizable {
 

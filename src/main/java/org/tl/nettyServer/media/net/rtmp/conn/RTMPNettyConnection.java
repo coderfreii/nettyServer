@@ -23,7 +23,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.jmx.mxbeans.RTMPNettyConnectionMXBean;
 import org.tl.nettyServer.media.net.rtmp.Channel;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.event.ClientBW;
 import org.tl.nettyServer.media.net.rtmp.event.ServerBW;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Represents an RTMP connection using Mina.
+ * Represents an RtmpProtocolState connection using Mina.
  *
  * @author Paul Gregoire
  * @see "http://mina.apache.org/report/trunk/apidocs/org/apache/mina/core/session/IoSession.html"
@@ -177,7 +177,7 @@ public class RTMPNettyConnection extends RTMPConnection implements RTMPNettyConn
                         break;
                     }
                 } catch (InterruptedException e) {
-                    log.warn("Interrupted while waiting for write lock. State: {}", RTMP.states[state.getState()], e);
+                    log.warn("Interrupted while waiting for write lock. State: {}", RtmpProtocolState.states[state.getState()], e);
                     if (log.isInfoEnabled()) {
                         // further debugging to assist with possible connection problems
                         log.info("Session id: {} in queue size: {} pending msgs: {} last ping/pong: {}", getSessionId(), currentQueueSize(), getPendingMessages(), getLastPingSentAndLastPongReceivedInterval());
@@ -214,7 +214,7 @@ public class RTMPNettyConnection extends RTMPConnection implements RTMPNettyConn
                         break;
                     }
                 } catch (InterruptedException e) {
-                    log.warn("Interrupted while waiting for write lock (writeRaw). State: {}", RTMP.states[state.getState()], e);
+                    log.warn("Interrupted while waiting for write lock (writeRaw). State: {}", RtmpProtocolState.states[state.getState()], e);
                     String exMsg = e.getMessage();
                     // if the exception cause is null break out of here to prevent looping until closed
                     if (exMsg == null || exMsg.indexOf("null") >= 0) {

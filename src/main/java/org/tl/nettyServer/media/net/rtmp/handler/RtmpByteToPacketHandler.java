@@ -22,10 +22,17 @@ public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<B
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> msg, List<Object> out) throws Exception {
         RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveConn(ctx);
         if (bufFacadeStore.readable()) {
-            log.info("left {}", bufFacadeStore.readableBytes());
+            log.debug("left {}", bufFacadeStore.readableBytes());
         }
         bufFacadeStore.writeBytes(msg);
         List<Object> objects = decoder.decodeBuffer(connection, bufFacadeStore);
         out.addAll(objects);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        this.bufFacadeStore.release();
+        this.bufFacadeStore = null;
+        super.channelInactive(ctx);
     }
 }

@@ -43,7 +43,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * RTMP protocol decoder.
+ * RtmpProtocolState protocol decoder.
  */
 public class RTMPProtocolDecoder implements Constants {
     private final RtmpPacketToMessageDecoder rtmpPacketToMessageDecoder = new RtmpPacketToMessageDecoder();
@@ -67,7 +67,7 @@ public class RTMPProtocolDecoder implements Constants {
     /**
      * Decode all available objects in in.
      *
-     * @param conn RTMP connection
+     * @param conn RtmpProtocolState connection
      * @param in   BufFacade of data to be decoded
      * @return a list of decoded objects, may be empty if nothing could be decoded
      */
@@ -87,7 +87,7 @@ public class RTMPProtocolDecoder implements Constants {
                 // get the local decode state
                 RTMPDecodeState state = conn.getDecoderState();
                 if (log.isTraceEnabled()) {
-                    log.trace("RTMP decode state {}", state);
+                    log.trace("RtmpProtocolState decode state {}", state);
                 }
                 if (!conn.getSessionId().equals(state.getSessionId())) {
                     log.warn("Session decode overlap: {} != {}", conn.getSessionId(), state.getSessionId());
@@ -140,7 +140,7 @@ public class RTMPProtocolDecoder implements Constants {
     /**
      * Decodes the buffer data.
      *
-     * @param conn  RTMP connection
+     * @param conn  RtmpProtocolState connection
      * @param state Stores state for the protocol, ProtocolState is just a marker interface
      * @param in    BufFacade of data to be decoded
      * @return one of three possible values:
@@ -159,16 +159,16 @@ public class RTMPProtocolDecoder implements Constants {
         try {
             final byte connectionState = conn.getState().getState();
             switch (connectionState) {
-                case RTMP.STATE_CONNECTED:
+                case RtmpProtocolState.STATE_CONNECTED:
                     return decodePacket(conn, state, in);
-                case RTMP.STATE_ERROR:
-                case RTMP.STATE_DISCONNECTING:
-                case RTMP.STATE_DISCONNECTED:
+                case RtmpProtocolState.STATE_ERROR:
+                case RtmpProtocolState.STATE_DISCONNECTING:
+                case RtmpProtocolState.STATE_DISCONNECTED:
                     // throw away any remaining input data:
                     in.clear();
                     return null;
                 default:
-                    throw new IllegalStateException("Invalid RTMP state: " + connectionState);
+                    throw new IllegalStateException("Invalid RtmpProtocolState state: " + connectionState);
             }
         } catch (ProtocolException pe) {
             // raise to caller unmodified
@@ -186,15 +186,15 @@ public class RTMPProtocolDecoder implements Constants {
      * Decodes an BufFacade into a Packet.
      *
      * @param conn  Connection
-     * @param state RTMP protocol state
+     * @param state RtmpProtocolState protocol state
      * @param in    BufFacade
      * @return Packet
      */
     public Packet decodePacket(RTMPConnection conn, RTMPDecodeState state, BufFacade in) {
         int position = in.readerIndex();
         in.markReaderIndex();
-        // get RTMP state holder
-        RTMP rtmp = conn.getState();
+        // get RtmpProtocolState state holder
+        RtmpProtocolState rtmpProtocolState = conn.getState();
 
         // read the chunk header (variable from 1-3 bytes)
         final ChunkHeader chunkHeader = ChunkHeader.read(in);
@@ -206,7 +206,7 @@ public class RTMPProtocolDecoder implements Constants {
             return null;
         }
 
-        final Header latestHeader = decodeHeader(chunkHeader, state, in, rtmp);
+        final Header latestHeader = decodeHeader(chunkHeader, state, in, rtmpProtocolState);
         if (latestHeader == null || latestHeader.isEmpty()) {
             // get the channel id
             final int channelId = chunkHeader.getCsId();
@@ -232,7 +232,7 @@ public class RTMPProtocolDecoder implements Constants {
             throw new ProtocolException(String.format("Packet size exceeded. size: %s", latestHeader.getDataSize()));
         }
 
-        Packet packet = resolveAPacketToComplete(rtmp, latestHeader);
+        Packet packet = resolveAPacketToComplete(rtmpProtocolState, latestHeader);
         BufFacade data = packet.getData();
         if (log.isTraceEnabled()) {
             log.trace("Source buffer position: {}, capacity: {}, packet-buf.position {}, packet size: {}", in.readerIndex(), in.capacity(), data.readerIndex(), latestHeader.getDataSize());
@@ -240,7 +240,7 @@ public class RTMPProtocolDecoder implements Constants {
         // read chunk
         // check in buf size
         // get the size of our chunks
-        int readChunkSize = rtmp.getReadChunkSize();
+        int readChunkSize = rtmpProtocolState.getReadChunkSize();
         int length = Math.min(data.writableBytes(), readChunkSize);
         if (in.readableBytes() < length) {
             log.debug("Chunk too small, buffering ({},{})", in.readableBytes(), length);
@@ -271,18 +271,18 @@ public class RTMPProtocolDecoder implements Constants {
         }
 
         decodeMessage(conn, packet);
-        postProcessMessage(rtmp, packet);
+        postProcessMessage(rtmpProtocolState, packet);
         return packet;
     }
 
-    Packet resolveAPacketToComplete(RTMP rtmp, Header header) {
+    Packet resolveAPacketToComplete(RtmpProtocolState rtmpProtocolState, Header header) {
         // check to see if this is a new packet or continue decoding an existing one
-        Packet packet = rtmp.getIncompleteReadPacket(header.getCsId());
+        Packet packet = rtmpProtocolState.getIncompleteReadPacket(header.getCsId());
         if (packet == null) {
             // create a new packet
             packet = new Packet(header.clone());
             // store the packet based on its channel id
-            rtmp.setLastReadPacket(header.getCsId(), packet);
+            rtmpProtocolState.setLastReadPacket(header.getCsId(), packet);
         } else {
             if (packet.isUnCompletedToContinue()) {
                 packet.updateHeader(header.clone());
@@ -295,22 +295,22 @@ public class RTMPProtocolDecoder implements Constants {
         return packet;
     }
 
-    void postProcessMessage(RTMP rtmp, Packet packet) {
+    void postProcessMessage(RtmpProtocolState rtmpProtocolState, Packet packet) {
         IRTMPEvent message = packet.getMessage();
         if (message instanceof ChunkSize) { //设置读到的
             ChunkSize chunkSizeMsg = (ChunkSize) message;
-            rtmp.setReadChunkSize(chunkSizeMsg.getSize());
+            rtmpProtocolState.setReadChunkSize(chunkSizeMsg.getSize());
         } else if (message instanceof Abort) {
             log.debug("Abort packet detected");
             // client is aborting a message, reset the packet because the next chunk will start a new packet
             Abort abort = (Abort) message;
-            rtmp.setLastReadPacket(abort.getChannelId(), null);
+            rtmpProtocolState.setLastReadPacket(abort.getChannelId(), null);
         }
     }
 
     void decodeMessage(RTMPConnection connection, Packet packet) {
         // decode the packet data into a message
-        RTMP rtmp = connection.getState();
+        RtmpProtocolState rtmpProtocolState = connection.getState();
         Header header = packet.getHeader();
         try {
             // timebase + time delta
@@ -330,7 +330,7 @@ public class RTMPProtocolDecoder implements Constants {
             }
         } finally {
             //读完清除
-            rtmp.setLastReadPacket(header.getCsId(), null);
+            rtmpProtocolState.setLastReadPacket(header.getCsId(), null);
         }
     }
 
@@ -338,12 +338,12 @@ public class RTMPProtocolDecoder implements Constants {
      * Decodes packet header.
      *
      * @param chh   chunk header
-     * @param state RTMP decode state
+     * @param state RtmpProtocolState decode state
      * @param in    Input BufFacade
-     * @param rtmp  RTMP object to get last header
+     * @param rtmpProtocolState  RtmpProtocolState object to get last header
      * @return Decoded header
      */
-    public Header decodeHeader(ChunkHeader chh, RTMPDecodeState state, BufFacade in, RTMP rtmp) {
+    public Header decodeHeader(ChunkHeader chh, RTMPDecodeState state, BufFacade in, RtmpProtocolState rtmpProtocolState) {
         if (log.isTraceEnabled()) {
             log.trace("decodeHeader - chh: {} input: {}", chh, Hex.encodeHexString(Arrays.copyOfRange(in.array(), in.readerIndex(), in.capacity())));
             log.trace("decodeHeader - chh: {}", chh);
@@ -351,7 +351,7 @@ public class RTMPProtocolDecoder implements Constants {
         final int csId = chh.getCsId();
         // identifies the header type of the four types
         final byte format = chh.getFormat();
-        Header lastHeader = rtmp.getLastReadHeader(csId);
+        Header lastHeader = rtmpProtocolState.getLastReadHeader(csId);
         if (log.isTraceEnabled()) {
             log.trace("{} lastHeader: {}", Header.HeaderType.values()[format], lastHeader);
         }
@@ -460,7 +460,7 @@ public class RTMPProtocolDecoder implements Constants {
         log.trace("Decoded chunk {} {}", Header.HeaderType.values()[format], header);
         header.collapseTimeStamps();
         // store the header based on its channel id
-        rtmp.setLastReadHeader(csId, header);
+        rtmpProtocolState.setLastReadHeader(csId, header);
         return header;
     }
 

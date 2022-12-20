@@ -286,7 +286,7 @@ public class RecordingListener implements IRecordingListener {
                 // get the current size of the buffer / data
                 int bufferLimit = buffer.readableBytes();
                 if (bufferLimit > 0) {
-                    // create new RTMP message and push to the consumer
+                    // create new RtmpProtocolState message and push to the consumer
                     switch (dataType) {
                         case Constants.TYPE_AGGREGATE:
                             event = new Aggregate(buffer);

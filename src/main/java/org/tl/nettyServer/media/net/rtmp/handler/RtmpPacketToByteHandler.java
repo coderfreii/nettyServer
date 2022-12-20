@@ -63,7 +63,6 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
                     log.info("Released lock after interruption. session {}, permits {}", conn.getSessionId(), lock.availablePermits());
                 }
             }
-
             //TODO
             // set connection local back to previous value
             if (localConn != null) {

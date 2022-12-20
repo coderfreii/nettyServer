@@ -82,6 +82,27 @@ public interface BufFacade<T> {
 
     BufFacade<T> discardReadBytes();
 
+
+    /**
+     * Sets the {@code readerIndex} of this buffer.
+     *
+     * @throws IndexOutOfBoundsException if the specified {@code readerIndex} is
+     *                                   less than {@code 0} or
+     *                                   greater than {@code this.writerIndex}
+     */
+    BufFacade<T> readerIndex(int readerIndex);
+
+
+    /**
+     * Sets the {@code writerIndex} of this buffer.
+     *
+     * @throws IndexOutOfBoundsException if the specified {@code writerIndex} is
+     *                                   less than {@code this.readerIndex} or
+     *                                   greater than {@code this.capacity}
+     */
+    BufFacade<T> writerIndex(int writerIndex);
+
+
     //read----
     boolean readable();
 

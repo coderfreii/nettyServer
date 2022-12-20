@@ -220,11 +220,6 @@ public class ProviderService implements IProviderService {
             file = new File(String.format("%s/webapps/%s/%s", System.getProperty("red5.root"), appScopeName, filename));
         }
 
-        if (!file.exists()) {
-            log.info("{} 不存在", file.getPath());
-            file = null;
-        }
-
         return file;
     }
 

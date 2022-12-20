@@ -32,7 +32,7 @@ import org.tl.nettyServer.media.messaging.IConsumer;
 import org.tl.nettyServer.media.messaging.OOBControlMessage;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.DeferredResult;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.consts.Action;
@@ -79,7 +79,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
         int requestedChunkSize = chunkSize.getSize();
         log.debug("Chunk size: {}", requestedChunkSize);
         // set chunk size on the connection
-        RTMP state = conn.getState();
+        RtmpProtocolState state = conn.getState();
         // set only the read chunk size since it came from the client
         state.setReadChunkSize(requestedChunkSize);
         //state.setWriteChunkSize(requestedChunkSize);
@@ -589,7 +589,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    protected void onInvoke(RTMPConnection conn, Channel channel, Header source, Notify invoke, RTMP rtmp) {
+    protected void onInvoke(RTMPConnection conn, Channel channel, Header source, Notify invoke, RtmpProtocolState rtmpProtocolState) {
         log.debug("Invoke: {}", invoke);
         // Get call
         final IServiceCall call = invoke.getCall();
@@ -766,7 +766,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                         ((IPendingServiceCall) call).setResult(result);
                     }
 
-                    rtmp.setEncoding(IConnection.Encoding.AMF3);
+                    rtmpProtocolState.setEncoding(IConnection.Encoding.AMF3);
                 }
             } else {
                 //log.debug("Enum value of: {}", StreamAction.getEnum(action));

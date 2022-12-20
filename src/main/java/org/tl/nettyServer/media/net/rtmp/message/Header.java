@@ -24,7 +24,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- * RTMP packet header    chunk header and message header
+ * RtmpProtocolState packet header    chunk header and message header
  */
 public class Header implements Constants, Cloneable, Externalizable {
 

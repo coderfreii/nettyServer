@@ -112,7 +112,7 @@ public class DataTypes {
     public static final byte CUSTOM_AMF_MASK = 0x30;
 
     /**
-     * Custom datatype RTMP mask
+     * Custom datatype RtmpProtocolState mask
      */
     public static final byte CUSTOM_RTMP_MASK = 0x40;
 
@@ -188,7 +188,7 @@ public class DataTypes {
             return "AMF[" + (dataType - CUSTOM_AMF_MASK) + ']';
         }
         if (dataType >= CUSTOM_RTMP_MASK && dataType < CUSTOM_JSON_MASK) {
-            return "RTMP[" + (dataType - CUSTOM_RTMP_MASK) + ']';
+            return "RtmpProtocolState[" + (dataType - CUSTOM_RTMP_MASK) + ']';
         }
         if (dataType >= CUSTOM_JSON_MASK && dataType < CUSTOM_XML_MASK) {
             return "JSON[" + (dataType - CUSTOM_JSON_MASK) + ']';

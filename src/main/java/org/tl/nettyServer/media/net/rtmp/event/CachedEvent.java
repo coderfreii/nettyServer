@@ -22,7 +22,7 @@ import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.stream.data.IStreamPacket;
 
 /**
- * Provides a means for storage of RTMP events.
+ * Provides a means for storage of RtmpProtocolState events.
  *
  * @author Paul Gregoire (mondain@gmail.com)
  */

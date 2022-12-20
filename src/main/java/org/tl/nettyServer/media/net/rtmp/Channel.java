@@ -30,23 +30,25 @@ import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.service.call.PendingCall;
-import org.tl.nettyServer.media.stream.base.IClientStream;
+import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.stream.IRtmpSampleAccess;
+import org.tl.nettyServer.media.stream.base.IClientStream;
 import org.tl.nettyServer.media.stream.data.IStreamData;
 
 /**
  * Identified connection that transfers packets.
  * Chunk stream ID 是用来区分消息信道的 即此项目的channelId
  * 一个tcp连接对应多个channel
+ * <p>
+ * 通过通道的Id和客户端进行通信
  */
 @Slf4j
 public class Channel {
     private final static String CALL_ON_STATUS = "onStatus";
 
     /**
-     * RTMP connection used to transfer packets.
+     * RtmpProtocolState connection used to transfer packets.
      */
     private final RTMPConnection connection;
 
@@ -68,7 +70,7 @@ public class Channel {
     }
 
     /**
-     * Closes channel with this id on RTMP connection.
+     * Closes channel with this id on RtmpProtocolState connection.
      */
     public void close() {
         log.debug("Closing channel: {}", id);
@@ -85,16 +87,16 @@ public class Channel {
     }
 
     /**
-     * Getter for RTMP connection.
+     * Getter for RtmpProtocolState connection.
      *
-     * @return RTMP connection
+     * @return RtmpProtocolState connection
      */
     protected RTMPConnection getConnection() {
         return connection;
     }
 
     /**
-     * Writes packet from event data to RTMP connection.
+     * Writes packet from event data to RtmpProtocolState connection.
      *
      * @param event Event data
      */
@@ -113,7 +115,7 @@ public class Channel {
     }
 
     /**
-     * Writes packet from event data to RTMP connection and stream id.
+     * Writes packet from event data to RtmpProtocolState connection and stream id.
      *
      * @param event    Event data
      * @param streamId Stream id

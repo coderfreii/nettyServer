@@ -24,18 +24,24 @@ public class RtmpServer {
                                 return new Thread(r, "BufFacade");
                             }
                         }), new BufFacadeDecoder())
-                        .addLast(new NioEventLoopGroup(new ThreadFactory() {
+                        .addLast(new NioEventLoopGroup(2, new ThreadFactory() {
                             @Override
                             public Thread newThread(Runnable r) {
                                 return new Thread(r, "RtmpPacketToByte");
                             }
                         }), new RtmpPacketToByteHandler())
+                        .addLast(new MessageSendHandler())
                         .addLast(new ByteBufEncoder())
                         .addLast(new ConnInboundHandler()) //
                         .addLast(new HandshakeHandler())
                         .addLast(new RTMPEHandler())
                         .addLast(new RtmpByteToPacketHandler())
-                        .addLast(new RtmpPacketMayAsyncDecoder())
+                        .addLast(new NioEventLoopGroup(2, new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "RtmpPacketMayAsyncDecoder");
+                            }
+                        }), new RtmpPacketMayAsyncDecoder())
                 ;
             }
         };

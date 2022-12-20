@@ -6,7 +6,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.util.Attribute;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.session.NettySessionFacade;
 import org.tl.nettyServer.media.session.SessionFacade;
@@ -21,10 +21,10 @@ public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
         Attribute<RTMPConnection> attr = ctx.channel().attr(NettySessionFacade.connectionAttributeKey);
         RTMPConnection connection = attr.get();
         SessionFacade session = connection.getSession();
-        RTMP state = connection.getState();
+        RtmpProtocolState state = connection.getState();
 
         switch (state.getState()) {
-            case RTMP.STATE_CONNECTED:
+            case RtmpProtocolState.STATE_CONNECTED:
                 // assuming majority of connections will not be encrypted
                 if (!state.isEncrypted()) {
                     out.add(in);
@@ -43,16 +43,16 @@ public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
                     }
                 }
                 break;
-            case RTMP.STATE_ERROR:
-            case RTMP.STATE_DISCONNECTING:
-            case RTMP.STATE_DISCONNECTED:
+            case RtmpProtocolState.STATE_ERROR:
+            case RtmpProtocolState.STATE_DISCONNECTING:
+            case RtmpProtocolState.STATE_DISCONNECTED:
                 // do nothing, really
                 log.debug("Nothing to do, connection state: {}", state);
                 in.release();
                 break;
             default:
                 in.release();
-                throw new IllegalStateException("Invalid RTMP state: " + state);
+                throw new IllegalStateException("Invalid RtmpProtocolState state: " + state);
         }
     }
 }

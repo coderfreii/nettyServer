@@ -30,7 +30,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 /**
- * RTMP chunk header
+ * RtmpProtocolState chunk header
  *
  * <pre>
  * rtmp_specification_1.0.pdf (5.3.1.1 page 12)

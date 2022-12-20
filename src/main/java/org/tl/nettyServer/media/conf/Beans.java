@@ -13,6 +13,7 @@ import org.tl.nettyServer.media.service.consumer.ConsumerService;
 import org.tl.nettyServer.media.service.consumer.IConsumerService;
 import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.service.provider.ProviderService;
+import org.tl.nettyServer.media.stream.client.ClientBroadcastStream;
 import org.tl.nettyServer.media.stream.client.PlaylistSubscriberStream;
 
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class Beans {
         return factory;
     }
 
-    @Bean(name = "playlistSubscriberStream")
+    @Bean(name = "playlistSubscriberStream")  //一个连接一个
     @Lazy
     @Scope("prototype")
     public PlaylistSubscriberStream playlistSubscriberStream() {
@@ -50,6 +51,14 @@ public class Beans {
         cache.setBufferCheckInterval(ExtConfiguration.INTERVAL);
         cache.setUnderrunTrigger(ExtConfiguration.TRIGGER);
         cache.setRepeat(true);
+        return cache;
+    }
+
+    @Bean(name = "clientBroadcastStream")
+    @Lazy
+    @Scope("prototype")
+    public ClientBroadcastStream clientBroadcastStream() {
+        ClientBroadcastStream cache = new ClientBroadcastStream();
         return cache;
     }
 

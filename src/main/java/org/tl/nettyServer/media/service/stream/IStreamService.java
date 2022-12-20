@@ -24,7 +24,7 @@ import org.tl.nettyServer.media.scope.IScopeService;
 import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 
 /**
- * This interface represents the stream methods that can be called throug RTMP.
+ * This interface represents the stream methods that can be called throug RtmpProtocolState.
  */
 public interface IStreamService extends IScopeService {
 

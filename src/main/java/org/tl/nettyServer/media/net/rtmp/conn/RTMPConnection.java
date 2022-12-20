@@ -17,7 +17,7 @@ import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.exception.ClientRejectedException;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.DeferredResult;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMPDecodeState;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
@@ -29,7 +29,8 @@ import org.tl.nettyServer.media.net.rtmp.task.ReceivedMessageTask;
 import org.tl.nettyServer.media.net.rtmp.task.ReceivedMessageTaskQueue;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.service.*;
+import org.tl.nettyServer.media.service.IPendingServiceCallback;
+import org.tl.nettyServer.media.service.IServiceCapableConnection;
 import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.service.call.PendingCall;
@@ -39,9 +40,9 @@ import org.tl.nettyServer.media.service.stream.StreamService;
 import org.tl.nettyServer.media.so.FlexSharedObjectMessage;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.SharedObjectMessage;
-import org.tl.nettyServer.media.stream.*;
-import org.tl.nettyServer.media.stream.client.*;
+import org.tl.nettyServer.media.stream.OutputStream;
 import org.tl.nettyServer.media.stream.base.IClientStream;
+import org.tl.nettyServer.media.stream.client.*;
 import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 import org.tl.nettyServer.media.util.ScopeUtils;
@@ -55,42 +56,33 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * RTMP connection. Stores information about client streams, data transfer channels, pending RPC calls, bandwidth configuration, AMF
+ * RtmpProtocolState connection. Stores information about client streams, data transfer channels, pending RPC calls, bandwidth configuration, AMF
  * encoding type (AMF0/AMF3), connection state (is alive, last ping time and ping result) and session.
  * RTMP连接。存储有关客户端流、数据传输通道、挂起的RPC调用、带宽配置、AMF的信息
  * 编码类型（amf0/amf3）、连接状态（活动、上次Ping时间和Ping结果）和会话。
  */
 @Slf4j
 public abstract class RTMPConnection extends BaseConnection implements IStreamCapableConnection, IServiceCapableConnection, IReceivedMessageTaskQueueListener, SessionConnection {
-
-    public static final String RTMP_SESSION_ID = "rtmp.sessionid";
-
-    public static final String RTMP_HANDSHAKE = "rtmp.handshake";
-
-    public static final String RTMP_CONN_MANAGER = "rtmp.connection.manager";
-
-    public static final Object RTMP_HANDLER = "rtmp.handler";
-
     /**
-     * Marker byte for standard or non-encrypted RTMP data.
+     * Marker byte for standard or non-encrypted RtmpProtocolState data.
      * 标准或非加密RTMP数据的标记字节。
      */
     public static final byte RTMP_NON_ENCRYPTED = (byte) 0x03;
 
     /**
-     * Marker byte for encrypted RTMP data.
+     * Marker byte for encrypted RtmpProtocolState data.
      * 加密RTMP数据标记字节
      */
     public static final byte RTMP_ENCRYPTED = (byte) 0x06;
 
     /**
-     * Marker byte for encrypted RTMP data XTEA. http://en.wikipedia.org/wiki/XTEA
+     * Marker byte for encrypted RtmpProtocolState data XTEA. http://en.wikipedia.org/wiki/XTEA
      * 加密的rtmp数据xtea的标记字节
      */
     public static final byte RTMP_ENCRYPTED_XTEA = (byte) 0x08;
 
     /**
-     * Marker byte for encrypted RTMP data using Blowfish. http://en.wikipedia.org/wiki/Blowfish_(cipher)
+     * Marker byte for encrypted RtmpProtocolState data using Blowfish. http://en.wikipedia.org/wiki/Blowfish_(cipher)
      * 使用Blowfish加密RTMP数据的标记字节
      */
     public static final byte RTMP_ENCRYPTED_BLOWFISH = (byte) 0x09;
@@ -305,7 +297,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
     /**
      * Protocol state
      */
-    protected RTMP state = new RTMP();
+    protected RtmpProtocolState state = new RtmpProtocolState();
 
     // protection for the decoder when using multiple threads per connection
     // 在每个连接使用多个线程时对解码器的保护
@@ -382,7 +374,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
     private ScheduledFuture<?> keepAliveTask;
 
     /**
-     * Creates anonymous RTMP connection without scope.
+     * Creates anonymous RtmpProtocolState connection without scope.
      * 创建没有作用域的匿名RTMP连接。
      *
      * @param type Connection type
@@ -409,7 +401,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
     }
 
 
-    public RTMP getState() {
+    public RtmpProtocolState getState() {
         return state;
     }
 
@@ -419,7 +411,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 
     public void setStateCode(byte code) {
         if (log.isTraceEnabled()) {
-            log.trace("setStateCode: {} - {}", code, RTMP.states[code]);
+            log.trace("setStateCode: {} - {}", code, RtmpProtocolState.states[code]);
         }
         state.setState(code);
     }
@@ -680,7 +672,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
     }
 
     public boolean isDisconnected() {
-        return state.getState() == RTMP.STATE_DISCONNECTED;
+        return state.getState() == RtmpProtocolState.STATE_DISCONNECTED;
     }
 
     public IClientBroadcastStream newBroadcastStream(Number streamId) {
@@ -767,6 +759,12 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
         return getStreamById(streamId);
     }
 
+    /**
+     * 简单做了函数映射 或者 规则如此
+     *
+     * @param streamId 流id
+     * @return int
+     */
     public int getChannelIdForStreamId(Number streamId) {
         int channelId = (int) (streamId.doubleValue() * 5) - 1;
         if (log.isTraceEnabled()) {
@@ -827,16 +825,16 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
             if (state != null) {
                 final byte s = getStateCode();
                 switch (s) {
-                    case RTMP.STATE_DISCONNECTED:
+                    case RtmpProtocolState.STATE_DISCONNECTED:
                         if (log.isDebugEnabled()) {
                             log.debug("Already disconnected");
                         }
                         return;
                     default:
                         if (log.isDebugEnabled()) {
-                            log.debug("State: {}", RTMP.states[s]);
+                            log.debug("State: {}", RtmpProtocolState.states[s]);
                         }
-                        setStateCode(RTMP.STATE_DISCONNECTING);
+                        setStateCode(RtmpProtocolState.STATE_DISCONNECTING);
                 }
             }
             Red5.setConnectionLocal(this);
@@ -1207,7 +1205,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
         } catch (Throwable e) {
             log.error("Incoming message handling failed on session=[" + sessionId + "]", e);
             if (log.isDebugEnabled()) {
-                log.debug("Execution rejected on {} - {}", getSessionId(), RTMP.states[getStateCode()]);
+                log.debug("Execution rejected on {} - {}", getSessionId(), RtmpProtocolState.states[getStateCode()]);
                 log.debug("Lock permits - decode: {} encode: {}", decoderLock.availablePermits(), encoderLock.availablePermits());
             }
             currentStreamTasks.removeTask(task);
@@ -1508,9 +1506,9 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
     public String toString() {
         if (log.isDebugEnabled()) {
             String id = getClient() != null ? getClient().getId() : null;
-            return String.format("%1$s %2$s:%3$s to %4$s client: %5$s session: %6$s state: %7$s", new Object[]{getClass().getSimpleName(), getRemoteAddress(), getRemotePort(), getHost(), id, getSessionId(), RTMP.states[getStateCode()]});
+            return String.format("%1$s %2$s:%3$s to %4$s client: %5$s session: %6$s state: %7$s", new Object[]{getClass().getSimpleName(), getRemoteAddress(), getRemotePort(), getHost(), id, getSessionId(), RtmpProtocolState.states[getStateCode()]});
         } else {
-            Object[] args = new Object[]{getClass().getSimpleName(), getRemoteAddress(), getReadBytes(), getWrittenBytes(), getSessionId(), RTMP.states[getStateCode()]};
+            Object[] args = new Object[]{getClass().getSimpleName(), getRemoteAddress(), getReadBytes(), getWrittenBytes(), getSessionId(), RtmpProtocolState.states[getStateCode()]};
             return String.format("%1$s from %2$s (in: %3$s out: %4$s) session: %5$s state: %6$s", args);
         }
     }
@@ -1527,7 +1525,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
         @Override
         public void run() {
             //在连接状态下才能ping
-            if (state.getState() != RTMP.STATE_CONNECTED) {
+            if (state.getState() != RtmpProtocolState.STATE_CONNECTED) {
                 return;
             }
             // 确保作业尚未运行
@@ -1542,7 +1540,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
                 // first check connected
                 if (!isConnected()) {
                     if (log.isDebugEnabled()) {
-                        log.debug("No longer connected, clean up connection. Connection state: {}", RTMP.states[state.getState()]);
+                        log.debug("No longer connected, clean up connection. Connection state: {}", RtmpProtocolState.states[state.getState()]);
                     }
                     onInactive();
                     return;
@@ -1604,9 +1602,9 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
                 log.trace("WaitForHandshakeTask started for {}", getSessionId());
             }
             // check for connected state before disconnecting
-            if (state.getState() != RTMP.STATE_CONNECTED) {
+            if (state.getState() != RtmpProtocolState.STATE_CONNECTED) {
                 // Client didn't send a valid handshake, disconnect
-                log.warn("Closing {}, due to long handshake. State: {}", getSessionId(), RTMP.states[getStateCode()]);
+                log.warn("Closing {}, due to long handshake. State: {}", getSessionId(), RtmpProtocolState.states[getStateCode()]);
                 onInactive();
             }
         }

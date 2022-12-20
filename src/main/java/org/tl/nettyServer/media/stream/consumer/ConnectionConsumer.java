@@ -35,7 +35,7 @@ import org.tl.nettyServer.media.stream.message.StatusMessage;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * RTMP connection consumer.
+ * RtmpProtocolState connection consumer.
  */
 @Slf4j
 public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionListener {

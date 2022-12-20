@@ -600,7 +600,7 @@ public class Output3 extends Output implements IOutput {
         byte[] tmp = new byte[data.capacity()];
         data.markReaderIndex();
         try {
-            data.setIndex(0, data.writerIndex());
+            data.rewind();
             data.readBytes(tmp);
             buf.writeBytes(tmp);
         } finally {

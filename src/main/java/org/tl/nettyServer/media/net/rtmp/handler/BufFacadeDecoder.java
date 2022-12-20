@@ -4,6 +4,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
+import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
+import org.tl.nettyServer.media.session.SessionAccessor;
 
 public class BufFacadeDecoder extends ChannelOutboundHandlerAdapter {
     @Override

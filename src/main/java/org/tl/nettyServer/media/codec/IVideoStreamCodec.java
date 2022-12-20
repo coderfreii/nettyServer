@@ -132,7 +132,7 @@ public interface IVideoStreamCodec {
             if (frame != null) {
                 frame = null;
             }
-            frame = new byte[data.capacity()];
+            frame = new byte[data.readableBytes()];
             data.readBytes(frame);
         }
 

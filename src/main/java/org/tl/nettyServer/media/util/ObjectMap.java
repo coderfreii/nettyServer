@@ -21,7 +21,7 @@ package org.tl.nettyServer.media.util;
 import java.util.LinkedHashMap;
 
 /**
- * Map that should be transmitted as object through RTMP.
+ * Map that should be transmitted as object through RtmpProtocolState.
  * 
  * @author The Red5 Project
  * @author Joachim Bauch (jojo@struktur.de)

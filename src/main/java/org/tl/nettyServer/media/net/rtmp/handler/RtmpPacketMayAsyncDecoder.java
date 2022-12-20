@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.packet.RtmpPacketHandler;
@@ -34,6 +34,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
     @Override
     protected void decode(ChannelHandlerContext ctx, Packet msg, List<Object> out) throws Exception {
         RTMPConnection conn = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        RtmpProtocolState state = conn.getState();
 
         ThreadPoolTaskExecutor executor = conn.getExecutor();
         String sessionId = conn.getSessionId();
@@ -58,7 +59,8 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                         if (executorQueueSizeToDropAudioPackets > 0 && conn.getCurrentQueueSize().get() >= executorQueueSizeToDropAudioPackets) {
                             if (packet.getHeader().getDataType() == Constants.TYPE_AUDIO_DATA) {
                                 //如果队列中有积压的消息。flash可能在网络拥塞后发送了一系列消息。扔掉我们可以丢弃的包。
-                                log.info("Queue threshold reached. Discarding packet: session=[{}], msgType=[{}], packetNum=[{}]", sessionId, messageType, conn.getPacketSequence().get());
+                                state.freePacket(packet);
+                                log.debug("Queue threshold reached. Discarding packet: session=[{}], msgType=[{}], packetNum=[{}]", sessionId, messageType, conn.getPacketSequence().get());
                                 return;
                             }
                         }
@@ -71,19 +73,19 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                     } catch (Exception e) {
                         log.error("Incoming message handling failed on session=[" + sessionId + "], messageType=[" + messageType + "]", e);
                         if (log.isDebugEnabled()) {
-                            log.debug("Execution rejected on {} - {}", sessionId, RTMP.states[conn.getStateCode()]);
+                            log.debug("Execution rejected on {} - {}", sessionId, RtmpProtocolState.states[conn.getStateCode()]);
                             log.debug("Lock permits - decode: {} encode: {}", conn.getDecoderLock().availablePermits(), conn.getEncoderLock().availablePermits());
                         }
                     }
             }
         } else {
-            log.debug("Executor is null on {} state: {}", sessionId, RTMP.states[conn.getStateCode()]);
+            log.debug("Executor is null on {} state: {}", sessionId, RtmpProtocolState.states[conn.getStateCode()]);
             // pass message to the handler
             try {
                 //将消息传递给处理程序
                 handler.messageReceived(conn, packet);
             } catch (Exception e) {
-                log.error("Error processing received message {} state: {}", sessionId, RTMP.states[conn.getStateCode()], e);
+                log.error("Error processing received message {} state: {}", sessionId, RtmpProtocolState.states[conn.getStateCode()], e);
             }
         }
     }

@@ -166,7 +166,7 @@ public class ServerPlaylistBroadcastStream extends AbstractStream implements ISe
     private long nextTS;
 
     /**
-     * Next RTMP message
+     * Next RtmpProtocolState message
      */
     private RTMPMessage nextRTMPMessage;
 
@@ -790,9 +790,9 @@ public class ServerPlaylistBroadcastStream extends AbstractStream implements ISe
     }
 
     /**
-     * Getter for next RTMP message.
+     * Getter for next RtmpProtocolState message.
      *
-     * @return Next RTMP message
+     * @return Next RtmpProtocolState message
      */
     protected RTMPMessage getNextRTMPMessage() {
         IMessage message;

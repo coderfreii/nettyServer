@@ -89,7 +89,7 @@ public class CoreHandler implements IScopeHandler, CoreHandlerMXBean {
                     // set the client on the connection
                     conn.setClient(client);
                 } else if (conn instanceof RTMPConnection) {
-                    log.debug("Creating new client for RTMP connection");
+                    log.debug("Creating new client for RtmpProtocolState connection");
                     // this is a new connection, create a new client to hold it
                     client = clientRegistry.newClient(params);
                     // set the client on the connection

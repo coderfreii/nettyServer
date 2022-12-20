@@ -30,7 +30,7 @@ import org.tl.nettyServer.media.io.object.IOutput;
 import org.tl.nettyServer.media.io.object.Serializer;
 import org.tl.nettyServer.media.net.rtmp.AttributeStore;
 import org.tl.nettyServer.media.net.rtmp.IAttributeStore;
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.persistence.IPersistable;
@@ -122,7 +122,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
     protected transient volatile CopyOnWriteArraySet<IEventListener> listeners = new CopyOnWriteArraySet<>();
 
     /**
-     * Event listener, actually RTMP connection
+     * Event listener, actually RtmpProtocolState connection
      */
     protected IEventListener source;
 
@@ -292,7 +292,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
     }
 
     /**
-     * Send update notification over data channel of RTMP connection
+     * Send update notification over data channel of RtmpProtocolState connection
      */
     protected synchronized void sendUpdates() {
         log.debug("sendUpdates");
@@ -349,7 +349,7 @@ public class SharedObject extends AttributeStore implements ISharedObjectStatist
                             con.sendSharedObjectMessage(name, currentVersion, persistent, events);
                             Red5.setConnectionLocal(null);
                         } else {
-                            log.trace("Skipping {} connection: {}", RTMP.states[con.getStateCode()], con.getId());
+                            log.trace("Skipping {} connection: {}", RtmpProtocolState.states[con.getStateCode()], con.getId());
                             // if the connection is 'disconnected' remove it
                             if (con.isDisconnected()) {
                                 unregister(con);

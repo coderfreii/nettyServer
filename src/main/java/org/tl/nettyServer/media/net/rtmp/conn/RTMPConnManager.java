@@ -19,7 +19,7 @@
 package org.tl.nettyServer.media.net.rtmp.conn;
 
 
-import org.tl.nettyServer.media.net.rtmp.codec.RTMP;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 
 import java.lang.ref.WeakReference;
@@ -29,7 +29,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Responsible for management and creation of RTMP based connections.
+ * Responsible for management and creation of RtmpProtocolState based connections.
  * 负责管理和创建基本的RTMP连接
  *
  * @author The Red5 Project
@@ -58,7 +58,7 @@ public class RTMPConnManager implements IConnectionManager<RTMPConnection> {
 
                 for (RTMPConnection conn : allConns) {
                     String sessionId = conn.getSessionId();
-                    RTMP rtmp = conn.getState();
+                    RtmpProtocolState rtmpProtocolState = conn.getState();
                 }
                 // if there is more than one connection that needed to be closed, request a GC to clean up memory.
                 if (closedConnections > 0) {

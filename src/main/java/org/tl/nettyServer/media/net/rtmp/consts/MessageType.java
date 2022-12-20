@@ -68,7 +68,7 @@ public class MessageType {
 
 
     /**
-     * RTMP chunk size constant
+     * RtmpProtocolState chunk size constant
      */
     public static final byte TYPE_CHUNK_SIZE = 0x01;
 

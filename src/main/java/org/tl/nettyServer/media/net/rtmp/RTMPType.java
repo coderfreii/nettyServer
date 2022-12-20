@@ -19,7 +19,7 @@
 package org.tl.nettyServer.media.net.rtmp;
 
 /**
- * Enum for RTMP types.
+ * Enum for RtmpProtocolState types.
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
