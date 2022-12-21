@@ -35,8 +35,9 @@ import org.tl.nettyServer.media.net.rtmp.message.Header;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
+import org.tl.nettyServer.media.service.stream.StreamCommandService;
 import org.tl.nettyServer.media.stream.StreamAction;
-import org.tl.nettyServer.media.service.stream.StreamService;
+import org.tl.nettyServer.media.util.DebugTool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -182,6 +183,8 @@ public class RTMPProtocolDecoder implements Constants {
         }
     }
 
+    private DebugTool debugTool = new DebugTool();
+
     /**
      * Decodes an BufFacade into a Packet.
      *
@@ -216,7 +219,7 @@ public class RTMPProtocolDecoder implements Constants {
             // clear / slice the input and close the channel
             in.clear();
             // send a NetStream.Failed message
-            StreamService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Bad data on channel: " + channelId, "no-name", Status.ERROR, conn.getStreamIdForChannelId(channelId));
+            StreamCommandService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Bad data on channel: " + channelId, "no-name", Status.ERROR, conn.getStreamIdForChannelId(channelId));
             // close the channel on which the issue occurred, until we find a way to exclude the current data
             //TODO
             conn.closeChannel(channelId);
@@ -228,7 +231,7 @@ public class RTMPProtocolDecoder implements Constants {
             // Reject packets that are too big, to protect against OOM when decoding has failed in some way
             log.warn("Packet size exceeded. size={}, max={}, connId={}", latestHeader.getDataSize(), MAX_PACKET_SIZE, conn.getSessionId());
             // send a NetStream.Failed message
-            StreamService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Data exceeded maximum allowed by " + (size - MAX_PACKET_SIZE) + " bytes", "no-name", Status.ERROR, conn.getStreamIdForChannelId(latestHeader.getCsId()));
+            StreamCommandService.sendNetStreamStatus(conn, StatusCodes.NS_FAILED, "Data exceeded maximum allowed by " + (size - MAX_PACKET_SIZE) + " bytes", "no-name", Status.ERROR, conn.getStreamIdForChannelId(latestHeader.getCsId()));
             throw new ProtocolException(String.format("Packet size exceeded. size: %s", latestHeader.getDataSize()));
         }
 
@@ -250,6 +253,8 @@ public class RTMPProtocolDecoder implements Constants {
             in.resetReaderIndex();
             return null;
         }
+        // store the header based on its channel id
+        rtmpProtocolState.setLastReadHeader(chunkHeader.getCsId(), latestHeader);
 
         // get the chunk from our input
         byte[] chunk = Arrays.copyOfRange(in.array(), in.readerIndex(), in.readerIndex() + length);
@@ -325,6 +330,7 @@ public class RTMPProtocolDecoder implements Constants {
                 log.trace("Decoded message: {}", message);
             }
             packet.setMessage(message);
+            debugTool.addPacket(packet);
             if (log.isTraceEnabled()) {
                 log.trace("Latest read header after decode: {}", packet.getHeader());
             }
@@ -337,10 +343,10 @@ public class RTMPProtocolDecoder implements Constants {
     /**
      * Decodes packet header.
      *
-     * @param chh   chunk header
-     * @param state RtmpProtocolState decode state
-     * @param in    Input BufFacade
-     * @param rtmpProtocolState  RtmpProtocolState object to get last header
+     * @param chh               chunk header
+     * @param state             RtmpProtocolState decode state
+     * @param in                Input BufFacade
+     * @param rtmpProtocolState RtmpProtocolState object to get last header
      * @return Decoded header
      */
     public Header decodeHeader(ChunkHeader chh, RTMPDecodeState state, BufFacade in, RtmpProtocolState rtmpProtocolState) {
@@ -459,8 +465,6 @@ public class RTMPProtocolDecoder implements Constants {
         }
         log.trace("Decoded chunk {} {}", Header.HeaderType.values()[format], header);
         header.collapseTimeStamps();
-        // store the header based on its channel id
-        rtmpProtocolState.setLastReadHeader(csId, header);
         return header;
     }
 

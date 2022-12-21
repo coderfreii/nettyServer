@@ -192,7 +192,6 @@ public class Header implements Constants, Cloneable, Externalizable {
         if (tsCollapsed == false) {
             this.setTimerBase(getTimer());
             this.setTimerDelta(0);
-        } else {
             tsCollapsed = true;
         }
     }
