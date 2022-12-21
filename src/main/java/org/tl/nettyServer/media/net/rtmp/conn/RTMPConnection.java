@@ -35,8 +35,8 @@ import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.service.call.PendingCall;
 import org.tl.nettyServer.media.service.call.ServiceCall;
-import org.tl.nettyServer.media.service.stream.IStreamService;
-import org.tl.nettyServer.media.service.stream.StreamService;
+import org.tl.nettyServer.media.service.stream.IStreamCommandService;
+import org.tl.nettyServer.media.service.stream.StreamCommandService;
 import org.tl.nettyServer.media.so.FlexSharedObjectMessage;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.SharedObjectMessage;
@@ -838,7 +838,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
                 }
             }
             Red5.setConnectionLocal(this);
-            IStreamService streamService = (IStreamService) ScopeUtils.getScopeService(scope, IStreamService.class, StreamService.class);
+            IStreamCommandService streamService = (IStreamCommandService) ScopeUtils.getScopeService(scope, IStreamCommandService.class, StreamCommandService.class);
             if (streamService != null) {
                 //in the end of call streamService.deleteStream we do streams.remove
                 for (Iterator<IClientStream> it = streams.values().iterator(); it.hasNext(); ) {

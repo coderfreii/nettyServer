@@ -48,8 +48,8 @@ import org.tl.nettyServer.media.scope.IScopeHandler;
 import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.service.call.IPendingServiceCall;
 import org.tl.nettyServer.media.service.call.IServiceCall;
-import org.tl.nettyServer.media.service.stream.IStreamService;
-import org.tl.nettyServer.media.service.stream.StreamService;
+import org.tl.nettyServer.media.service.stream.IStreamCommandService;
+import org.tl.nettyServer.media.service.stream.StreamCommandService;
 import org.tl.nettyServer.media.so.*;
 import org.tl.nettyServer.media.stream.*;
 import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
@@ -310,7 +310,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
             case PAUSE_RAW:
             case RECEIVE_VIDEO:
             case RECEIVE_AUDIO:
-                IStreamService streamService = (IStreamService) ScopeUtils.getScopeService(conn.getScope(), IStreamService.class, StreamService.class);
+                IStreamCommandService streamService = (IStreamCommandService) ScopeUtils.getScopeService(conn.getScope(), IStreamCommandService.class, StreamCommandService.class);
                 try {
                     log.debug("Invoking {} from {} with service: {}", new Object[]{call, conn.getSessionId(), streamService});
                     if (invokeCall(conn, call, streamService)) {
@@ -789,7 +789,7 @@ public class RtmpPacketHandler extends BaseRtmpPacketHandler {
                     case PAUSE_RAW:
                     case RECEIVE_VIDEO:
                     case RECEIVE_AUDIO:
-                        IStreamService streamService = (IStreamService) conn.getScope().getContext().getBean(ScopeContextBean.STREAMSERVICE_BEAN);
+                        IStreamCommandService streamService = (IStreamCommandService) conn.getScope().getContext().getBean(ScopeContextBean.STREAMSERVICE_BEAN);
                         //ScopeUtils.getScopeService(conn.getScope(), IStreamService.class, StreamService.class);
                         Status status = null;
                         try {

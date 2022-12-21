@@ -818,9 +818,9 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
      * {@inheritDoc}
      */
     public IBroadcastStream getBroadcastStream(IScope scope, String name) {
-        IStreamService service = (IStreamService) ScopeUtils.getScopeService(scope, IStreamService.class, StreamService.class);
-        if (service instanceof StreamService) {
-            IBroadcastScope bs = ((StreamService) service).getBroadcastScope(scope, name);
+        IStreamCommandService service = (IStreamCommandService) ScopeUtils.getScopeService(scope, IStreamCommandService.class, StreamCommandService.class);
+        if (service instanceof StreamCommandService) {
+            IBroadcastScope bs = ((StreamCommandService) service).getBroadcastScope(scope, name);
             if (bs != null) {
                 return bs.getClientBroadcastStream();
             }
@@ -873,7 +873,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
      */
     public IOnDemandStream getOnDemandStream(IScope scope, String name) {
         log.warn("This won't work until the refactoring of the streaming code is complete.");
-        IOnDemandStreamService service = (IOnDemandStreamService) ScopeUtils.getScopeService(scope, IOnDemandStreamService.class, StreamService.class, false);
+        IOnDemandStreamService service = (IOnDemandStreamService) ScopeUtils.getScopeService(scope, IOnDemandStreamService.class, StreamCommandService.class, false);
         return service.getOnDemandStream(scope, name);
     }
 
@@ -886,7 +886,7 @@ public class MultiThreadedApplicationAdapter extends StatefulScopeWrappingAdapte
      */
     public ISubscriberStream getSubscriberStream(IScope scope, String name) {
         log.warn("This won't work until the refactoring of the streaming code is complete.");
-        ISubscriberStreamService service = (ISubscriberStreamService) ScopeUtils.getScopeService(scope, ISubscriberStreamService.class, StreamService.class, false);
+        ISubscriberStreamService service = (ISubscriberStreamService) ScopeUtils.getScopeService(scope, ISubscriberStreamService.class, StreamCommandService.class, false);
         return service.getSubscriberStream(scope, name);
     }
 
