@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,15 +26,14 @@ import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 /**
  * RtmpProtocolState message
  */
-public class RTMPMessage extends AbstractMessage {
+public class RTMPMessage extends AbstractMessage implements Releasable {
 
     private final IRTMPEvent body;
 
     /**
      * Creates a new rtmp message.
-     * 
-     * @param body
-     *            value to set for property 'body'
+     *
+     * @param body value to set for property 'body'
      */
     private RTMPMessage(IRTMPEvent body) {
         this.body = body;
@@ -44,11 +43,9 @@ public class RTMPMessage extends AbstractMessage {
 
     /**
      * Creates a new rtmp message.
-     * 
-     * @param body
-     *            value to set for property 'body'
-     * @param eventTime
-     *            updated timestamp
+     *
+     * @param body      value to set for property 'body'
+     * @param eventTime updated timestamp
      */
     private RTMPMessage(IRTMPEvent body, int eventTime) {
         this.body = body;
@@ -68,9 +65,8 @@ public class RTMPMessage extends AbstractMessage {
 
     /**
      * Builder for RTMPMessage.
-     * 
-     * @param body
-     *            event data
+     *
+     * @param body event data
      * @return Immutable RTMPMessage
      */
     public final static RTMPMessage build(IRTMPEvent body) {
@@ -79,15 +75,25 @@ public class RTMPMessage extends AbstractMessage {
 
     /**
      * Builder for RTMPMessage.
-     * 
-     * @param body
-     *            event data
-     * @param eventTime
-     *            time value to set on the event body
+     *
+     * @param body      event data
+     * @param eventTime time value to set on the event body
      * @return Immutable RTMPMessage
      */
     public final static RTMPMessage build(IRTMPEvent body, int eventTime) {
         return new RTMPMessage(body, eventTime);
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s  %s", getBody().getDataType(), getBody().getTimestamp());
+    }
+
+    @Override
+    public void release() {
+        IRTMPEvent body = getBody();
+        if (body != null) {
+            body.release();
+        }
+    }
 }

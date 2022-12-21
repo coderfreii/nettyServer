@@ -38,7 +38,7 @@ import org.tl.nettyServer.media.scope.IBroadcastScope;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.consumer.IConsumerService;
 import org.tl.nettyServer.media.service.provider.IProviderService;
-import org.tl.nettyServer.media.service.stream.StreamService;
+import org.tl.nettyServer.media.service.stream.StreamCommandService;
 import org.tl.nettyServer.media.stream.StreamState;
 import org.tl.nettyServer.media.stream.base.IBroadcastStream;
 import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
@@ -457,7 +457,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
         StreamCodecInfo info = (StreamCodecInfo) codecInfo;
         IVideoStreamCodec videoCodec = info.getVideoCodec();
         log.debug("Video codec: {}", videoCodec);
-        //4、---发送vido的配置和关键帧---
+        //4、---发送video的配置和关键帧---
         if (videoCodec != null) {
             // check for decoder configuration to send
             BufFacade config = videoCodec.getDecoderConfiguration();
@@ -473,7 +473,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
                 log.debug("Keyframe is available");
                 VideoData video = new VideoData(keyframe.getFrame(), true);
                 log.debug("Pushing keyframe");
-                    sendMessage(RTMPMessage.build(video, ts));
+                sendMessage(RTMPMessage.build(video, ts));
             }
         } else {
             log.debug("No video decoder configuration available");
@@ -567,7 +567,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
             }
         } else {
             log.warn("Provider was not found for {}", itemName);
-            StreamService.sendNetStreamStatus(subscriberStream.getConnection(), StatusCodes.NS_PLAY_STREAMNOTFOUND, "Stream was not found", itemName, Status.ERROR, streamId);
+            StreamCommandService.sendNetStreamStatus(subscriberStream.getConnection(), StatusCodes.NS_PLAY_STREAMNOTFOUND, "Stream was not found", itemName, Status.ERROR, streamId);
         }
     }
 
@@ -1277,10 +1277,10 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
         }
         String sessionId = subscriberStream.getConnection().getSessionId();
         if (message instanceof RTMPMessage) {
-
-            IMessageInput msgIn = msgInReference.get();
-            RTMPMessage rtmpMessage = (RTMPMessage) message;
+            //这里copy一份
+            RTMPMessage rtmpMessage = IStreamData.doDuplicate((RTMPMessage) message);
             IRTMPEvent body = rtmpMessage.getBody();
+            IMessageInput msgIn = msgInReference.get();
 
             if (!(body instanceof IStreamData)) {
                 throw new RuntimeException(String.format("Expected IStreamData but got %s (type %s)", body.getClass(), body.getDataType()));

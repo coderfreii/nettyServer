@@ -246,9 +246,9 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     }
                     */
                     //get the buffer only once per call
-                    BufFacade buf = null;
-                    if (rtmpEvent instanceof IStreamData && (buf = ((IStreamData<?>) rtmpEvent).getData()) != null) {
-                        bytesReceived += buf.readableBytes();
+                    BufFacade data = null;
+                    if (rtmpEvent instanceof IStreamData && (data = ((IStreamData<?>) rtmpEvent).getData()) != null) {
+                        bytesReceived += data.readableBytes();
                     }
                     // get stream codec
                     IStreamCodecInfo codecInfo = getCodecInfo();
@@ -262,8 +262,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                         IAudioStreamCodec audioStreamCodec = null;
                         if (checkAudioCodec) {
                             // dont try to read codec info from 0 length audio packets
-                            if (buf.readableBytes() > 0) {
-                                audioStreamCodec = AudioCodecFactory.getAudioCodec(buf);
+                            if (data.readableBytes() > 0) {
+                                audioStreamCodec = AudioCodecFactory.getAudioCodec(data);
                                 if (info != null) {
                                     info.setAudioCodec(audioStreamCodec);
                                 }
@@ -272,8 +272,9 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                         } else if (codecInfo != null) {
                             audioStreamCodec = codecInfo.getAudioCodec();
                         }
+
                         if (audioStreamCodec != null) {
-                            audioStreamCodec.addData(buf);
+                            audioStreamCodec.addData(data);
                         }
                         if (info != null) {
                             info.setHasAudio(true);
@@ -282,7 +283,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                         //log.trace("Video: {}", eventTime);
                         IVideoStreamCodec videoStreamCodec = null;
                         if (checkVideoCodec) {
-                            videoStreamCodec = VideoCodecFactory.getVideoCodec(buf);
+                            videoStreamCodec = VideoCodecFactory.getVideoCodec(data);
                             if (info != null) {
                                 info.setVideoCodec(videoStreamCodec);
                             }
@@ -291,26 +292,26 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                             videoStreamCodec = codecInfo.getVideoCodec();
                         }
                         if (videoStreamCodec != null) {
-                            videoStreamCodec.addData(buf, eventTime);
+                            videoStreamCodec.addData(data, eventTime);
                         }
                         if (info != null) {
                             info.setHasVideo(true);
                         }
                     } else if (rtmpEvent instanceof Invoke) {
-                        //Invoke invokeEvent = (Invoke) rtmpEvent;
-                        //log.debug("Invoke action: {}", invokeEvent.getAction());
+                        Invoke invokeEvent = (Invoke) rtmpEvent;
+                        log.debug("Invoke action: {}", invokeEvent.getAction());
                         // event / stream listeners will not be notified of invokes
                         return;
                     } else if (rtmpEvent instanceof Notify) {
                         Notify notifyEvent = (Notify) rtmpEvent;
                         String action = notifyEvent.getAction();
-                        //if (log.isDebugEnabled()) {
-                        //log.debug("Notify action: {}", action);
-                        //}
+                        if (log.isDebugEnabled()) {
+                            log.debug("Notify action: {}", action);
+                        }
                         if ("onMetaData".equals(action)) {
                             // store the metadata
                             try {
-                                //log.debug("Setting metadata");
+                                log.debug("Setting metadata");
                                 setMetaData(notifyEvent.duplicate());
                             } catch (Exception e) {
                                 log.warn("Metadata could not be duplicated for this stream", e);
@@ -337,23 +338,12 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                         stop();
                     }
 
-                    //确保可读
 
                     // notify listeners about received packet
                     if (rtmpEvent instanceof IStreamPacket) {
                         for (IStreamListener listener : getStreamListeners()) {
                             try {
-                                if (rtmpEvent instanceof IStreamData) {
-                                    try {
-                                        rtmpEvent = (IRTMPEvent) ((IStreamData) rtmpEvent).duplicate();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                listener.packetReceived(this, (IStreamPacket) rtmpEvent);
+                                listener.packetReceived(this, (IStreamPacket) IStreamData.doDuplicate(rtmpEvent));
                             } catch (Exception e) {
                                 log.error("Error while notifying listener {}", listener, e);
                                 if (listener instanceof RecordingListener) {
@@ -365,7 +355,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     break;
                 default:
                     // ignored event
-                    //log.debug("Ignoring event: {}", event.getType());
+                    log.debug("Ignoring event: {}", event.getType());
             }
         } else {
             log.debug("Event was of wrong type or stream is closed ({})", closed);
@@ -543,37 +533,37 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
     public void onPipeConnectionEvent(PipeConnectionEvent event) {
         switch (event.getType()) {
             case PROVIDER_CONNECT_PUSH:
-                //log.debug("Provider connect");
+                log.trace("Provider connect");
                 if (event.getProvider() == this && event.getSource() != connMsgOut && (event.getParamMap() == null || !event.getParamMap().containsKey("record"))) {
                     livePipe = (IPipe) event.getSource();
-                    //log.debug("Provider: {}", livePipe.getClass().getName());
+                    log.trace("Provider: {}", livePipe.getClass().getName());
                     for (IConsumer consumer : livePipe.getConsumers()) {
                         subscriberStats.increment();
                     }
                 }
                 break;
             case PROVIDER_DISCONNECT:
-                //log.debug("Provider disconnect");
-                //if (log.isDebugEnabled() && livePipe != null) {
-                //log.debug("Provider: {}", livePipe.getClass().getName());
-                //}
+                log.trace("Provider disconnect");
+                if (log.isTraceEnabled() && livePipe != null) {
+                    log.trace("Provider: {}", livePipe.getClass().getName());
+                }
                 if (livePipe == event.getSource()) {
                     livePipe = null;
                 }
                 break;
             case CONSUMER_CONNECT_PUSH:
-                log.debug("Consumer connect");
+                log.trace("Consumer connect");
                 IPipe pipe = (IPipe) event.getSource();
-                //if (log.isDebugEnabled() && pipe != null) {
-                log.debug("Consumer: {}", pipe.getClass().getName());
-                //}
+                if (log.isTraceEnabled() && pipe != null) {
+                    log.trace("Consumer: {}", pipe.getClass().getName());
+                }
                 if (livePipe == pipe) {
                     notifyChunkSize();
                 }
                 subscriberStats.increment();
                 break;
             case CONSUMER_DISCONNECT:
-                //log.debug("Consumer disconnect: {}", event.getSource().getClass().getName());
+                log.trace("Consumer disconnect: {}", event.getSource().getClass().getName());
                 subscriberStats.decrement();
                 break;
             default:

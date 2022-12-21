@@ -38,7 +38,9 @@ import org.tl.nettyServer.media.so.SharedObjectMessage;
 import org.tl.nettyServer.media.stream.StreamAction;
 import org.tl.nettyServer.media.stream.base.IClientStream;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -148,10 +150,7 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
         } catch (Throwable t) {
             log.error("Exception", t);
         }
-        //如果以前的方法在缓冲之前没有进行复制，这可能会导致“丢失”数据
-        if (message != null) {
-//            message.release();
-        }
+        //这里不能release
     }
 
     public void messageSent(RTMPConnection conn, Packet packet) {
