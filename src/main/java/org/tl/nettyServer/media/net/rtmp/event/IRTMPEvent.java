@@ -22,8 +22,9 @@ package org.tl.nettyServer.media.net.rtmp.event;
 import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.event.IEventListener;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
-public interface IRTMPEvent extends IEvent {
+public interface IRTMPEvent extends IEvent, Releasable {
 
     public byte getDataType();
 
@@ -43,5 +44,4 @@ public interface IRTMPEvent extends IEvent {
 
     public void retain();
 
-    public void release();
 }

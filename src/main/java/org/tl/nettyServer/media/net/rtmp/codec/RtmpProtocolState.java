@@ -194,7 +194,7 @@ public class RtmpProtocolState {
      */
     public void freePacket(Packet packet) {
         if (packet != null && packet.getData() != null) {
-            packet.clearData();
+            packet.release();
         }
     }
 

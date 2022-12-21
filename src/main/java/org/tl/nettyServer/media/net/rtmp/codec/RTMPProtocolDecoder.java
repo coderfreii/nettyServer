@@ -253,7 +253,7 @@ public class RTMPProtocolDecoder implements Constants {
             in.resetReaderIndex();
             return null;
         }
-        // store the header based on its channel id
+        // store the header based on its channel id  //这之前 in.readerIndex 可能会重置
         rtmpProtocolState.setLastReadHeader(chunkHeader.getCsId(), latestHeader);
 
         // get the chunk from our input

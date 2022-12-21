@@ -697,7 +697,6 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     public boolean release() {
         if (free == false) free = true;
         return this.target.release();
-//        return true;
     }
 
     @Override

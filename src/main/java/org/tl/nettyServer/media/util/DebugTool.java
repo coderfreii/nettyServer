@@ -1,5 +1,6 @@
 package org.tl.nettyServer.media.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
@@ -13,7 +14,10 @@ import java.util.List;
  * @author TL
  * @date 2022/12/21
  */
+@Slf4j
 public class DebugTool {
+    private boolean disabled = true;
+
     protected List<IRTMPEvent> irtmpEvents = new ArrayList<>();
     AudioData last = null;
     private int check = 40;
@@ -28,9 +32,9 @@ public class DebugTool {
             if (last != null) {
                 int i = message.getTimestamp() - last.getTimestamp();
                 if (i > check) {
-                    System.out.println();
+                    log.debug(i + "");
                 } else {
-                    System.out.println(i);
+                    log.trace(i + "");
                 }
             }
             irtmpEvents.add(message);

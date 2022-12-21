@@ -25,6 +25,7 @@ public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<B
             log.debug("left {}", bufFacadeStore.readableBytes());
         }
         bufFacadeStore.writeBytes(msg);
+        msg.release();
         List<Object> objects = decoder.decodeBuffer(connection, bufFacadeStore);
         out.addAll(objects);
     }

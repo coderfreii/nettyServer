@@ -18,6 +18,12 @@ import org.tl.nettyServer.media.session.SessionAccessor;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * rtmp 只处理外面传入的packet
+ *
+ * @author TL
+ * @date 2022/12/21
+ */
 @Slf4j
 public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
     private RtmpPacketHandler handler = new RtmpPacketHandler();
@@ -71,6 +77,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                         // 创建任务以设置处理消息
                         addTask(streamId, new ReceivedMessageTask(sessionId, packet, handler, conn), conn);
                     } catch (Exception e) {
+                        packet.release();
                         log.error("Incoming message handling failed on session=[" + sessionId + "], messageType=[" + messageType + "]", e);
                         if (log.isDebugEnabled()) {
                             log.debug("Execution rejected on {} - {}", sessionId, RtmpProtocolState.states[conn.getStateCode()]);
@@ -85,6 +92,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
                 //将消息传递给处理程序
                 handler.messageReceived(conn, packet);
             } catch (Exception e) {
+                packet.release();
                 log.error("Error processing received message {} state: {}", sessionId, RtmpProtocolState.states[conn.getStateCode()], e);
             }
         }

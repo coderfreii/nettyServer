@@ -32,7 +32,8 @@ public class RtmpServer {
                         .addLast(new RTMPEHandler())
                         .addLast(new RtmpByteToPacketHandler())
                         .addLast(new RtmpPacketMayAsyncDecoder())
-                ;
+                        .addLast(new InExceptionHandler());
+
             }
         };
 

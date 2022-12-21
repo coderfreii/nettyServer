@@ -21,6 +21,7 @@ package org.tl.nettyServer.media.net.rtmp.message;
 
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * RtmpProtocolState packet. Consists of packet header, data and event context.
  */
-public class Packet implements Externalizable {
+public class Packet implements Externalizable, Releasable {
 
     private static final long serialVersionUID = -6415050845346626950L;
 
@@ -171,5 +172,15 @@ public class Packet implements Externalizable {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    @Override
+    public void release() {
+        if (data != null) {
+            data.release();
+        }
+        if (this.message != null) {
+            this.message.release();
+        }
     }
 }
