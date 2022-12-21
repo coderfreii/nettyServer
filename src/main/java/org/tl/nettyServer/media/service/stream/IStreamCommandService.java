@@ -26,7 +26,7 @@ import org.tl.nettyServer.media.stream.conn.IStreamCapableConnection;
 /**
  * This interface represents the stream methods that can be called throug RtmpProtocolState.
  */
-public interface IStreamService extends IScopeService {
+public interface IStreamCommandService extends IScopeService {
 
     public static String BEAN_NAME = "streamService";
 

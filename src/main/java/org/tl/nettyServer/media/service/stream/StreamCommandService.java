@@ -58,9 +58,9 @@ import java.util.Set;
  * Stream service
  * 流服务
  */
-public class StreamService implements IStreamService {
+public class StreamCommandService implements IStreamCommandService {
 
-    private static Logger log = LoggerFactory.getLogger(StreamService.class);
+    private static Logger log = LoggerFactory.getLogger(StreamCommandService.class);
 
     /**
      * Use to determine playback type.
@@ -205,7 +205,7 @@ public class StreamService implements IStreamService {
                 scConn.deleteStreamById(streamId);
                 // in case of broadcasting stream, status is sent automatically by Red5
                 if (!(stream instanceof IClientBroadcastStream)) {
-                    StreamService.sendNetStreamStatus(conn, StatusCodes.NS_PLAY_STOP, "Stream closed by server", stream.getName(), Status.STATUS, streamId);
+                    StreamCommandService.sendNetStreamStatus(conn, StatusCodes.NS_PLAY_STOP, "Stream closed by server", stream.getName(), Status.STATUS, streamId);
                 }
             } else {
                 log.info("Stream not found - streamId: {} connection: {}", streamId, conn.getSessionId());
@@ -659,6 +659,7 @@ public class StreamService implements IStreamService {
             // grab the streams name
             name = name.substring(0, name.indexOf("?"));
         }
+
         log.debug("publish called with name {} and mode {}", name, mode);
         IConnection conn = Red5.getConnectionLocal();
         if (conn instanceof IStreamCapableConnection) {
@@ -670,6 +671,8 @@ public class StreamService implements IStreamService {
                 log.error("The stream name may not be empty.");
                 return;
             }
+
+            //
             IStreamSecurityService security = (IStreamSecurityService) ScopeUtils.getScopeService(scope, IStreamSecurityService.class);
             if (security != null) {
                 Set<IStreamPublishSecurity> handlers = security.getStreamPublishSecurity();
@@ -681,6 +684,8 @@ public class StreamService implements IStreamService {
                     }
                 }
             }
+
+            //
             IBroadcastScope bsScope = getBroadcastScope(scope, name);
             if (bsScope != null && !bsScope.getProviders().isEmpty()) {
                 // another stream with that name is already published			
@@ -688,11 +693,14 @@ public class StreamService implements IStreamService {
                 log.error("Bad name {}", name);
                 return;
             }
+
+            //
             IClientStream stream = streamConn.getStreamById(streamId);
             if (stream != null && !(stream instanceof IClientBroadcastStream)) {
                 log.error("Stream not found or is not instance of IClientBroadcastStream, name: {}, streamId: {}", name, streamId);
                 return;
             }
+
             boolean created = false;
             if (stream == null) {
                 stream = streamConn.newBroadcastStream(streamId);
@@ -717,6 +725,8 @@ public class StreamService implements IStreamService {
                         ((BaseConnection) conn).registerBasicScope(bsScope);
                     }
                 }
+
+                //
                 log.debug("Mode: {}", mode);
                 if (IClientStream.MODE_RECORD.equals(mode)) {
                     bs.start();
@@ -727,6 +737,8 @@ public class StreamService implements IStreamService {
                 } else {
                     bs.start();
                 }
+
+                //发送事件
                 bs.startPublishing();
             } catch (IOException e) {
                 log.warn("Stream I/O exception", e);
@@ -822,7 +834,7 @@ public class StreamService implements IStreamService {
      * @param streamId
      */
     private void sendNSFailed(IConnection conn, String errorCode, String description, String name, Number streamId) {
-        StreamService.sendNetStreamStatus(conn, errorCode, description, name, Status.ERROR, streamId);
+        StreamCommandService.sendNetStreamStatus(conn, errorCode, description, name, Status.ERROR, streamId);
     }
 
     /**
@@ -835,7 +847,7 @@ public class StreamService implements IStreamService {
      * @param streamId
      */
     private void sendNSStatus(IConnection conn, String statusCode, String description, String name, Number streamId) {
-        StreamService.sendNetStreamStatus(conn, statusCode, description, name, Status.STATUS, streamId);
+        StreamCommandService.sendNetStreamStatus(conn, statusCode, description, name, Status.STATUS, streamId);
     }
 
     /**
