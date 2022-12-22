@@ -34,13 +34,14 @@ public class SimplePlaylistController implements IPlaylistController {
     public int nextItem(IPlaylist playlist, int itemIndex) {
         if (itemIndex < 0) {
             itemIndex = -1;
+
+        }
+
+        if (playlist.isRepeat()) {
             //解决Repeat的bug
             if (playlist.getItemSize() > 0) {
                 itemIndex = 0;
             }
-        }
-
-        if (playlist.isRepeat()) {
             return itemIndex;
         }
         if (playlist.isRandom()) {

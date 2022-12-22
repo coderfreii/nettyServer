@@ -50,7 +50,8 @@ public class Beans {
         PlaylistSubscriberStream cache = new PlaylistSubscriberStream();
         cache.setBufferCheckInterval(ExtConfiguration.INTERVAL);
         cache.setUnderrunTrigger(ExtConfiguration.TRIGGER);
-        cache.setRepeat(true);
+        //repeat开启有bug
+        //cache.setRepeat(true);
         return cache;
     }
 

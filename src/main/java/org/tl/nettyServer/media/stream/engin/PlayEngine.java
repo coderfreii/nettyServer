@@ -665,7 +665,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
                 cancelDeferredStop();
                 if (subscriberStream instanceof IPlaylistSubscriberStream) {
                     IPlaylistSubscriberStream pss = (IPlaylistSubscriberStream) subscriberStream;
-                    if (!pss.hasMoreItems()) {
+                    if (!pss.hasMoreItems()) { // repeat 导致无法走到这里
                         releasePendingMessage();
                         sendCompleteStatus();
                         bytesSent.set(0);
@@ -676,7 +676,7 @@ public final class PlayEngine implements IFilter, IPushableConsumer, IPipeConnec
                             // remember last timestamp so we can generate correct headers in playlists.
                             timestampOffset = lastMessageTs;
                         }
-                        pss.nextItem();
+                        pss.nextItem();  //走到这里会因为线程问题无法获取cnn
                     }
                 }
                 break;
