@@ -335,6 +335,7 @@ public class StreamCommandService implements IStreamCommandService {
 
     /**
      * {@inheritDoc}
+     * //这里点播用的
      */
     public void play(String name, int start, int length, boolean flushPlaylist) {
         log.debug("Play called - name: {} start: {} length: {} flush playlist: {}", new Object[]{name, start, length, flushPlaylist});

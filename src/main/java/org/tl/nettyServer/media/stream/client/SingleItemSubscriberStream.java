@@ -178,7 +178,7 @@ public class SingleItemSubscriberStream extends AbstractClientStream implements 
 
         engine.setBufferCheckInterval(bufferCheckInterval);
 
-        engine.setUnderrunTrigger(underrunTrigger);
+        engine.setUnderRunTrigger(underrunTrigger);
 
         engine.start();
 

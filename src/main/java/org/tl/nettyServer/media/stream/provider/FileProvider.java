@@ -1,33 +1,29 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright (c) 2006-2011 by respective authors (see below). All rights reserved.
- * 
- * This library is free software; you can redistribute it and/or modify it under the 
- * terms of the GNU Lesser General Public License as published by the Free Software 
- * Foundation; either version 2.1 of the License, or (at your option) any later 
- * version. 
- * 
- * This library is distributed in the hope that it will be useful, but WITHOUT ANY 
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A 
+ *
+ * This library is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free Software
+ * Foundation; either version 2.1 of the License, or (at your option) any later
+ * version.
+ *
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
  * PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along 
- * with this library; if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA 
+ *
+ * You should have received a copy of the GNU Lesser General Public License along
+ * with this library; if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
 package org.tl.nettyServer.media.stream.provider;
 
-import java.io.File;
-import java.io.IOException;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.ITagReader;
-import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.messaging.*;
 import org.tl.nettyServer.media.net.rtmp.event.*;
@@ -38,6 +34,10 @@ import org.tl.nettyServer.media.service.IStreamableFileServiceFactory;
 import org.tl.nettyServer.media.service.StreamableFileServiceFactory;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.util.ScopeUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Pullable provider for files
@@ -85,7 +85,7 @@ public class FileProvider implements IPassive, ISeekableProvider, IPullableProvi
 
     /**
      * Create file provider for given file and scope
-     * 
+     *
      * @param scope
      *            Scope
      * @param file
@@ -118,6 +118,11 @@ public class FileProvider implements IPassive, ISeekableProvider, IPullableProvi
             if (reader == null) {
                 init();
             }
+
+            if (reader == null) {
+                throw new FileNotFoundException(file.getPath());
+            }
+
             if (reader.hasMoreTags()) {
                 IRTMPEvent msg = null;
                 ITag tag = reader.readTag();

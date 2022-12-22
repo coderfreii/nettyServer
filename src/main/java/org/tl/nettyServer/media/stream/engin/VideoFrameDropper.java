@@ -70,7 +70,7 @@ public class VideoFrameDropper implements IFrameDropper {
                     // All packets will be sent
                     break;
                 case SEND_INTERFRAMES:
-                    // Only keyframes and interframes will be sent.
+                    // Only keyframes and inter frames will be sent.
                     if (type == VideoData.FrameType.KEYFRAME) {
                         if (pending == 0) {
                             // Send all frames from now on.

@@ -218,7 +218,7 @@ public class PlaylistSubscriberStream extends AbstractClientStream implements IP
         //set buffer check interval
         engine.setBufferCheckInterval(bufferCheckInterval);
         //set underrun trigger
-        engine.setUnderrunTrigger(underrunTrigger);
+        engine.setUnderRunTrigger(underrunTrigger);
         // set the max pending video frames to the play engine
         engine.setMaxPendingVideoFrames(maxPendingVideoFrames);
         // set the max sequential pending video frames to the play engine

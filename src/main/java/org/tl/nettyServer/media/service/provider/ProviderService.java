@@ -29,7 +29,6 @@ import org.tl.nettyServer.media.service.IStreamableFileServiceFactory;
 import org.tl.nettyServer.media.stream.DefaultStreamFilenameGenerator;
 import org.tl.nettyServer.media.stream.IStreamFilenameGenerator;
 import org.tl.nettyServer.media.stream.base.IBroadcastStream;
-import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
 import org.tl.nettyServer.media.stream.provider.FileProvider;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
@@ -44,24 +43,29 @@ public class ProviderService implements IProviderService {
     // whether or not to support FCS/FMS/AMS live-wait (default to off)
     private boolean liveWaitSupport;
 
-
+    /**
+     * {@inheritDoc}
+     */
     public INPUT_TYPE lookupProviderInput(IScope scope, String name, int type) {
         INPUT_TYPE result = INPUT_TYPE.NOT_FOUND;
         if (scope.getBasicScope(ScopeType.BROADCAST, name) != null) {
             // we have live input
+            log.debug(String.format("we have live input for <%s>", name));
             result = INPUT_TYPE.LIVE;
         } else {
             File file = getStreamFile(scope, name);
             if (file == null) {
                 if (type == -2 && liveWaitSupport) {
                     result = INPUT_TYPE.LIVE_WAIT;
+                    log.debug(String.format("we have a live wait for <%s>", name));
                 }
-                log.debug("Requested stream: {} does not appear to be of VOD type", name);
             } else {
                 // "default" to VOD as a missing file will be picked up later on
+                log.debug(String.format("we have VOD file input for <%s>", name));
                 result = INPUT_TYPE.VOD;
             }
         }
+        log.debug(String.format("request Stream <%s> not found", name));
         return result;
     }
 
