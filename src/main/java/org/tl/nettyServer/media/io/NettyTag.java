@@ -140,4 +140,15 @@ public class NettyTag implements ITag {
     public void setPreviousTagSize(int size) {
         this.previousTagSize = size;
     }
+
+    @Override
+    public void release() {
+        if (this.getBody() != null) {
+            this.getBody().release();
+        }
+
+        if (this.getData() != null) {
+            this.getData().release();
+        }
+    }
 }

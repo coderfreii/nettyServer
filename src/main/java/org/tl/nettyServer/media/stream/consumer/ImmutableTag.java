@@ -206,4 +206,14 @@ public class ImmutableTag implements ITag {
         }
     }
 
+    @Override
+    public void release() {
+        if (this.getBody() != null) {
+            this.getBody().release();
+        }
+
+        if (this.getData() != null) {
+            this.getData().release();
+        }
+    }
 }

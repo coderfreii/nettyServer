@@ -128,6 +128,11 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
     }
 
     public void setData(BufFacade data) {
+        if (this.data != null) {
+            //这里release-
+            this.data.release();
+        }
+
         this.data = data;
         if (data != null && data.readableBytes() > 0) {
             data.markReaderIndex();

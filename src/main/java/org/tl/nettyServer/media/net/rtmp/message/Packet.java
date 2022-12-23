@@ -92,6 +92,10 @@ public class Packet implements Externalizable, Releasable {
     }
 
     public void setData(BufFacade buffer) {
+        if (this.data != null) {
+            this.data.release();
+        }
+        
         if (noCopy) {
             this.data = buffer;
         } else {
@@ -104,6 +108,7 @@ public class Packet implements Externalizable, Releasable {
                 data = BufFacade.wrappedBuffer(copy);
             } else {
                 // fallback to ByteBuffer
+                System.out.println("fallback to ByteBuffer");
             }
         }
     }

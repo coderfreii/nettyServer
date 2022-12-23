@@ -44,6 +44,7 @@ import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.ISharedObjectMessage;
+import org.tl.nettyServer.media.stream.data.IStreamData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -172,13 +173,18 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 // set last write header
                 rtmpProtocolState.setLastWriteHeader(channelId, lastHeader);
                 //这里也不能release  RELEASE
-                //data.release();
+
+                //这里release-
+                if (!(message instanceof IStreamData)) {
+                    //release data 会直接用
+                    data.release();
+                }
                 data = null;
             }
+        } else {
+            //这里release-
+            packet.release();
         }
-        //这里不可以release
-//        //信息写入out 这里可以release
-//        message.release();
         return out;
     }
 

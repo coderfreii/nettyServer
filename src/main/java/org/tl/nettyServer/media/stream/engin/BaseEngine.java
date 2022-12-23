@@ -38,6 +38,9 @@ public abstract class BaseEngine implements IPushableConsumer {
 
     //上配置 下状态
 
+    /**
+     * pullMode as consumer
+     */
     protected boolean pullMode;
     protected final AtomicReference<IMessageInput> msgInReference = new AtomicReference<>();
     protected final AtomicReference<IMessageOutput> msgOutReference = new AtomicReference<>();

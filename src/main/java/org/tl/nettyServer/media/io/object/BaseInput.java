@@ -19,6 +19,8 @@
 package org.tl.nettyServer.media.io.object;
 
 import lombok.extern.slf4j.Slf4j;
+import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -31,7 +33,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
 @Slf4j
-public class BaseInput {
+public class BaseInput implements Releasable {
+    protected BufFacade buf;
+
     /**
      * References map
      */
@@ -93,4 +97,10 @@ public class BaseInput {
         return Deserializer.classAllowed(className);
     }
 
+    @Override
+    public void release() {
+        if (this.buf != null) {
+            this.buf.release();
+        }
+    }
 }

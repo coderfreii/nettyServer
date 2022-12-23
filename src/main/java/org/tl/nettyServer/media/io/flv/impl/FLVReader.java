@@ -12,7 +12,6 @@ import org.tl.nettyServer.media.io.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.util.IOUtils;
 
-
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -26,12 +25,12 @@ import java.util.Map;
  * NOTE: This class is not implemented as threading-safe. The caller
  * should make sure the threading-safety.
  */
-public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader, Closeable {
+public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader, Closeable {
 
     /**
      * Logger
      */
-    private static Logger log = LoggerFactory.getLogger(NettyFLVReader.class);
+    private static Logger log = LoggerFactory.getLogger(FLVReader.class);
 
     /**
      * File
@@ -115,20 +114,20 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
     /**
      * Constructs a new FLVReader.
      */
-    public NettyFLVReader() {
+    public FLVReader() {
     }
 
     /**
      * Creates FLV reader from file input stream.
      */
-    public NettyFLVReader(File f) throws IOException {
+    public FLVReader(File f) throws IOException {
         this(f, false);
     }
 
     /**
      * Creates FLV reader from file input stream, sets up metadata generation flag.
      */
-    public NettyFLVReader(File f, boolean generateMetadata) throws IOException {
+    public FLVReader(File f, boolean generateMetadata) throws IOException {
         if (null == f) {
             log.warn("Reader was passed a null file");
             log.debug("{}", org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(this));
@@ -147,7 +146,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
     /**
      * Creates FLV reader from file channel.
      */
-    public NettyFLVReader(FileChannel channel) throws IOException {
+    public FLVReader(FileChannel channel) throws IOException {
         if (null == channel) {
             log.warn("Reader was passed a null channel");
             log.debug("{}", org.apache.commons.lang3.builder.ToStringBuilder.reflectionToString(this));
@@ -170,14 +169,14 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
     /**
      * Accepts mapped file bytes to construct internal members.
      */
-    public NettyFLVReader(BufFacade buffer, boolean generateMetadata) {
+    public FLVReader(BufFacade buffer, boolean generateMetadata) {
         this.generateMetadata = generateMetadata;
         in = buffer;
         postInitialize();
     }
 
     public void setKeyFrameCache(IKeyFrameMetaCache keyframeCache) {
-        NettyFLVReader.keyframeCache = keyframeCache;
+        FLVReader.keyframeCache = keyframeCache;
     }
 
     /**
@@ -316,6 +315,9 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
                     in.clear();
                 }
                 in.writeBytes(channel, bufferSize);
+                if (in.readableBytes() < amount) {
+                    throw new IOException("no more bytes");
+                }
             }
         } catch (Exception e) {
             log.error("Error fillBuffer", e);
@@ -371,16 +373,16 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
         switch (bufferTypeHash) {
             case 3198444: //heap
                 //Get a heap buffer from buffer pool
-                NettyFLVReader.bufferType = BufferType.HEAP;
+                FLVReader.bufferType = BufferType.HEAP;
                 break;
             case -1331586071: //direct
                 //Get a direct buffer from buffer pool
-                NettyFLVReader.bufferType = BufferType.DIRECT;
+                FLVReader.bufferType = BufferType.DIRECT;
                 break;
             case 3005871: //auto
                 //Let MINA choose
             default:
-                NettyFLVReader.bufferType = BufferType.AUTO;
+                FLVReader.bufferType = BufferType.AUTO;
         }
     }
 
@@ -399,7 +401,7 @@ public class NettyFLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagR
         if (bufferSize < 1024) {
             bufferSize = 1024;
         }
-        NettyFLVReader.bufferSize = bufferSize;
+        FLVReader.bufferSize = bufferSize;
     }
 
     /**

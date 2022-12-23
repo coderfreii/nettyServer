@@ -421,7 +421,7 @@ public class FLVWriter implements ITagWriter {
 			}
 			if (reader == null) {
 				channel.position(0);
-				reader = new NettyFLVReader(file.getChannel());
+				reader = new FLVReader(file.getChannel());
 				//				RandomAccessFile raf = new RandomAccessFile("E:/dev/red5/java/server/trunk/distx/webapps/oflaDemo/streams/toystory3.flv", "r");
 				//				reader = new FLVReader(raf.createChannelIfAbsent());
 			}

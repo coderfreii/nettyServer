@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.packet.IRtmpPacketHandler;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.util.Date;
 import java.util.concurrent.Callable;
@@ -34,10 +35,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Wraps processing of incoming messages.
- * 
+ *
  * @author Paul Gregoire (mondain@gmail.com)
  */
-public final class ReceivedMessageTask implements Callable<Packet> {
+public final class ReceivedMessageTask implements Callable<Packet>, Releasable {
 
     private final static Logger log = LoggerFactory.getLogger(ReceivedMessageTask.class);
 
@@ -83,7 +84,7 @@ public final class ReceivedMessageTask implements Callable<Packet> {
         }
         return packet;
     }
- 
+
     @SuppressWarnings("unchecked")
     public void runDeadlockFuture(Runnable deadlockGuardTask) {
         if (deadlockFuture == null) {
@@ -101,14 +102,14 @@ public final class ReceivedMessageTask implements Callable<Packet> {
             log.warn("Deadlock future is already create for {}", sessionId);
         }
     }
- 
+
     public void cancelDeadlockFuture() {
         // kill the future for the deadlock since processing is complete
         if (deadlockFuture != null) {
             deadlockFuture.cancel(true);
         }
     }
- 
+
     public boolean setProcessing() {
         return processing.compareAndSet(false, true);
     }
@@ -165,4 +166,11 @@ public final class ReceivedMessageTask implements Callable<Packet> {
         return "[sessionId: " + sessionId + "; packetNumber: " + packetNumber + "; processing: " + processing.get() + "]";
     }
 
+    @Override
+    public void release() {
+        //only release when task failed
+        if (this.packet != null) {
+            this.packet.release();
+        }
+    }
 }

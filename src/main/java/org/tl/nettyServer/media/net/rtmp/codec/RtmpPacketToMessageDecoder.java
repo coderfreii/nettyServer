@@ -83,18 +83,28 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                 break;
             case MessageType.TYPE_BYTES_READ:
                 message = decodeBytesRead(in);
+                //这里release-
+                in.release();
                 break;
             case MessageType.TYPE_CHUNK_SIZE:
                 message = decodeChunkSize(in);
+                //这里release-
+                in.release();
                 break;
             case MessageType.TYPE_SERVER_BANDWIDTH:
                 message = decodeServerBW(in);
+                //这里release-
+                in.release();
                 break;
             case MessageType.TYPE_CLIENT_BANDWIDTH:
                 message = decodeClientBW(in);
+                //这里release-
+                in.release();
                 break;
             case MessageType.TYPE_ABORT:
                 message = decodeAbort(in);
+                //这里release-
+                in.release();
                 break;
             default:
                 log.warn("Unknown object type: {}", dataType);
@@ -179,6 +189,8 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         // create our shared object message
         final SharedObjectMessage so = new FlexSharedObjectMessage(null, name, version, persistent);
         doDecodeSharedObject(so, in, input);
+        //这里release-
+        in.release();
         return so;
     }
 
@@ -197,6 +209,8 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         // create our shared object message
         final SharedObjectMessage so = new SharedObjectMessage(null, name, version, persistent);
         doDecodeSharedObject(so, in, input);
+        //这里release-
+        in.release();
         return so;
     }
 
@@ -315,6 +329,9 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         input.reset();
         // get / set the parameters if there any
         Object[] params = in.readable() ? handleParameters(in, invoke, input) : new Object[0];
+        //这里release-
+        input.release();
+
         // determine service information
         final int dotIndex = action.lastIndexOf('.');
         String serviceName = (dotIndex == -1) ? null : action.substring(0, dotIndex);
@@ -399,6 +416,8 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                 ping = new Ping(type, in.readInt());
                 break;
         }
+        //这里release-
+        in.release();
         return ping;
     }
 
@@ -497,6 +516,9 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
                 out.writeMap(params);
                 // instance a notify with action
                 ret = new Notify(buf, onCueOrOnMeta);
+
+                //这里release-
+                in.release();
             } else {
                 byte object = input.readDataType();
                 if (object == DataTypes.CORE_SWITCH) {
@@ -633,6 +655,8 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         log.debug("Service name: {} method: {}", serviceName, serviceMethod);
         PendingCall call = new PendingCall(serviceName, serviceMethod, params);
         msg.setCall(call);
+        //这里release-
+        in.release();
         return msg;
     }
 }

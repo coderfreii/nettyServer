@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
-import org.tl.nettyServer.media.io.flv.impl.NettyFLVReader;
+import org.tl.nettyServer.media.io.flv.impl.FLVReader;
 
 import java.io.File;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ public class GenericWriterPostProcessor implements IPostProcessor {
     public void run() {
         if (file != null) {
             try {
-                NettyFLVReader reader = new NettyFLVReader(file);
+                FLVReader reader = new FLVReader(file);
                 ITag tag = null;
                 int audio = 0, video = 0, meta = 0;
                 while (reader.hasMoreTags()) {

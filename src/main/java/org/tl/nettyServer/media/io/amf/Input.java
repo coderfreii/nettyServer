@@ -61,8 +61,6 @@ public class Input extends BaseInput implements IInput {
         }
     };
 
-    protected BufFacade buf;
-
     protected byte currentDataType;
 
     /**

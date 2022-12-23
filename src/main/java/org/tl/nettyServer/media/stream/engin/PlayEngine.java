@@ -55,7 +55,6 @@ import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -70,8 +69,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnectionListener {
+    /**
+     * 表示是否接收到视频
+     */
     private boolean receiveVideo = true;
 
+    /**
+     * 表示是否接收到音频
+     */
     private boolean receiveAudio = true;
 
     private String waitLiveJob;
@@ -92,6 +97,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
      * 大于0个挂起帧的连续视频帧数
      */
     private int numSequentialPendingVideoFrames = 0;
+
     /**
      * 实时流中视频帧丢弃的状态机
      */
@@ -131,12 +137,6 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
      */
     private ConcurrentLinkedQueue<Runnable> pendingOperations = new ConcurrentLinkedQueue<>();
 
-    // Keep count of dropped packets so we can log every so often.
-    private long droppedPacketsCount;
-
-    private long droppedPacketsCountLastLogTimestamp = TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
-
-    private long droppedPacketsCountLogInterval = 60 * 1000L;
 
     private boolean configsDone;
 
@@ -567,10 +567,8 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
 
             // the subscriber paused
             if (subscriberStream.getState() == StreamState.PAUSED) {
-                if (log.isInfoEnabled() && shouldLogPacketDrop()) {
-                    log.info("Dropping packet because we are paused. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), droppedPacketsCount);
-                }
-                videoFrameDropper.dropPacket(rtmpMessage);
+                videoFrameDropper.dropPacket(rtmpMessage,
+                        () -> log.info("Dropping packet because we are paused. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), videoFrameDropper.getDroppedPacketsCount()));
                 return;
             }
 
@@ -619,12 +617,10 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
      */
     boolean dropVideoFrameIfWeCan(RTMPMessage rtmpMessage, String sessionId) {
         if (!receiveVideo) {
-            videoFrameDropper.dropPacket(rtmpMessage);
-            droppedPacketsCount++;
-            if (log.isInfoEnabled() && shouldLogPacketDrop()) {
-                // client disabled video or the app doesn't have enough bandwidth allowed for this stream
-                log.info("Drop packet. Failed to acquire token or no video. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), droppedPacketsCount);
-            }
+            videoFrameDropper.dropPacket(rtmpMessage,
+                    () -> {
+                        log.info("Drop packet. Failed to acquire token or no video. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), videoFrameDropper.getDroppedPacketsCount());
+                    });
             return true;
         }
         //对视频流实施某种背压。当客户处于拥挤状态时connection，red5无法足够快地发送数据包。mino把这些包放进
@@ -632,14 +628,13 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
         //挂起视频消息并丢弃视频数据包，直到队列低于阈值。仅检查编解码器是否支持帧丢弃
         long pendingVideos = pendingVideoMessages();
         if (log.isTraceEnabled()) {
-            log.trace("Pending messages sessionId={} pending={} threshold={} sequential={} stream={}, count={}", new Object[]{sessionId, pendingVideos, maxPendingVideoFrames, numSequentialPendingVideoFrames, subscriberStream.getBroadcastStreamPublishName(), droppedPacketsCount});
+            log.trace("Pending messages sessionId={} pending={} threshold={} sequential={} stream={}, count={}", new Object[]{sessionId, pendingVideos, maxPendingVideoFrames, numSequentialPendingVideoFrames, subscriberStream.getBroadcastStreamPublishName(), videoFrameDropper.getDroppedPacketsCount()});
         }
-        if (!videoFrameDropper.canSendPacket(rtmpMessage, pendingVideos)) {
+        if (!videoFrameDropper.canSendPacket(rtmpMessage, pendingVideos,
+                () -> {
+                    log.info("Frame dropper says to drop packet. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), videoFrameDropper.getDroppedPacketsCount());
+                })) {
             // 删除帧，因为它依赖于以前删除的其他帧
-            droppedPacketsCount++;
-            if (log.isInfoEnabled() && shouldLogPacketDrop()) {
-                log.info("Frame dropper says to drop packet. sessionId={} stream={} count={}", sessionId, subscriberStream.getBroadcastStreamPublishName(), droppedPacketsCount);
-            }
             return true;
         }
         // 按顺序增加挂起视频帧的次数
@@ -650,10 +645,6 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
             numSequentialPendingVideoFrames = 0;
         }
         if (pendingVideos > maxPendingVideoFrames || numSequentialPendingVideoFrames > maxSequentialPendingVideoFrames) {
-            droppedPacketsCount++;
-            if (log.isInfoEnabled() && shouldLogPacketDrop()) {
-                log.info("Drop packet. Pending above threshold. sessionId={} pending={} threshold={} sequential={} stream={} count={}", new Object[]{sessionId, pendingVideos, maxPendingVideoFrames, numSequentialPendingVideoFrames, subscriberStream.getBroadcastStreamPublishName(), droppedPacketsCount});
-            }
             // drop because the client has insufficient bandwidth
             long now = System.currentTimeMillis();
             if (bufferCheckInterval > 0 && now >= nextCheckBufferUnderRun) {
@@ -661,7 +652,10 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                 sendInsufficientBandwidthStatus(currentItem.get());
                 nextCheckBufferUnderRun = now + bufferCheckInterval;
             }
-            videoFrameDropper.dropPacket(rtmpMessage);
+            videoFrameDropper.dropPacket(rtmpMessage,
+                    () -> {
+                        log.info("Drop packet. Pending above threshold. sessionId={} pending={} threshold={} sequential={} stream={} count={}", new Object[]{sessionId, pendingVideos, maxPendingVideoFrames, numSequentialPendingVideoFrames, subscriberStream.getBroadcastStreamPublishName(), videoFrameDropper.getDroppedPacketsCount()});
+                    });
             return true;
         }
 
@@ -1000,20 +994,11 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
             pullAndPush = null;
         }
         if (waitLiveJob != null) {
-            schedulingService.removeScheduledJob(waitLiveJob);
+            subscriberStream.cancelJob(waitLiveJob);
             waitLiveJob = null;
         }
     }
 
-
-    private boolean shouldLogPacketDrop() {
-        long now = TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
-        if (now - droppedPacketsCountLastLogTimestamp > droppedPacketsCountLogInterval) {
-            droppedPacketsCountLastLogTimestamp = now;
-            return true;
-        }
-        return false;
-    }
 
     /**
      * Get number of pending video messages
@@ -1092,6 +1077,102 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
             deferredStop = null;
         }
     }
+
+    /**
+     * 由执行器定期触发以向客户端发送消息。
+     */
+    private final class PullAndPushRunnable implements IScheduledJob {
+        /**
+         * 触发消息发送。
+         */
+        public void execute(ISchedulingService svc) {
+            // 确保作业尚未运行
+            if (!pushPullRunning.compareAndSet(false, true)) {
+                log.debug("Push / pull already running");
+            }
+
+            try {
+                // 处理任何挂起的操作
+                Runnable worker = null;
+                while (!pendingOperations.isEmpty()) {
+                    log.debug("Pending operations: {}", pendingOperations.size());
+                    //删除第一个操作并执行它
+                    worker = pendingOperations.remove();
+                    log.debug("Worker: {}", worker);
+                    // 如果操作是seek，请确保它是集合中的最后一个请求
+                    while (worker instanceof SeekRunnable) {
+                        Runnable tmp = pendingOperations.peek();
+                        if (tmp != null && tmp instanceof SeekRunnable) {
+                            worker = pendingOperations.remove();
+                        } else {
+                            break;
+                        }
+                    }
+                    if (worker != null) {
+                        log.debug("Executing pending operation");
+                        worker.run();
+                    }
+                }
+                // 如果消息是数据（不是音频或视频），则接收然后发送
+                if (subscriberStream.getState() != StreamState.PLAYING || !pullMode) {
+                    return;
+                }
+
+                if (pendingMessage != null) {
+                    IRTMPEvent body = pendingMessage.getBody();
+                    if (okayToSendMessage(body)) {
+                        //TODO copy and send
+                        sendMessage(pendingMessage);
+                        releasePendingMessage();
+                    } else {
+                        return;
+                    }
+                } else {
+                    IMessage msg = null;
+                    IMessageInput in = msgInReference.get();
+                    do {
+                        msg = in.pullMessage();
+                        if (msg == null) {
+                            // No more packets to send
+                            log.debug("Ran out of packets");
+                            runDeferredStop();
+                            continue;
+                        }
+                        if (!(msg instanceof RTMPMessage)) {
+                            continue;
+                        }
+
+                        RTMPMessage rtmpMessage = (RTMPMessage) msg;
+                        if (checkSendMessageEnabled(rtmpMessage)) {
+                            // Adjust timestamp when playing lists
+                            IRTMPEvent body = rtmpMessage.getBody();
+                            body.setTimestamp(body.getTimestamp() + timestampOffset);
+                            if (okayToSendMessage(body)) {
+                                log.trace("ts: {}", rtmpMessage.getBody().getTimestamp());
+                                sendMessage(rtmpMessage);
+                            } else {
+                                //TODO
+                                pendingMessage = rtmpMessage;
+                            }
+                            ensurePullAndPushRunning();
+                            break;
+                        }else {
+                            System.out.println("----------------******************");
+                        }
+                    } while (msg != null);
+                }
+            } catch (IOException err) {
+                // 我们无法获取更多数据，请停止流。
+                log.warn("Error while getting message", err);
+                runDeferredStop();
+            } finally {
+                // 重置运行标志
+                pushPullRunning.compareAndSet(true, false);
+            }
+
+        }
+    }
+
 
     private final class SeekRunnable implements Runnable {
 
@@ -1234,101 +1315,6 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
         }
     }
 
-    /**
-     * 由执行器定期触发以向客户端发送消息。
-     */
-    private final class PullAndPushRunnable implements IScheduledJob {
-        /**
-         * 触发消息发送。
-         */
-        public void execute(ISchedulingService svc) {
-            // 确保作业尚未运行
-            if (!pushPullRunning.compareAndSet(false, true)) {
-                log.debug("Push / pull already running");
-            }
-
-            try {
-                // 处理任何挂起的操作
-                Runnable worker = null;
-                while (!pendingOperations.isEmpty()) {
-                    log.debug("Pending operations: {}", pendingOperations.size());
-                    //删除第一个操作并执行它
-                    worker = pendingOperations.remove();
-                    log.debug("Worker: {}", worker);
-                    // 如果操作是seek，请确保它是集合中的最后一个请求
-                    while (worker instanceof SeekRunnable) {
-                        Runnable tmp = pendingOperations.peek();
-                        if (tmp != null && tmp instanceof SeekRunnable) {
-                            worker = pendingOperations.remove();
-                        } else {
-                            break;
-                        }
-                    }
-                    if (worker != null) {
-                        log.debug("Executing pending operation");
-                        worker.run();
-                    }
-                }
-                // 如果消息是数据（不是音频或视频），则接收然后发送
-                if (subscriberStream.getState() != StreamState.PLAYING || !pullMode) {
-                    return;
-                }
-
-                if (pendingMessage != null) {
-                    IRTMPEvent body = pendingMessage.getBody();
-                    if (okayToSendMessage(body)) {
-                        sendMessage(pendingMessage);
-                        releasePendingMessage();
-                    } else {
-                        return;
-                    }
-                } else {
-                    IMessage msg = null;
-                    IMessageInput in = msgInReference.get();
-                    do {
-                        msg = in.pullMessage();
-                        if (msg == null) {
-                            // No more packets to send
-                            log.debug("Ran out of packets");
-                            runDeferredStop();
-                            continue;
-                        }
-                        if (!(msg instanceof RTMPMessage)) {
-                            continue;
-                        }
-
-                        RTMPMessage rtmpMessage = (RTMPMessage) msg;
-                        if (checkSendMessageEnabled(rtmpMessage)) {
-                            // Adjust timestamp when playing lists
-                            IRTMPEvent body = rtmpMessage.getBody();
-                            body.setTimestamp(body.getTimestamp() + timestampOffset);
-                            if (okayToSendMessage(body)) {
-                                log.trace("ts: {}", rtmpMessage.getBody().getTimestamp());
-                                sendMessage(rtmpMessage);
-                                BufFacade data = ((IStreamData<?>) body).getData();
-                                if (data != null) {
-                                    //这里还不能release RELEASE
-                                    //data.release();
-                                }
-                            } else {
-                                pendingMessage = rtmpMessage;
-                            }
-                            ensurePullAndPushRunning();
-                            break;
-                        }
-                    } while (msg != null);
-                }
-            } catch (IOException err) {
-                // 我们无法获取更多数据，请停止流。
-                log.warn("Error while getting message", err);
-                runDeferredStop();
-            } finally {
-                // 重置运行标志
-                pushPullRunning.compareAndSet(true, false);
-            }
-
-        }
-    }
 
     private class DeferredStopRunnable implements IScheduledJob {
         public void execute(ISchedulingService service) {

@@ -78,7 +78,6 @@ public class InMemoryPullPullPipe extends AbstractPipe {
                     /* 从生产者中拉取消息 */
                     message = ((IPullableProvider) provider).pullMessage(this);
                     if (message != null) {
-//                        System.out.println("pull : " + a++);
                         break;
                     }
                 } catch (Throwable t) {

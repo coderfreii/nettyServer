@@ -78,7 +78,7 @@ public class AACAudio implements IAudioStreamCodec {
      */
     @Override
     public boolean canHandleData(BufFacade data) {
-        if (data.capacity() == 0) {
+        if (data.readableBytes() == 0) {
             // Empty buffer
             return false;
         }

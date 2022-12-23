@@ -1184,6 +1184,8 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
                         log.warn("onFailure - session: {}, msgtype: {}, processingTime: {}, packetNum: {}", sessionId, messageType, getProcessingTime(), task.getPacketNumber());
                     }
                     currentStreamTasks.removeTask(task);
+                    //这里release-
+                    task.release();
                 }
 
                 public void onSuccess(Packet packet) {

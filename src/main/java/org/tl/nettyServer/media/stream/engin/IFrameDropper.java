@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ import org.tl.nettyServer.media.stream.message.RTMPMessage;
 
 /**
  * Interface for classes that implement logic to drop frames.
- * 
+ *
  * @author The Red5 Project
  * @author Joachim Bauch (jojo@struktur.de)
  */
@@ -37,22 +37,37 @@ public interface IFrameDropper {
     /** Send keyframes only and switch to SEND_INTERFRAMES later. */
     public static final int SEND_KEYFRAMES_CHECK = 3;
     /**
-     * Checks if a message may be sent to the subscriber. 
+     * Checks if a message may be sent to the subscriber.
      */
     boolean canSendPacket(RTMPMessage message, long pending);
     /**
-     * Notify that a packet has been dropped. 
+     * Notify that a packet has been dropped.
      */
     void dropPacket(RTMPMessage message);
+
+
     /**
-     * Notify that a message has been sent. 
+     * for log
+     *
+     * @param message 消息
+     * @param log     日志
+     */
+    void dropPacket(RTMPMessage message,Runnable log);
+    /**
+     * Notify that a message has been sent.
      */
     void sendPacket(RTMPMessage message);
     /** Reset the frame dropper. */
     void reset();
     /**
-     * Reset the frame dropper to a given state. 
+     * Reset the frame dropper to a given state.
      */
     void reset(int state);
+
+
+    int getDroppedPacketsCount();
+
+
+    boolean canSendPacket(RTMPMessage message, long pending,Runnable r);
 
 }

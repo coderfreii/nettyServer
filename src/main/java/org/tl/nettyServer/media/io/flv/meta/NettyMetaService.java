@@ -27,7 +27,7 @@ import org.tl.nettyServer.media.io.NettyTag;
 import org.tl.nettyServer.media.io.amf.Input;
 import org.tl.nettyServer.media.io.amf.Output;
 import org.tl.nettyServer.media.io.flv.impl.FLVWriter;
-import org.tl.nettyServer.media.io.flv.impl.NettyFLVReader;
+import org.tl.nettyServer.media.io.flv.impl.FLVReader;
 import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.io.object.Serializer;
 
@@ -74,7 +74,7 @@ public class NettyMetaService implements INettyMetaService {
     public void write(IMetaData<?, ?> meta) throws IOException {
         // Get cue points, FLV reader and writer
         IMetaCue[] metaArr = meta.getMetaCue();
-        NettyFLVReader reader = new NettyFLVReader(file, false);
+        FLVReader reader = new FLVReader(file, false);
         FLVWriter writer = new FLVWriter(file, false);
         ITag tag = null;
         // Read first tag

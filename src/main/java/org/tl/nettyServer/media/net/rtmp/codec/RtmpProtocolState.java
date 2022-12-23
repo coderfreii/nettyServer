@@ -193,7 +193,7 @@ public class RtmpProtocolState {
      * @param packet Packet to release
      */
     public void freePacket(Packet packet) {
-        if (packet != null && packet.getData() != null) {
+        if (packet != null) {
             packet.release();
         }
     }

@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.io;
 
 import io.netty.buffer.ByteBuf;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
 /**
  * A Tag represents the contents or payload of a streamable file.
@@ -28,7 +29,7 @@ import org.tl.nettyServer.media.buf.BufFacade;
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public interface ITag extends IoConstants {
+public interface ITag extends IoConstants, Releasable {
 
     public BufFacade getBody();
 

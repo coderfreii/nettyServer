@@ -150,7 +150,6 @@ public abstract class BaseRtmpPacketHandler implements IRtmpPacketHandler, Const
         } catch (Throwable t) {
             log.error("Exception", t);
         }
-        //这里不能release
     }
 
     public void messageSent(RTMPConnection conn, Packet packet) {

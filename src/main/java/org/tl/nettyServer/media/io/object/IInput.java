@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.io.object;
 
 
 import org.tl.nettyServer.media.io.amf3.ByteArray;
+import org.tl.nettyServer.media.stream.message.Releasable;
 import org.w3c.dom.Document;
 
 import java.lang.reflect.Type;
@@ -36,7 +37,7 @@ import java.util.Vector;
  * @author The Red5 Project
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
  */
-public interface IInput {
+public interface IInput extends Releasable {
 
     /**
      * Read type of data

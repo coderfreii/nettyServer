@@ -1,6 +1,7 @@
 package org.tl.nettyServer.media.buf;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
@@ -17,11 +18,11 @@ public interface BufFacade<T> {
     Class<ByteBuf> currentByteBuf = ByteBuf.class;
 
     static <T> BufFacade<T> buffer(int size) {
-        return (BufFacade<T>) new ByteBufFacade(Unpooled.buffer(size));
+        return (BufFacade<T>) new ByteBufFacade(PooledByteBufAllocator.DEFAULT.buffer(size));
     }
 
     static <T> BufFacade<T> directBuffer(int size) {
-        return (BufFacade<T>) new ByteBufFacade(Unpooled.directBuffer(size));
+        return (BufFacade<T>) new ByteBufFacade(PooledByteBufAllocator.DEFAULT.directBuffer(size));
     }
 
     static <T> BufFacade<T> wrappedBuffer(byte[] src) {
