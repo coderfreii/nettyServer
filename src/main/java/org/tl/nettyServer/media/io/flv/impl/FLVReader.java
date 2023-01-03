@@ -516,7 +516,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         props.put("canSeekToEnd", true);
         out.writeMap(props);
 
-        ITag result = new NettyTag(IoConstants.TYPE_METADATA, 0, buf.capacity(), null, 0);
+        ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.capacity(), null, 0);
         result.setBody(buf);
         //
         out = null;
@@ -774,7 +774,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         } else {
             in.skipBytes(3);    // 3B
         }
-        return new NettyTag(dataType, timestamp, bodySize, null, previousTagSize);
+        return new Tag(dataType, timestamp, bodySize, null, previousTagSize);
     }
 
     public static int getDuration(File flvFile) {
@@ -846,10 +846,6 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         return duration;
     }
 
-    @Override
-    public ITagReader copy() {
-        return null;
-    }
 
     @Override
     public void setMetaSent(boolean metaSent) {

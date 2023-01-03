@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.tl.nettyServer.media.io.flv.impl.FLVService;
+import org.tl.nettyServer.media.io.mp3.MP3Service;
 import org.tl.nettyServer.media.scheduling.ISchedulingService;
 import org.tl.nettyServer.media.scheduling.JDKSchedulingService;
 import org.tl.nettyServer.media.service.IStreamableFileService;
@@ -36,7 +37,7 @@ public class Beans {
         FLVService flv = new FLVService();
         flv.setGenerateMetadata(true);
         services.add(flv);
-//        services.add(new MP3Service());
+        services.add(new MP3Service());
 //        services.add(new MP4Service());
 //        services.add(new M4AService());
         factory.setServices(services);

@@ -22,6 +22,7 @@ package org.tl.nettyServer.media.net.rtmp.event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
 import org.tl.nettyServer.media.stream.data.IStreamData;
@@ -214,14 +215,23 @@ public class Aggregate extends BaseEvent implements IoConstants, IStreamData<Agg
      * {@inheritDoc}
      */
     @Override
-    protected void releaseInternal() {
+    protected boolean releaseInternal() {
         if (data != null) {
             final BufFacade localData = data;
             // null out the data first so we don't accidentally
             // return a valid reference first
             data = null;
-            localData.clear();
-            localData.release();
+            if (localData != null) {
+                if (ReleaseUtil.release(localData)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            return true;
         }
     }
 

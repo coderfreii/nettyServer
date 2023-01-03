@@ -21,14 +21,15 @@ package org.tl.nettyServer.media.net.rtmp.conn;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.jmx.mxbeans.RTMPNettyConnectionMXBean;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.event.ClientBW;
 import org.tl.nettyServer.media.net.rtmp.event.ServerBW;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.session.SessionFacade;
 import org.tl.nettyServer.media.scope.IScope;
+import org.tl.nettyServer.media.session.SessionFacade;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -195,6 +196,8 @@ public class RTMPNettyConnection extends RTMPConnection implements RTMPNettyConn
                     }
                 }
             }
+        } else {
+            ReleaseUtil.releaseAll(out);
         }
     }
 

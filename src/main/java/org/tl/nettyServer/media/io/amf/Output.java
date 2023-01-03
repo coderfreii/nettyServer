@@ -66,6 +66,7 @@ public class Output extends BaseOutput implements IOutput {
                 try {
                     cacheManager = new CacheManager(System.getProperty("red5.root") + File.separator + "conf" + File.separator + "ehcache.xml");
                 } catch (CacheException e) {
+                    //
                     cacheManager = constructDefault();
                 }
             } else {
@@ -78,10 +79,10 @@ public class Output extends BaseOutput implements IOutput {
 
     private static CacheManager constructDefault() {
         CacheManager manager = CacheManager.getInstance();
-        manager.addCacheIfAbsent("org.red5.io.amf.Output.stringCache");
-        manager.addCacheIfAbsent("org.red5.io.amf.Output.getterCache");
-        manager.addCacheIfAbsent("org.red5.io.amf.Output.fieldCache");
-        manager.addCacheIfAbsent("org.red5.io.amf.Output.serializeCache");
+        manager.addCacheIfAbsent("org.tl.nettyServer.media.io.amf.Output.stringCache");
+        manager.addCacheIfAbsent("org.tl.nettyServer.media.io.amf.Output.getterCache");
+        manager.addCacheIfAbsent("org.tl.nettyServer.media.io.amf.Output.fieldCache");
+        manager.addCacheIfAbsent("org.tl.nettyServer.media.io.amf.Output.serializeCache");
         return manager;
     }
 
@@ -624,28 +625,28 @@ public class Output extends BaseOutput implements IOutput {
 
     protected static Cache getStringCache() {
         if (stringCache == null) {
-            stringCache = getCacheManager().getCache("org.red5.io.amf.Output.stringCache");
+            stringCache = getCacheManager().getCache("org.tl.nettyServer.media.io.amf.Output.stringCache");
         }
         return stringCache;
     }
 
     protected static Cache getSerializeCache() {
         if (serializeCache == null) {
-            serializeCache = getCacheManager().getCache("org.red5.io.amf.Output.serializeCache");
+            serializeCache = getCacheManager().getCache("org.tl.nettyServer.media.io.amf.Output.serializeCache");
         }
         return serializeCache;
     }
 
     protected static Cache getFieldCache() {
         if (fieldCache == null) {
-            fieldCache = getCacheManager().getCache("org.red5.io.amf.Output.fieldCache");
+            fieldCache = getCacheManager().getCache("org.tl.nettyServer.media.io.amf.Output.fieldCache");
         }
         return fieldCache;
     }
 
     protected static Cache getGetterCache() {
         if (getterCache == null) {
-            getterCache = getCacheManager().getCache("org.red5.io.amf.Output.getterCache");
+            getterCache = getCacheManager().getCache("org.tl.nettyServer.media.io.amf.Output.getterCache");
         }
         return getterCache;
     }

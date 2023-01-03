@@ -19,6 +19,7 @@
 package org.tl.nettyServer.media.stream.message;
 
 
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.messaging.AbstractMessage;
 import org.tl.nettyServer.media.net.rtmp.RTMPType;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
@@ -90,10 +91,12 @@ public class RTMPMessage extends AbstractMessage implements Releasable {
     }
 
     @Override
-    public void release() {
+    public boolean release() {
         IRTMPEvent body = getBody();
         if (body != null) {
-            body.release();
+            return ReleaseUtil.release(body);
+        } else {
+            return true;
         }
     }
 }

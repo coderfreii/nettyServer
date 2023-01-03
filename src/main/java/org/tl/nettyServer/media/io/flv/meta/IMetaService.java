@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@
 package org.tl.nettyServer.media.io.flv.meta;
 
 
-
 import org.tl.nettyServer.media.buf.BufFacade;
 
 import java.io.File;
@@ -27,7 +26,7 @@ import java.io.IOException;
 
 /**
  * IMetaService Defines the MetaData Service API
- * 
+ *
  * @author The Red5 Project
  * @author Dominick Accattato (daccattato@gmail.com)
  * @author Luke Hubbard, Codegent Ltd (luke@codegent.com)
@@ -50,19 +49,16 @@ public interface IMetaService {
 
     /**
      * Initiates writing of the MetaData
-     * 
-     * @param meta
-     *            Metadata
-     * @throws IOException
-     *             I/O exception
+     *
+     * @param meta Metadata
+     * @throws IOException I/O exception
      */
     public void write(IMetaData<?, ?> meta) throws IOException;
 
     /**
      * Writes the MetaData
-     * 
-     * @param metaData
-     *            Metadata
+     *
+     * @param metaData Metadata
      */
     public void writeMetaData(IMetaData<?, ?> metaData);
 
@@ -73,31 +69,29 @@ public interface IMetaService {
 
     /**
      * Read the MetaData
-     * 
+     *
+     * @param buffer IoBuffer source
      * @return metaData Metadata
-     * @param buffer
-     *            IoBuffer source
      */
     public MetaData<?, ?> readMetaData(BufFacade buffer);
 
     /**
      * Read the Meta Cue Points
-     * 
+     *
      * @return Meta cue points
      */
     public IMetaCue[] readMetaCue();
 
     /**
      * Media file to be accessed
-     * 
-     * @param file
-     *            file
+     *
+     * @param file file
      */
     public void setFile(File file);
 
     /**
      * Returns the file being accessed
-     * 
+     *
      * @return file
      */
     public File getFile();

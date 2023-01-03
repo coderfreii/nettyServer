@@ -1,6 +1,7 @@
 package org.tl.nettyServer.media.buf;
 
 import io.netty.buffer.ByteBuf;
+import lombok.Data;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.IOException;
@@ -700,6 +701,11 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     }
 
     @Override
+    public int refCnt() {
+        return this.target.refCnt();
+    }
+
+    @Override
     public BufFacade<ByteBuf> writeInt(int value) {
         this.target.writeInt(value);
         return this;
@@ -955,4 +961,12 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
         return wrapper(this.target.retainedSlice(index, length));
     }
 
+
+    @Override
+    protected void finalize() throws Throwable {
+//        while (this.getBuf().refCnt() > 0) {
+//            this.release();
+//        }
+        super.finalize();
+    }
 }

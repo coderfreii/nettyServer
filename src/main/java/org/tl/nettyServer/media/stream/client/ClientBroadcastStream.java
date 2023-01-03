@@ -49,6 +49,7 @@ import org.tl.nettyServer.media.stream.data.IStreamPacket;
 import org.tl.nettyServer.media.stream.lisener.IRecordingListener;
 import org.tl.nettyServer.media.stream.lisener.IStreamListener;
 import org.tl.nettyServer.media.stream.lisener.RecordingListener;
+import org.tl.nettyServer.media.stream.message.Duplicateable;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.stream.message.StatusMessage;
 
@@ -343,7 +344,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     if (rtmpEvent instanceof IStreamPacket) {
                         for (IStreamListener listener : getStreamListeners()) {
                             try {
-                                listener.packetReceived(this, (IStreamPacket) IStreamData.doDuplicate(rtmpEvent));
+                                listener.packetReceived(this, (IStreamPacket) Duplicateable.doDuplicate(rtmpEvent));
                             } catch (Exception e) {
                                 log.error("Error while notifying listener {}", listener, e);
                                 if (listener instanceof RecordingListener) {

@@ -97,11 +97,6 @@ public class ChunkSize extends BaseEvent {
         return getSize() == other.getSize();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-
-    }
 
     /** {@inheritDoc} */
     @Override

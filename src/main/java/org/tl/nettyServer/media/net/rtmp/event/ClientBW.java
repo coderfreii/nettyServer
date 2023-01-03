@@ -105,11 +105,6 @@ public class ClientBW extends BaseEvent {
         return "ClientBW: " + bandwidth + " limitType: " + limitType;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-
-    }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {

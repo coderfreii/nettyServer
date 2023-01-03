@@ -26,7 +26,8 @@ public interface BufFacade<T> {
     }
 
     static <T> BufFacade<T> wrappedBuffer(byte[] src) {
-        return (BufFacade<T>) new ByteBufFacade(Unpooled.wrappedBuffer(src));
+        BufFacade<Object> buffer = buffer(src.length);
+        return (BufFacade<T>) buffer.writeBytes(src);
     }
 
     static <T> BufFacade<T> wrappedBuffer(ByteBuffer src) {
@@ -68,6 +69,8 @@ public interface BufFacade<T> {
     BufFacade<T> clear();
 
     boolean release();
+
+    int refCnt();
 
     BufFacade<T> setIndex(int ri, int wi);
 

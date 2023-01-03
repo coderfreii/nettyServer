@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.stream.engin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.codec.IAudioStreamCodec;
 import org.tl.nettyServer.media.codec.IVideoStreamCodec;
 import org.tl.nettyServer.media.codec.StreamCodecInfo;
@@ -47,6 +48,7 @@ import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
 import org.tl.nettyServer.media.stream.client.ISubscriberStream;
 import org.tl.nettyServer.media.stream.codec.IStreamCodecInfo;
 import org.tl.nettyServer.media.stream.data.IStreamData;
+import org.tl.nettyServer.media.stream.message.Duplicateable;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.stream.message.ResetMessage;
 import org.tl.nettyServer.media.stream.playlist.DynamicPlayItem;
@@ -557,7 +559,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
         String sessionId = subscriberStream.getConnection().getSessionId();
         if (message instanceof RTMPMessage) {
             //这里copy一份
-            RTMPMessage rtmpMessage = IStreamData.doDuplicate((RTMPMessage) message);
+            RTMPMessage rtmpMessage = Duplicateable.doDuplicate((RTMPMessage) message);
             IRTMPEvent body = rtmpMessage.getBody();
             IMessageInput msgIn = msgInReference.get();
 
@@ -1152,12 +1154,16 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                                 sendMessage(rtmpMessage);
                             } else {
                                 //TODO
+                                if (pendingMessage != null) {
+                                    ReleaseUtil.releaseAll(pendingMessage);
+                                }
                                 pendingMessage = rtmpMessage;
+
                             }
                             ensurePullAndPushRunning();
                             break;
-                        }else {
-                            System.out.println("----------------******************");
+                        } else {
+                            ReleaseUtil.releaseAll(msg);
                         }
                     } while (msg != null);
                 }

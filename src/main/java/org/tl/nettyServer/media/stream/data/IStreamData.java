@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.stream.data;
 
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
+import org.tl.nettyServer.media.stream.message.Duplicateable;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ import java.io.IOException;
 /**
  * Stream data packet
  */
-public interface IStreamData<T> {
+public interface IStreamData<T> extends Duplicateable<IStreamData<T>> {
 
     /**
      * Getter for property 'data'.
@@ -44,26 +45,5 @@ public interface IStreamData<T> {
      * @throws ClassNotFoundException on class not found
      */
     public IStreamData<T> duplicate() throws IOException, ClassNotFoundException;
-
-
-    static IRTMPEvent doDuplicate(IRTMPEvent rtmpEvent) {
-        if (rtmpEvent instanceof IStreamData) {
-            try {
-                rtmpEvent = (IRTMPEvent) ((IStreamData) rtmpEvent).duplicate();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return rtmpEvent;
-    }
-
-
-    static RTMPMessage doDuplicate(RTMPMessage rtmpMessage) {
-        IRTMPEvent body = rtmpMessage.getBody();
-        IRTMPEvent duplicate = doDuplicate(body);
-        return RTMPMessage.build(duplicate);
-    }
 
 }

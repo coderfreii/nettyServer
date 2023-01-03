@@ -216,7 +216,7 @@ public class QuartzSchedulingService implements ISchedulingService, QuartzSchedu
 	 * @param trigger            Job trigger
 	 * @param job                Scheduled job object
 	 *
-	 * @see org.red5.server.api.scheduling.IScheduledJob
+	 * @see IScheduledJob
 	 */
 	private void scheduleJob(String name, Trigger trigger, IScheduledJob job) {
 		if (scheduler != null) {

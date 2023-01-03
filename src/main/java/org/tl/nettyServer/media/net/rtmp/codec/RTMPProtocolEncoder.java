@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.ICommand;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.exception.ClientDetailsException;
 import org.tl.nettyServer.media.io.amf.Output;
 import org.tl.nettyServer.media.io.amf3.Output3;
@@ -44,7 +45,6 @@ import org.tl.nettyServer.media.service.call.IServiceCall;
 import org.tl.nettyServer.media.service.call.ServiceCall;
 import org.tl.nettyServer.media.so.ISharedObjectEvent;
 import org.tl.nettyServer.media.so.ISharedObjectMessage;
-import org.tl.nettyServer.media.stream.data.IStreamData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -172,13 +172,9 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
                 lastHeader.setTimerDelta(0);
                 // set last write header
                 rtmpProtocolState.setLastWriteHeader(channelId, lastHeader);
-                //这里也不能release  RELEASE
 
                 //这里release-
-                if (!(message instanceof IStreamData)) {
-                    //release data 会直接用
-                    data.release();
-                }
+                ReleaseUtil.releaseAll(data);
                 data = null;
             }
         } else {

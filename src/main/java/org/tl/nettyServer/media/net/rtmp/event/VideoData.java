@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.net.rtmp.event;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
@@ -129,8 +130,7 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
 
     public void setData(BufFacade data) {
         if (this.data != null) {
-            //这里release-
-            this.data.release();
+            ReleaseUtil.releaseAll(this.data);
         }
 
         this.data = data;
@@ -188,14 +188,16 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
      * {@inheritDoc}
      */
     @Override
-    protected void releaseInternal() {
+    protected boolean releaseInternal() {
         if (data != null) {
-            final BufFacade localData = data;
-            // null out the data first so we don't accidentally
-            // return a valid reference first
-            data = null;
-            localData.clear();
-            localData.release();
+            if (ReleaseUtil.release(data)) {
+                data = null;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 

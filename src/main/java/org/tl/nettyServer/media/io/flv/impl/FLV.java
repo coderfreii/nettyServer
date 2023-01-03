@@ -30,9 +30,9 @@ import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.io.flv.IFLV;
 import org.tl.nettyServer.media.io.flv.meta.IMetaData;
-import org.tl.nettyServer.media.io.flv.meta.INettyMetaService;
+import org.tl.nettyServer.media.io.flv.meta.IMetaService;
 import org.tl.nettyServer.media.io.flv.meta.MetaData;
-import org.tl.nettyServer.media.io.flv.meta.NettyMetaService;
+import org.tl.nettyServer.media.io.flv.meta.MetaService;
 import org.tl.nettyServer.media.media.processor.IPostProcessor;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class FLV implements IFLV {
 
     private boolean generateMetadata;
 
-    private INettyMetaService metaService;
+    private IMetaService metaService;
 
     private IMetaData<?, ?> metaData;
 
@@ -112,7 +112,7 @@ public class FLV implements IFLV {
                     tag = reader.readTag();
                     if (tag.getDataType() == IoConstants.TYPE_METADATA) {
                         if (metaService == null) {
-                            metaService = new NettyMetaService();
+                            metaService = new MetaService();
                         }
                         metaData = metaService.readMetaData(tag.getBody());
                     }
@@ -299,7 +299,7 @@ public class FLV implements IFLV {
     public void setMetaData(IMetaData meta) throws IOException {
         log.info("setMetaData: {}", meta);
         if (metaService == null) {
-            metaService = new NettyMetaService(file);
+            metaService = new MetaService(file);
         }
         //if the file is not checked the write may produce an NPE
         if (metaService.getFile() == null) {
@@ -310,7 +310,7 @@ public class FLV implements IFLV {
     }
 
     @Override
-    public void setMetaService(INettyMetaService service) {
+    public void setMetaService(IMetaService service) {
         metaService = service;
     }
 }

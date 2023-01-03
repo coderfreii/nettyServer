@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.io.object;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,9 +99,16 @@ public class BaseInput implements Releasable {
     }
 
     @Override
-    public void release() {
+    public boolean release() {
         if (this.buf != null) {
-            this.buf.release();
+            if (ReleaseUtil.release(this.buf)) {
+                this.buf = null;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 }

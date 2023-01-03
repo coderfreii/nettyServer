@@ -5,10 +5,12 @@ import io.netty.handler.codec.MessageToMessageEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMPProtocolEncoder;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.session.SessionAccessor;
+import org.tl.nettyServer.media.stream.message.Duplicateable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,8 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
             if (localConn != null) {
                 Red5.setConnectionLocal(localConn);
             }
+        } else {
+            ReleaseUtil.releaseAll(msg);
         }
     }
 

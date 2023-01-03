@@ -34,9 +34,6 @@ public class ClientInvokeEvent extends BaseEvent {
         return TYPE_INVOKE;
     }
 
-    @Override
-    protected void releaseInternal() {
-    }
 
     /**
      * @return the method

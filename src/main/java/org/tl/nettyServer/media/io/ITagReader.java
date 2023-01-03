@@ -95,8 +95,6 @@ public interface ITagReader {
      */
     public ITag readTag();
 
-    public ITagReader copy();
-
 
     void setMetaSent(boolean metaSent);
 }

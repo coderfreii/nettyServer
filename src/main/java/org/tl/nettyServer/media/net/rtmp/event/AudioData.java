@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.net.rtmp.event;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.stream.data.IStreamData;
@@ -107,6 +108,9 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
             }
             data.resetReaderIndex();
         }
+        if (this.data != null) {
+            ReleaseUtil.releaseAll(this.data);
+        }
         this.data = data;
     }
 
@@ -128,10 +132,16 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
      * {@inheritDoc}
      */
     @Override
-    protected void releaseInternal() {
+    protected boolean releaseInternal() {
         if (data != null) {
-            data.release();
-            data = null;
+            if (ReleaseUtil.release(data)) {
+                data = null;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 

@@ -167,10 +167,12 @@ public final class ReceivedMessageTask implements Callable<Packet>, Releasable {
     }
 
     @Override
-    public void release() {
+    public boolean release() {
         //only release when task failed
         if (this.packet != null) {
-            this.packet.release();
+           return this.packet.release();
+        }else {
+            return true;
         }
     }
 }

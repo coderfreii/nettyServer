@@ -292,11 +292,6 @@ public class Ping extends BaseEvent {
         return String.format("Ping: %d, %f, %d, %d", eventType, value2.doubleValue(), value3, value4);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-
-    }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {

@@ -208,10 +208,6 @@ public class SharedObjectMessage extends BaseEvent implements ISharedObjectMessa
         return getEvents();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-    }
 
     /** {@inheritDoc} */
     @Override

@@ -4,6 +4,7 @@ package org.tl.nettyServer.media.scheduling;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.tl.nettyServer.media.jmx.mxbeans.JDKSchedulingServiceMXBean;
+import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -41,7 +42,7 @@ public class JDKSchedulingService implements ISchedulingService, JDKSchedulingSe
      */
     public void afterPropertiesSet() throws Exception {
         log.debug("Initializing...");
-        scheduler = Executors.newScheduledThreadPool(threadCount);
+        scheduler = Executors.newScheduledThreadPool(threadCount, new CustomizableThreadFactory("JDKSchedulingService-"));
     }
 
     /**

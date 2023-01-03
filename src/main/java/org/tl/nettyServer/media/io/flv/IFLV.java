@@ -24,7 +24,7 @@ import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.ITagWriter;
 import org.tl.nettyServer.media.io.flv.meta.IMetaData;
-import org.tl.nettyServer.media.io.flv.meta.INettyMetaService;
+import org.tl.nettyServer.media.io.flv.meta.IMetaService;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public interface IFLV extends IStreamableFile {
     @SuppressWarnings({ "rawtypes" })
     public void setMetaData(IMetaData metadata) throws FileNotFoundException, IOException;
  
-    public void setMetaService(INettyMetaService service);
+    public void setMetaService(IMetaService service);
  
     @SuppressWarnings({ "rawtypes" })
     public IMetaData getMetaData() throws FileNotFoundException;

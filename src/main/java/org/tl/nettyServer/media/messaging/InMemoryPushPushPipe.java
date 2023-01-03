@@ -20,6 +20,9 @@
 package org.tl.nettyServer.media.messaging;
 
 import lombok.extern.slf4j.Slf4j;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
+import org.tl.nettyServer.media.stream.message.Duplicateable;
+import org.tl.nettyServer.media.stream.message.RTMPMessage;
 import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.io.IOException;
@@ -98,7 +101,12 @@ public class InMemoryPushPushPipe extends AbstractPipe {
         /* 把消息推给消费者 */
         for (IConsumer consumer : consumers) {
             try {
-                ((IPushableConsumer) consumer).pushMessage(this, message);
+                if (message instanceof RTMPMessage) {
+                    RTMPMessage rtmpMessage = Duplicateable.doDuplicate((RTMPMessage) message);
+                    ((IPushableConsumer) consumer).pushMessage(this, rtmpMessage);
+                } else {
+                    ((IPushableConsumer) consumer).pushMessage(this, message);
+                }
             } catch (Throwable t) {
                 if (t instanceof IOException) {
                     throw (IOException) t;
@@ -106,6 +114,7 @@ public class InMemoryPushPushPipe extends AbstractPipe {
                 log.error("Exception pushing message to consumer", t);
             }
         }
+        ReleaseUtil.release(message);
     }
 
 }

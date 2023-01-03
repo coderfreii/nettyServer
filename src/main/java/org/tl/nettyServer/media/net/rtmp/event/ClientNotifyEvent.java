@@ -29,10 +29,6 @@ public class ClientNotifyEvent extends BaseEvent {
         return TYPE_NOTIFY;
     }
 
-    @Override
-    protected void releaseInternal() {
-    }
-
     /**
      * @return the method
      */

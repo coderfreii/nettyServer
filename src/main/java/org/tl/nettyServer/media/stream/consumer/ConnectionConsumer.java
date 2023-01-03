@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,8 @@
 package org.tl.nettyServer.media.stream.consumer;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.messaging.*;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
@@ -43,14 +43,14 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
      * Connection consumer class name
      */
     public static final String KEY = ConnectionConsumer.class.getName();
- 
+
     private RTMPConnection conn;
- 
+
     private Channel video;
- 
+
     private Channel audio;
- 
-    private Channel data; 
+
+    private Channel data;
     /**
      * Chunk size. Packets are sent chunk-by-chunk.
      */
@@ -59,17 +59,17 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
      * Whether or not the chunk size has been sent. This seems to be required for h264.
      */
     private AtomicBoolean chunkSizeSent = new AtomicBoolean(false);
-  
+
     public ConnectionConsumer(RTMPConnection conn, Channel videoChannel, Channel audioChannel, Channel dataChannel) {
-        log.debug("Channel ids - video: {} audio: {} data: {}", new Object[] { videoChannel, audioChannel, dataChannel });
+        log.debug("Channel ids - video: {} audio: {} data: {}", new Object[]{videoChannel, audioChannel, dataChannel});
         this.conn = conn;
         this.video = videoChannel;
         this.audio = audioChannel;
         this.data = dataChannel;
     }
- 
+
     public ConnectionConsumer(Channel videoChannel, Channel audioChannel, Channel dataChannel) {
-        this(null, videoChannel, audioChannel, dataChannel); 
+        this(null, videoChannel, audioChannel, dataChannel);
     }
 
     @Override
@@ -153,7 +153,7 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
                     break;
                 case Constants.TYPE_FLEX_STREAM_SEND:
                     //if (log.isTraceEnabled()) {
-                        //log.trace("Flex stream send: {}", (Notify) msg);
+                    //log.trace("Flex stream send: {}", (Notify) msg);
                     //}
                     FlexStreamSend send = null;
                     if (msg instanceof FlexStreamSend) {
@@ -177,10 +177,11 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
                     data.write(msg);
             }
         } else {
+            ReleaseUtil.release(message);
             log.debug("Unhandled push message: {}", message);
             if (log.isTraceEnabled()) {
                 Class<? extends IMessage> clazz = message.getClass();
-                log.trace("Class info - name: {} declaring: {} enclosing: {}", new Object[] { clazz.getName(), clazz.getDeclaringClass(), clazz.getEnclosingClass() });
+                log.trace("Class info - name: {} declaring: {} enclosing: {}", new Object[]{clazz.getName(), clazz.getDeclaringClass(), clazz.getEnclosingClass()});
             }
         }
     }
@@ -190,7 +191,8 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
         if (event.getType().equals(PipeConnectionEvent.EventType.PROVIDER_DISCONNECT)) {
             closeChannels();
         }
-    } 
+    }
+
     @Override
     public void onOOBControlMessage(IMessageComponent source, IPipe pipe, OOBControlMessage oobCtrlMsg) {
         if ("ConnectionConsumer".equals(oobCtrlMsg.getTarget())) {
@@ -211,7 +213,7 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
                 // Return the current delta between sent bytes and bytes the client
                 // reported to have received, and the interval the client should use
                 // for generating BytesRead messages (half of the allowed bandwidth).
-                oobCtrlMsg.setResult(new Long[] { conn.getWrittenBytes() - conn.getClientBytesRead(), maxStream / 2 });
+                oobCtrlMsg.setResult(new Long[]{conn.getWrittenBytes() - conn.getClientBytesRead(), maxStream / 2});
             } else if ("chunkSize".equals(serviceName)) {
                 int newSize = (Integer) oobCtrlMsg.getServiceParamMap().get("chunkSize");
                 if (newSize != chunkSize) {
@@ -222,14 +224,15 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
             }
         }
     }
- 
+
     private void sendChunkSize() {
         if (chunkSizeSent.compareAndSet(false, true)) {
             log.debug("Sending chunk size: {}", chunkSize);
             ChunkSize chunkSizeMsg = new ChunkSize(chunkSize);
             conn.createChannelIfAbsent((byte) 2).write(chunkSizeMsg);
         }
-    } 
+    }
+
     private void closeChannels() {
         conn.closeChannel(video.getId());
         conn.closeChannel(audio.getId());

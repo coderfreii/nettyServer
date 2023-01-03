@@ -19,6 +19,7 @@
 package org.tl.nettyServer.media.net.rtmp.event;
 
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -90,10 +91,16 @@ public class Unknown extends BaseEvent {
      * {@inheritDoc}
      */
     @Override
-    protected void releaseInternal() {
+    protected boolean releaseInternal() {
         if (data != null) {
-            data.release();
-            data = null;
+            if (ReleaseUtil.release(data)) {
+                data = null;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 

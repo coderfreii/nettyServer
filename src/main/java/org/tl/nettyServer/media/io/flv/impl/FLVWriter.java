@@ -407,7 +407,7 @@ public class FLVWriter implements ITagWriter {
 			fileMetaSize = buf.readableBytes();
 		}
 		log.debug("Metadata size: {}", fileMetaSize);
-		ITag onMetaData = new NettyTag(ITag.TYPE_METADATA, 0, fileMetaSize, buf, 0);
+		ITag onMetaData = new Tag(ITag.TYPE_METADATA, 0, fileMetaSize, buf, 0);
 		metaWritten=true;
 		writeTag(onMetaData);
 	}

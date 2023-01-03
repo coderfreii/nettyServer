@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.stream.consumer;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.io.ITag;
 
 /**
@@ -207,13 +208,25 @@ public class ImmutableTag implements ITag {
     }
 
     @Override
-    public void release() {
+    public boolean release() {
+        boolean b = false;
+        boolean d = false;
+
         if (this.getBody() != null) {
             this.getBody().release();
+            b = ReleaseUtil.release(this.getBody());
         }
 
         if (this.getData() != null) {
             this.getData().release();
+            d = ReleaseUtil.release(this.getData());
+        }
+
+
+        if (b && d) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

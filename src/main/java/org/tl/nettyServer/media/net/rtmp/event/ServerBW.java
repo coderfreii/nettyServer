@@ -79,11 +79,6 @@ public class ServerBW extends BaseEvent {
         return "ServerBW: " + bandwidth;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-
-    }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {

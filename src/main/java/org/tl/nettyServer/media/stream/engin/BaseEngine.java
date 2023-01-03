@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.stream.engin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.LeakChecked;
 import org.tl.nettyServer.media.io.amf.Output;
 import org.tl.nettyServer.media.messaging.*;
 import org.tl.nettyServer.media.net.rtmp.event.*;
@@ -142,6 +143,7 @@ public abstract class BaseEngine implements IPushableConsumer {
     /**
      * Send an RtmpProtocolState message
      */
+    @LeakChecked
     protected void sendMessage(RTMPMessage messageIn) {
         IRTMPEvent eventIn = messageIn.getBody();
         IRTMPEvent event;

@@ -43,9 +43,6 @@ public class Abort extends BaseEvent {
         return TYPE_ABORT;
     }
 
-    protected void releaseInternal() {
-
-    }
 
     public void setChannelId(int channelId) {
         this.channelId = channelId;

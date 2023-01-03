@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.net.rtmp.message;
 
 
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 import org.tl.nettyServer.media.stream.message.Releasable;
 
@@ -95,7 +96,7 @@ public class Packet implements Externalizable, Releasable {
         if (this.data != null) {
             this.data.release();
         }
-        
+
         if (noCopy) {
             this.data = buffer;
         } else {
@@ -180,12 +181,21 @@ public class Packet implements Externalizable, Releasable {
     }
 
     @Override
-    public void release() {
+    public boolean release() {
+        boolean d = true;
+        boolean m = true;
+
         if (data != null) {
-            data.release();
+            d = ReleaseUtil.release(data);
         }
         if (this.message != null) {
-            this.message.release();
+            m = this.message.release();
+        }
+
+        if (d && m) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -87,11 +87,6 @@ public class BytesRead extends BaseEvent {
         return "StreamBytesRead: " + bytesRead;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected void releaseInternal() {
-
-    }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
