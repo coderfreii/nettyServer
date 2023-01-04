@@ -383,6 +383,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
             if (frameSize > 0) {
                 ByteBuffer in = ByteBuffer.allocate(frameSize).order(ByteOrder.BIG_ENDIAN);
                 fileChannel.read(in);
+                in.flip();
                 body.writeBytes(in);;
                 tag.setBody(body);
             } else {

@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.net.rtmp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.consts.ChunkStreamType;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
@@ -110,7 +111,8 @@ public class Channel {
             final Number streamId = (stream == null) ? 0 : stream.getStreamId();
             write(event, streamId);
         } else {
-            log.debug("Connection {} is closed, cannot write to channel: {}", connection.getSessionId(), id);
+            ReleaseUtil.releaseAll(event);
+            log.debug("Connection {} is closed, cannot X to channel: {}", connection.getSessionId(), id);
         }
     }
 

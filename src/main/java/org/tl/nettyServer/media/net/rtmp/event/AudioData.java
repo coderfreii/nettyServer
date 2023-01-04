@@ -209,7 +209,7 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
      */
     @Override
     public String toString() {
-        return String.format("Audio - ts: %s length: %s", getTimestamp(), (data != null ? data.capacity() : '0'));
+        return String.format("Audio - ts: %s length: %s", getTimestamp(), (data != null ? data.readableBytes() : '0'));
     }
 
 }
