@@ -7,6 +7,7 @@
 
 package org.tl.nettyServer.media.io.mp3;
 
+import org.tl.nettyServer.media.io.CachingFileKeyFrameMetaCache;
 import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.io.ITagWriter;
 
@@ -35,7 +36,9 @@ public class MP3 implements IMP3 {
     /** {@inheritDoc} */
     @Override
     public ITagReader getReader() throws IOException {
-        return new MP3Reader(file);
+        MP3Reader mp3Reader = new MP3Reader(file);
+        mp3Reader.setFrameCache(CachingFileKeyFrameMetaCache.getInstance());
+        return mp3Reader;
     }
 
     /** {@inheritDoc} */

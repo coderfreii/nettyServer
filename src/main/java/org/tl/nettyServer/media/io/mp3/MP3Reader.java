@@ -8,8 +8,6 @@
 package org.tl.nettyServer.media.io.mp3;
 
 
-
-
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.mp3.AudioFrame;
 import org.apache.tika.parser.mp3.Mp3Parser;
@@ -113,10 +111,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
     /**
      * Creates reader from file input stream
      *
-     * @param file
-     *            file input
-     * @throws IOException
-     *             on IO error
+     * @param file file input
+     * @throws IOException on IO error
      */
     public MP3Reader(File file) throws IOException {
         this.file = file;
@@ -264,7 +260,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
             }
             if (metaData.hasCoverImage()) {
                 Map<Object, Object> covr = new HashMap<>(1);
-                covr.put("covr", new Object[] { metaData.getCovr() });
+                covr.put("covr", new Object[]{metaData.getCovr()});
                 props.put("tags", covr);
             }
             //clear meta for gc
@@ -291,19 +287,25 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         return result;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IStreamableFile getFile() {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getOffset() {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getBytesRead() {
         try {
@@ -313,7 +315,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getDuration() {
         return duration;
@@ -329,14 +333,18 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         return fileSize;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasMoreTags() {
         log.debug("hasMoreTags");
         return fileChannel.isOpen() && frameIndex < frameCount;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ITag readTag() {
         log.debug("readTag");
@@ -384,7 +392,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
                 ByteBuffer in = ByteBuffer.allocate(frameSize).order(ByteOrder.BIG_ENDIAN);
                 fileChannel.read(in);
                 in.flip();
-                body.writeBytes(in);;
+                body.writeBytes(in);
+                ;
                 tag.setBody(body);
             } else {
                 log.warn("Buffer size was invalid: {}", frameSize);
@@ -405,7 +414,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         if (posTimeMap != null) {
@@ -419,12 +430,16 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void decodeHeader() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void position(long pos) {
         if (pos == Long.MAX_VALUE) {
@@ -441,7 +456,9 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public KeyFrameMeta analyzeKeyFrames() {
         log.debug("analyzeKeyFrames");
@@ -451,7 +468,7 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
         try {
             lock.acquire();
             // check for cached frame information
-            if (frameCache != null) {
+            if (frameCache != null && false) {
                 frameMeta = frameCache.loadKeyFrameMeta(file);
                 if (frameMeta != null && frameMeta.duration > 0) {
                     // frame data loaded, create other mappings
