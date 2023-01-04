@@ -72,7 +72,7 @@ public class Input extends BaseInput implements IInput {
         super();
         this.buf = buf;
         if (log.isTraceEnabled()) {
-            log.trace("Input: {}", Hex.encodeHexString(Arrays.copyOfRange(buf.array(), buf.readerIndex(), buf.capacity())));
+            log.trace("Input: {}", Hex.encodeHexString(Arrays.copyOfRange(buf.array(), buf.readerIndex(), buf.readableBytes())));
         }
     }
 
@@ -170,7 +170,7 @@ public class Input extends BaseInput implements IInput {
             return d;
         }
         if (log.isDebugEnabled()) {
-            log.debug("Remaining not big enough for number - offset: {} limit: {} {}", buf.readerIndex(), buf.capacity(), Hex.encodeHexString(buf.array()));
+            log.debug("Remaining not big enough for number - offset: {} limit: {} {}", buf.readerIndex(), buf.readableBytes(), Hex.encodeHexString(buf.array()));
         }
         return 0;
     }
@@ -201,7 +201,7 @@ public class Input extends BaseInput implements IInput {
      */
     @Override
     public String readString() {
-        int limit = buf.capacity();
+        int limit = buf.readableBytes();
         int len = 0;
         switch (currentDataType) {
             case AMF.TYPE_LONG_STRING:

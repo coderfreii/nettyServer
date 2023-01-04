@@ -445,7 +445,7 @@ public interface BufFacade<T> {
      * Returns a retained buffer which shares the whole region of this buffer.
      * Modifying the content of the returned buffer or this buffer affects
      * each other's content while they maintain separate indexes and marks.
-     * This method is identical to {@code buf.slice(0, buf.capacity())}.
+     * This method is identical to {@code buf.slice(0, buf.readableBytes())}.
      * This method does not modify {@code readerIndex} or {@code writerIndex} of
      * this buffer.
      * <p>

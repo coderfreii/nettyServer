@@ -596,8 +596,8 @@ public class Output3 extends Output implements IOutput {
         }
         storeReference(array);
         BufFacade data = array.getData();
-        putInteger(data.capacity() << 1 | 1);
-        byte[] tmp = new byte[data.capacity()];
+        putInteger(data.readableBytes() << 1 | 1);
+        byte[] tmp = new byte[data.readableBytes()];
         data.markReaderIndex();
         try {
             data.rewind();

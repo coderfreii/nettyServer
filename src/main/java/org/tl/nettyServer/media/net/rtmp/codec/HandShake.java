@@ -195,7 +195,7 @@ public class HandShake {
         // clear original base bytes
         handshakeBytes = null;
         if (log.isTraceEnabled()) {
-            log.trace("S0+S1+S2 size: {}", s0s1s2.capacity());
+            log.trace("S0+S1+S2 size: {}", s0s1s2.readableBytes());
         }
         return s0s1s2;
     }

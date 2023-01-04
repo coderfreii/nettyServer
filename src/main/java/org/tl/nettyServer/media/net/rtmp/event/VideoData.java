@@ -236,22 +236,33 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
      * @return duplicated event
      */
     public VideoData duplicate() throws IOException, ClassNotFoundException {
+        return duplicate(true);
+    }
+
+    @Override
+    public VideoData duplicate(boolean serialize) throws IOException, ClassNotFoundException {
         VideoData result = new VideoData();
-        // serialize
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        writeExternal(oos);
-        oos.close();
-        // convert to byte array
-        byte[] buf = baos.toByteArray();
-        baos.close();
-        // create input streams
-        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        // deserialize
-        result.readExternal(ois);
-        ois.close();
-        bais.close();
+        if (serialize) {
+            // serialize
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            writeExternal(oos);
+            oos.close();
+            // convert to byte array
+            byte[] buf = baos.toByteArray();
+            baos.close();
+            // create input streams
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            // deserialize
+            result.readExternal(ois);
+            ois.close();
+            bais.close();
+        } else {
+            result.setTimestamp(this.timestamp);
+            result.setType(this.getType());
+            result.setData(ReleaseUtil.duplicate(this.data));
+        }
         // clone the header if there is one
         if (header != null) {
             result.setHeader(header.clone());
@@ -267,7 +278,7 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
      */
     @Override
     public String toString() {
-        return String.format("Video - ts: %s length: %s", getTimestamp(), (data != null ? data.capacity() : '0'));
+        return String.format("Video - ts: %s length: %s", getTimestamp(), (data != null ? data.readableBytes() : '0'));
     }
 
 }

@@ -12,7 +12,7 @@ public interface Duplicateable<T> {
     static IRTMPEvent doDuplicate(IRTMPEvent rtmpEvent) {
         if (rtmpEvent instanceof IStreamData) {
             try {
-                rtmpEvent = (IRTMPEvent) ((IStreamData) rtmpEvent).duplicate();
+                rtmpEvent = (IRTMPEvent) ((IStreamData) rtmpEvent).duplicate(false);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {

@@ -178,23 +178,36 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
      * @return duplicated event
      */
     public IStreamData<AudioData> duplicate() throws IOException, ClassNotFoundException {
+        return duplicate(true);
+    }
+
+    @Override
+    public IStreamData<AudioData> duplicate(boolean serialize) throws IOException, ClassNotFoundException {
         AudioData result = new AudioData();
-        // serialize
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        writeExternal(oos);
-        oos.close();
-        // convert to byte array
-        byte[] buf = baos.toByteArray();
-        baos.close();
-        // create input streams
-        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        // deserialize
-        result.readExternal(ois);
-        ois.close();
-        bais.close();
-        // clone the header if there is one
+        if (serialize) {
+            // serialize
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            writeExternal(oos);
+            oos.close();
+            // convert to byte array
+            byte[] buf = baos.toByteArray();
+            baos.close();
+            // create input streams
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            // deserialize
+            result.readExternal(ois);
+            ois.close();
+            bais.close();
+        } else {
+            result.setTimestamp(this.timestamp);
+            result.setSource(this.source);
+            result.setSourceType(this.sourceType);
+            result.setType(this.getType());
+            result.setData(ReleaseUtil.duplicate(this.data));
+
+        }        // clone the header if there is one
         if (header != null) {
             result.setHeader(header.clone());
         }

@@ -105,7 +105,7 @@ public class DataInput implements IDataInput {
     @Override
     public String readMultiByte(int length, String charSet) {
         final Charset cs = Charset.forName(charSet);
-        int limit = buffer.capacity();
+        int limit = buffer.readableBytes();
         final ByteBuffer strBuf = buffer.nioBuffer();
         strBuf.limit(strBuf.position() + length);
         final String string = cs.decode(strBuf).toString();
@@ -153,7 +153,7 @@ public class DataInput implements IDataInput {
     /** {@inheritDoc} */
     @Override
     public String readUTFBytes(int length) {
-        int limit = buffer.capacity();
+        int limit = buffer.readableBytes();
         final ByteBuffer strBuf = buffer.nioBuffer();
         strBuf.limit(strBuf.position() + length);
         final String string = AMF.CHARSET.decode(strBuf).toString();

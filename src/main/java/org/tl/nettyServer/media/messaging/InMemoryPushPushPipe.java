@@ -114,7 +114,9 @@ public class InMemoryPushPushPipe extends AbstractPipe {
                 log.error("Exception pushing message to consumer", t);
             }
         }
-        ReleaseUtil.release(message);
+        if (message instanceof RTMPMessage) {
+            ReleaseUtil.release(message);
+        }
     }
 
 }

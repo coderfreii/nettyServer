@@ -677,7 +677,7 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
 
     @Override
     public int capacity() {
-        return this.target.capacity();
+        return this.target.readableBytes();
     }
 
     @Override

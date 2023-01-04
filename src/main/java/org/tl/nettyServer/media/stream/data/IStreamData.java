@@ -46,4 +46,6 @@ public interface IStreamData<T> extends Duplicateable<IStreamData<T>> {
      */
     public IStreamData<T> duplicate() throws IOException, ClassNotFoundException;
 
+
+    public IStreamData<T> duplicate(boolean serialize) throws IOException, ClassNotFoundException;
 }

@@ -127,7 +127,7 @@ public class ByteArray implements IDataInput, IDataOutput {
      * @return number of bytes in array
      */
     public int length() {
-        return data.capacity();
+        return data.readableBytes();
     }
 
     /**
@@ -135,7 +135,7 @@ public class ByteArray implements IDataInput, IDataOutput {
      */
     public void compress() {
         BufFacade tmp = BufFacade.buffer(0);
-        byte[] tmpData = new byte[data.capacity()];
+        byte[] tmpData = new byte[data.readableBytes()];
         data.rewind();
         data.readBytes(tmpData);
         try (DeflaterOutputStream deflater = new DeflaterOutputStream(tmp.asOutputStream(), new Deflater(Deflater.BEST_COMPRESSION))) {

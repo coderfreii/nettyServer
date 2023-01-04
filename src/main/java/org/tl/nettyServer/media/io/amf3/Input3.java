@@ -406,7 +406,7 @@ public class Input3 extends Input implements IInput {
             }
             len >>= 1;
             log.debug("readString - new length: {}", len);
-            int limit = buf.capacity();
+            int limit = buf.readableBytes();
             log.debug("readString - limit: {}", limit);
             final ByteBuffer strBuf = buf.nioBuffer();
             strBuf.limit(strBuf.position() + len);
@@ -429,7 +429,7 @@ public class Input3 extends Input implements IInput {
      */
     public String readString(int length) {
         log.debug("readString - length: {}", length);
-        int limit = buf.capacity();
+        int limit = buf.readableBytes();
         final ByteBuffer strBuf = buf.nioBuffer();
         strBuf.limit(strBuf.position() + length);
         final String string = AMF.CHARSET.decode(strBuf).toString();
@@ -737,7 +737,7 @@ public class Input3 extends Input implements IInput {
                     properties.put(key, value);
                 }
                 if (log.isTraceEnabled()) {
-                    log.trace("Buffer - position: {} limit: {}", buf.readerIndex(), buf.capacity());
+                    log.trace("Buffer - position: {} limit: {}", buf.readerIndex(), buf.readableBytes());
                 }
                 // no more items to read if we are at the end of the buffer
                 if (buf.readableBytes() > 0) {
@@ -1098,7 +1098,7 @@ public class Input3 extends Input implements IInput {
             return (Document) getReference(len >> 1);
         }
         len >>= 1;
-        int limit = buf.capacity();
+        int limit = buf.readableBytes();
         final ByteBuffer strBuf = buf.nioBuffer();
         strBuf.limit(strBuf.position() + len);
         final String xmlString = AMF.CHARSET.decode(strBuf).toString();

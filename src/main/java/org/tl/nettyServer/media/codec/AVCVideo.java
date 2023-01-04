@@ -107,7 +107,7 @@ public class AVCVideo extends AbstractVideo {
     @Override
     public boolean canHandleData(BufFacade data) {
         boolean result = false;
-        if (data.capacity() > 0) {
+        if (data.readableBytes() > 0) {
             // read the first byte and ensure its AVC / h.264 type
             result = ((data.readByte() & 0x0f) == VideoCodec.AVC.getId());
             data.clear();

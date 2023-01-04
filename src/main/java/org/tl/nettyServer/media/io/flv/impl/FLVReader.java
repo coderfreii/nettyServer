@@ -205,7 +205,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
      */
     public long getTotalBytes() {
         if (!useLoadBuf) {
-            return in.capacity();
+            return in.readableBytes();
         }
         try {
             return channelSize;
@@ -248,8 +248,8 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
             return;
         }
         try {
-            if (pos >= (channel.position() - in.capacity()) && pos < channel.position()) {
-                in.setIndex((int) (pos - (channel.position() - in.capacity())), in.writerIndex());
+            if (pos >= (channel.position() - in.readableBytes()) && pos < channel.position()) {
+                in.setIndex((int) (pos - (channel.position() - in.readableBytes())), in.writerIndex());
             } else {
                 channel.position(pos);
                 fillBuffer(bufferSize, true);
@@ -516,7 +516,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         props.put("canSeekToEnd", true);
         out.writeMap(props);
 
-        ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.capacity(), null, 0);
+        ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.readableBytes(), null, 0);
         result.setBody(buf);
         //
         out = null;
@@ -748,7 +748,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         int i = 0;
         while (dataType != 8 && dataType != 9 && dataType != 18) {
             log.debug("Invalid data type detected, reading ahead");
-            log.debug("Current position: {} limit: {}", in.readerIndex(), in.capacity());
+            log.debug("Current position: {} limit: {}", in.readerIndex(), in.readableBytes());
             // only allow 10 loops
             if (i++ > 10) {
                 return null;

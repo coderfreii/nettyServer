@@ -76,7 +76,7 @@ public class RTMPProtocolDecoder implements Constants {
         //buffer当前所在的操作位置
         final int position = in.readerIndex();
         if (log.isTraceEnabled()) {
-            log.trace("decodeBuffer: {}", Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.capacity())));
+            log.trace("decodeBuffer: {}", Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.readableBytes())));
         }
         // decoded results
         List<Object> result = null;
@@ -120,7 +120,7 @@ public class RTMPProtocolDecoder implements Constants {
                     }
                 }
             } catch (Exception ex) {
-                log.warn("Failed to decodeBuffer: pos {}, capacity {}, chunk size {}, in {}", position, in.capacity(), conn.getState().getReadChunkSize(), Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.capacity())));
+                log.warn("Failed to decodeBuffer: pos {}, capacity {}, chunk size {}, in {}", position, in.readableBytes(), conn.getState().getReadChunkSize(), Hex.encodeHexString(Arrays.copyOfRange(in.array(), position, in.readableBytes())));
                 // catch any non-handshake exception in the decoding; close the connection
                 log.warn("Closing connection because decoding failed: {}", conn, ex);
                 // clear the in to eliminate memory leaks when we can't parse protocol
@@ -238,7 +238,7 @@ public class RTMPProtocolDecoder implements Constants {
         Packet packet = resolveAPacketToComplete(rtmpProtocolState, latestHeader);
         BufFacade data = packet.getData();
         if (log.isTraceEnabled()) {
-            log.trace("Source buffer position: {}, capacity: {}, packet-buf.position {}, packet size: {}", in.readerIndex(), in.capacity(), data.readerIndex(), latestHeader.getDataSize());
+            log.trace("Source buffer position: {}, capacity: {}, packet-buf.position {}, packet size: {}", in.readerIndex(), in.readableBytes(), data.readerIndex(), latestHeader.getDataSize());
         }
         // read chunk
         // check in buf size
@@ -269,7 +269,7 @@ public class RTMPProtocolDecoder implements Constants {
         // 检查是否写完（没写完的 message 要大于 chunk size）
         if (data.writeable()) {
             if (log.isTraceEnabled()) {
-                log.trace("Packet is incomplete ({},{})", data.readableBytes(), data.capacity());
+                log.trace("Packet is incomplete ({},{})", data.readableBytes(), data.readableBytes());
             }
             packet.setUnCompletedToContinue(true);
             return null;
@@ -351,7 +351,7 @@ public class RTMPProtocolDecoder implements Constants {
      */
     public Header decodeHeader(ChunkHeader chh, RTMPDecodeState state, BufFacade in, RtmpProtocolState rtmpProtocolState) {
         if (log.isTraceEnabled()) {
-            log.trace("decodeHeader - chh: {} input: {}", chh, Hex.encodeHexString(Arrays.copyOfRange(in.array(), in.readerIndex(), in.capacity())));
+            log.trace("decodeHeader - chh: {} input: {}", chh, Hex.encodeHexString(Arrays.copyOfRange(in.array(), in.readerIndex(), in.readableBytes())));
             log.trace("decodeHeader - chh: {}", chh);
         }
         final int csId = chh.getCsId();

@@ -56,13 +56,13 @@ public class CacheableImpl implements ICacheable {
 
     public CacheableImpl(BufFacade buffer) {
         if (log.isDebugEnabled()) {
-//            log.debug("Buffer is direct: {} capacity: {}", buffer.isDirect(), buffer.capacity());
+//            log.debug("Buffer is direct: {} capacity: {}", buffer.isDirect(), buffer.readableBytes());
 //            log.debug("Buffer limit: {} remaining: {} position: {}", new Object[] { buffer.limit(), buffer.remaining(), buffer.position() });
         }
-        bytes = new byte[buffer.capacity()];
+        bytes = new byte[buffer.readableBytes()];
         buffer.rewind();
         int i = 0;
-        while (i < buffer.capacity()) {
+        while (i < buffer.readableBytes()) {
             buffer.setIndex(i, buffer.writerIndex());
             while (buffer.readableBytes() > 0) {
                 bytes[i++] = buffer.readByte();
@@ -70,7 +70,7 @@ public class CacheableImpl implements ICacheable {
         }
         cached = true;
         if (log.isDebugEnabled()) {
-            log.debug("Buffer size: " + buffer.capacity());
+            log.debug("Buffer size: " + buffer.readableBytes());
         }
         buffer = null;
     }

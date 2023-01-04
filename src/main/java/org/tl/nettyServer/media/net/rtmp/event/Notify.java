@@ -159,18 +159,33 @@ public class Notify extends BaseEvent implements ICommand, IStreamData<Notify>, 
      * 将此通知消息复制到将来的注入序列化到内存并反序列化，安全方式。
      */
     public Notify duplicate() throws IOException, ClassNotFoundException {
+        return duplicate(true);
+    }
+
+    @Override
+    public Notify duplicate(boolean serialize) throws IOException, ClassNotFoundException {
         Notify result = new Notify();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        writeExternal(oos);
-        oos.close();
-        byte[] buf = baos.toByteArray();
-        baos.close();
-        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-        ObjectInputStream ois = new ObjectInputStream(bais);
-        result.readExternal(ois);
-        ois.close();
-        bais.close();
+        if (serialize) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            writeExternal(oos);
+            oos.close();
+            byte[] buf = baos.toByteArray();
+            baos.close();
+            ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+            ObjectInputStream ois = new ObjectInputStream(bais);
+            result.readExternal(ois);
+            ois.close();
+            bais.close();
+        } else {
+            result.setTimestamp(this.timestamp);
+            result.setType(this.getType());
+
+            result.setCall(call);
+            result.setConnectionParams(connectionParams);
+            result.transactionId = transactionId;
+            result.setData(ReleaseUtil.duplicate(this.data));
+        }
         //set the action if it exists
         result.setAction(getAction());
         result.setSourceType(sourceType);
