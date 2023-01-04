@@ -26,6 +26,7 @@
         <ehcache.version>3.8.0</ehcache.version>
 
         <tika.version>1.26</tika.version>
+        <isoparser.version>1.9.41</isoparser.version>
     </properties>
 
     <dependencies>
@@ -96,7 +97,7 @@
             <version>1.8.5</version>
         </dependency>
 
-
+        <!--    mp3   -->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
@@ -124,5 +125,13 @@
             <artifactId>poi</artifactId>
             <version>4.0.0</version>
         </dependency>
+        <!--    mp3   -->
+        <!--    mp4    -->
+        <dependency>
+            <groupId>org.mp4parser</groupId>
+            <artifactId>isoparser</artifactId>
+            <version>${isoparser.version}</version>
+        </dependency>
+        <!--    mp4    -->
     </dependencies>
 </project>
