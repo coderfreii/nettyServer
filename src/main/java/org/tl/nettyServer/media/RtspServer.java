@@ -7,6 +7,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.tl.nettyServer.media.net.rtsp.codec.RTSPRequestDecoder;
+import org.tl.nettyServer.media.net.rtsp.codec.RTSPResponseEncoder;
+import org.tl.nettyServer.media.net.rtsp.handler.ConnInboundHandlerAdapter;
+import org.tl.nettyServer.media.net.rtsp.handler.RTSPMinaIoHandler;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 
 import java.util.concurrent.ExecutorService;
@@ -32,7 +36,7 @@ public class RtspServer {
     public static Channel RTCP_AUDIO_ACCEPTOR_CHANNEL;
 
 
-    {
+    static {
 
 
         RTP_VIDEO_ACCEPTOR.handler(new ChannelInitializer<NioDatagramChannel>() {
@@ -71,7 +75,12 @@ public class RtspServer {
         ChannelHandler test = new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
-                socketChannel.pipeline();
+                socketChannel.pipeline()
+                        .addLast(new RTSPResponseEncoder())
+                        .addLast(new ConnInboundHandlerAdapter())
+                        .addLast(new RTSPRequestDecoder())
+                        .addLast(new RTSPMinaIoHandler())
+                ;
             }
         };
 
@@ -150,7 +159,7 @@ public class RtspServer {
 
             return bootstrap;
         } finally {
-            group.shutdownGracefully();
+//            group.shutdownGracefully();
         }
     }
 }

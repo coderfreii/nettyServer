@@ -13,8 +13,6 @@ import org.tl.nettyServer.media.net.rtsp.conn.RTSPMinaConnection;
 import org.tl.nettyServer.media.net.rtsp.rtp.RTPPacket;
 import org.tl.nettyServer.media.session.SessionAccessor;
 
-import java.nio.charset.CharacterCodingException;
-
 /**
  * RTSP Message Encoder
  *
@@ -22,7 +20,7 @@ import java.nio.charset.CharacterCodingException;
  */
 public abstract class RTSPMessageEncoder extends HTTPMessageEncoder {
 
-    public RTSPMessageEncoder() throws CharacterCodingException {
+    public RTSPMessageEncoder() {
         super();
     }
 

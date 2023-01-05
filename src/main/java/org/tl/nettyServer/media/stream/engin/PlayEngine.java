@@ -1028,10 +1028,6 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
         if (pendingMessage == null) {
             return;
         }
-        IRTMPEvent body = pendingMessage.getBody();
-        if (body instanceof IStreamData && ((IStreamData<?>) body).getData() != null) {
-            ((IStreamData<?>) body).getData().release();
-        }
         pendingMessage = null;
     }
 
@@ -1155,11 +1151,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                                 sendMessage(rtmpMessage);
                             } else {
                                 //TODO
-                                if (pendingMessage != null) {
-                                    ReleaseUtil.releaseAll(pendingMessage);
-                                }
                                 pendingMessage = rtmpMessage;
-
                             }
                             ensurePullAndPushRunning();
                             break;

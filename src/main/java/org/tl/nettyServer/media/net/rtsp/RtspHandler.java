@@ -12,6 +12,7 @@ import org.tl.nettyServer.media.RtspServer;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.client.IServer;
+import org.tl.nettyServer.media.conf.ConfigServer;
 import org.tl.nettyServer.media.io.flv.FLVUtils;
 import org.tl.nettyServer.media.net.http.codec.HTTPCodecUtil;
 import org.tl.nettyServer.media.net.http.codec.QueryStringDecoder;
@@ -67,7 +68,7 @@ public final class RtspHandler {
     /**
      * Red5 server instance.
      */
-    protected IServer server;
+    protected IServer server = ConfigServer.configServer.config();
 
     /**
      * @param request
@@ -136,7 +137,6 @@ public final class RtspHandler {
      * @param response
      */
     public void options(HTTPRequest request, HTTPResponse response) {
-
         response.setHeader("Public", "DESCRIBE,SETUP,TEARDOWN,PLAY,PAUSE,OPTIONS,ANNOUNCE,RECORD,GET_PARAMETER");
         response.setHeader("Supported", "play.basic,con.persistent");
     }
@@ -255,7 +255,7 @@ public final class RtspHandler {
         }
 
         CustomSingleItemSubStream rtspStream = (CustomSingleItemSubStream) conn.getAttribute("rtspStream");
-        double[] rangeNtp = RTPUtil.decodeRangeHeader(request.getHeader(RTSPHeaders.Names. RANGE));
+        double[] rangeNtp = RTPUtil.decodeRangeHeader(request.getHeader(RTSPHeaders.Names.RANGE));
         if (rangeNtp[0] > 0) {
             log.info("rtsp seekTo {}", rangeNtp[0]);
             rtspStream.seek(Math.round((float) (rangeNtp[0] * 1000)));
@@ -544,45 +544,49 @@ public final class RtspHandler {
         } else {
             // configure video sdp
             data = videoConfig.asReadOnly();
-            data.markReaderIndex();
-            codecId = (byte) FLVUtils.getVideoCodec(data.readByte());
-            data.readerIndex(5);
-            switch (codecId) {
-                case 0x07: //avc/h.264 video
-                    videoRtpPacketizer = new RTPPacketizerRFC3984H264();
-                    break;
-            }
+            if (data.readable()) {
+                data.markReaderIndex();
+                codecId = (byte) FLVUtils.getVideoCodec(data.readByte());
+                data.readerIndex(5);
+                switch (codecId) {
+                    case 0x07: //avc/h.264 video
+                        videoRtpPacketizer = new RTPPacketizerRFC3984H264();
+                        break;
+                }
 
-            if (videoRtpPacketizer != null) {
-                mdvideo = videoRtpPacketizer.getDescribeInfo(data);
-            }
+                if (videoRtpPacketizer != null) {
+                    mdvideo = videoRtpPacketizer.getDescribeInfo(data);
+                }
 
-            if (mdvideo != null) {
-                mdvideo.setAttribute("control", "trackID=0");
-                mds.add(mdvideo);
+                if (mdvideo != null) {
+                    mdvideo.setAttribute("control", "trackID=0");
+                    mds.add(mdvideo);
+                }
             }
 
             // configure audio sdp
             data = audioConfig.asReadOnly();
-            data.markReaderIndex();
-            codecId = (byte) FLVUtils.getAudioCodec(data.readByte());
-            data.skipBytes(1);
-            switch (codecId) {
-                case 0x02: //mp3
-                    audioRtpPacketizer = new RTPPacketizerRFC2250MP3();
-                    break;
-                case 0x0a: //aac
-                    audioRtpPacketizer = new RTPPacketizerMPEG4AAC();
-                    break;
-            }
+            if (data.readable()) {
+                data.markReaderIndex();
+                codecId = (byte) FLVUtils.getAudioCodec(data.readByte());
+                data.skipBytes(1);
+                switch (codecId) {
+                    case 0x02: //mp3
+                        audioRtpPacketizer = new RTPPacketizerRFC2250MP3();
+                        break;
+                    case 0x0a: //aac
+                        audioRtpPacketizer = new RTPPacketizerMPEG4AAC();
+                        break;
+                }
 
-            if (audioRtpPacketizer != null) {
-                mdaudio = audioRtpPacketizer.getDescribeInfo(data);
-            }
+                if (audioRtpPacketizer != null) {
+                    mdaudio = audioRtpPacketizer.getDescribeInfo(data);
+                }
 
-            if (mdaudio != null) {
-                mdaudio.setAttribute("control", "trackID=1");
-                mds.add(mdaudio);
+                if (mdaudio != null) {
+                    mdaudio.setAttribute("control", "trackID=1");
+                    mds.add(mdaudio);
+                }
             }
         }
         player = new RTPPlayer(conn, videoRtpPacketizer, audioRtpPacketizer);

@@ -19,7 +19,6 @@
 package org.tl.nettyServer.media.stream.client;
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.exception.OperationNotSupportedException;
@@ -32,8 +31,8 @@ import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.service.consumer.IConsumerService;
 import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.stream.IStreamAwareScopeHandler;
-import org.tl.nettyServer.media.stream.engin.PlayEngine;
 import org.tl.nettyServer.media.stream.StreamState;
+import org.tl.nettyServer.media.stream.engin.PlayEngine;
 import org.tl.nettyServer.media.stream.playlist.IPlayItem;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class SingleItemSubscriberStream extends AbstractClientStream implements 
     /**
      * 用于提供通知、保持客户端缓冲区已满、清理的服务, etc...
      */
-    protected ISchedulingService schedulingService = QuartzSchedulingService.getInstance();
+    protected ISchedulingService schedulingService;
 
     protected Set<String> jobs = new HashSet<String>(1);
     /**
@@ -384,6 +383,18 @@ public class SingleItemSubscriberStream extends AbstractClientStream implements 
     }
 
     public String scheduleOnceJob(IScheduledJob job) {
+        if (schedulingService == null) {
+            IScope scope = getScope();
+            if (scope != null) {
+                IContext ctx = scope.getContext();
+                if (ctx.hasBean(ISchedulingService.BEAN_NAME)) {
+                    schedulingService = (ISchedulingService) ctx.getBean(ISchedulingService.BEAN_NAME);
+                } else {
+                    //try the parent
+                    schedulingService = (ISchedulingService) scope.getParent().getContext().getBean(ISchedulingService.BEAN_NAME);
+                }
+            }
+        }
         String jobName = schedulingService.addScheduledOnceJob(10, job);
         return jobName;
     }

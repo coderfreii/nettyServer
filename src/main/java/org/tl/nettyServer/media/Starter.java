@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Starter {
     public static void main(String[] args) {
         SpringApplication.run(Starter.class, args);
-        RtmpServer.main(args);
+//        RtmpServer.main(args);
+        RtspServer.main(args);
     }
 }

@@ -27,7 +27,9 @@ public class Beans {
 
     @Bean(name = ISchedulingService.BEAN_NAME)
     public JDKSchedulingService schedulingService() {
-        return new JDKSchedulingService();
+        JDKSchedulingService schedulingService = new JDKSchedulingService();
+        schedulingService.setThreadCount(ExtConfiguration.SO_POOL_SIZE);
+        return schedulingService;
     }
 
 

@@ -50,9 +50,6 @@ public class RTSPConnectionConsumer implements ICustomPushableConsumer {
 				if (packet.getData() != null) {					
 					for(IStreamListener listener : listeners) {						
 						listener.packetReceived(null, packet);
-						if(packet instanceof VideoData){
-							System.out.println(packet);
-						}
 					}
 				}
 			}

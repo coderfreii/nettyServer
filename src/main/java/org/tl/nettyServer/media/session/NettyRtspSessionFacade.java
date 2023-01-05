@@ -5,11 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtsp.conn.RTSPMinaConnection;
 
 import javax.crypto.Cipher;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 @Data
@@ -44,7 +42,8 @@ public class NettyRtspSessionFacade implements SessionFacade<ChannelHandlerConte
 
     @Override
     public String getSessionId() {
-        return this.connection.getSessionId();
+        long l = Long.parseLong(this.context.channel().id().asShortText(), 16);
+        return String.valueOf(l);
     }
 
     @Override
