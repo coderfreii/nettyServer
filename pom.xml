@@ -133,5 +133,12 @@
             <version>${isoparser.version}</version>
         </dependency>
         <!--    mp4  m4A  -->
+
+        <!--    rtp    -->
+        <dependency>
+            <groupId>javax.sdp</groupId>
+            <artifactId>nist-sdp</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 </project>

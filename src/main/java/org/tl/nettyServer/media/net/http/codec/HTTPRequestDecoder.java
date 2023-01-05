@@ -20,7 +20,6 @@ public class HTTPRequestDecoder extends HTTPMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        System.out.println();
         try {
             while (in.readableBytes() > 0) {
                 DecodeState obj = decodeBuffer(BufFacade.wrapperAndCast(in));

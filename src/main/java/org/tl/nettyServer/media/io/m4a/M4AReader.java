@@ -442,7 +442,7 @@ public class M4AReader implements IoConstants, ITagReader {
     }
 
     /**
-     * Get the current position in a file or IoBuffer.
+     * Get the current position in a file or BufFacade.
      *
      * @return Current position in a file
      */

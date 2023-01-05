@@ -70,7 +70,7 @@ public interface IMetaService {
     /**
      * Read the MetaData
      *
-     * @param buffer IoBuffer source
+     * @param buffer BufFacade source
      * @return metaData Metadata
      */
     public MetaData<?, ?> readMetaData(BufFacade buffer);

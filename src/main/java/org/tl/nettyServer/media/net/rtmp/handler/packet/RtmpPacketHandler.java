@@ -28,7 +28,7 @@ import org.tl.nettyServer.media.conf.ConfigServer;
 import org.tl.nettyServer.media.exception.ClientRejectedException;
 import org.tl.nettyServer.media.exception.ScopeNotFoundException;
 import org.tl.nettyServer.media.exception.ScopeShuttingDownException;
-import org.tl.nettyServer.media.messaging.IConsumer;
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
 import org.tl.nettyServer.media.messaging.OOBControlMessage;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.DeferredResult;

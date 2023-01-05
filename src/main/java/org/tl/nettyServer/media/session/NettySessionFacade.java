@@ -58,6 +58,11 @@ public class NettySessionFacade implements SessionFacade<ChannelHandlerContext, 
     }
 
     @Override
+    public SocketAddress getLocalAddress() {
+        return context.channel().localAddress();
+    }
+
+    @Override
     public ChannelFuture write(Object o) {
         return context.writeAndFlush(o);
     }

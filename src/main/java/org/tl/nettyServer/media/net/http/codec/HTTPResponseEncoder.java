@@ -20,7 +20,7 @@ public class HTTPResponseEncoder extends HTTPMessageEncoder {
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, HTTPMessage msg, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         try {
             BufFacade buf = encodeBuffer(msg);
             if (buf != null) {

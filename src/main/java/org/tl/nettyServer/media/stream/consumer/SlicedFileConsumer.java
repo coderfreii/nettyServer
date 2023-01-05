@@ -578,7 +578,7 @@ public class SlicedFileConsumer implements Constants, IPushableConsumer, IPipeCo
     //        byte dataType = msg.getDataType();
     //        log.debug("Write - timestamp: {} type: {}", timestamp, dataType);
     //        // get data bytes
-    //        IoBuffer data = ((IStreamData<?>) msg).getData();
+    //        BufFacade data = ((IStreamData<?>) msg).getData();
     //        if (data != null) {
     //            // if the last message was a reset or we just started, use the header timer
     //            if (startTimestamp == -1) {

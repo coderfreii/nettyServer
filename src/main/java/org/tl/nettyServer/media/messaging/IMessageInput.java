@@ -18,6 +18,8 @@
 
 package org.tl.nettyServer.media.messaging;
 
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;

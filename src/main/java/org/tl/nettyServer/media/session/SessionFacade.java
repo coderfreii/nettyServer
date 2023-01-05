@@ -3,6 +3,7 @@ package org.tl.nettyServer.media.session;
 import io.netty.channel.ChannelFuture;
 
 import javax.crypto.Cipher;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 public interface SessionFacade<T, S> {
@@ -20,6 +21,8 @@ public interface SessionFacade<T, S> {
 
 
     SocketAddress getRemoteAddress();
+
+    SocketAddress getLocalAddress();
 
 
     ChannelFuture write(Object o);

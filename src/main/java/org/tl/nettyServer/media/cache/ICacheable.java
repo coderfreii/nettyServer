@@ -71,7 +71,7 @@ public interface ICacheable {
     /**
      * Returns a readonly byte buffer.
      * 
-     * @return Read-only IoBuffer with cached data
+     * @return Read-only BufFacade with cached data
      */
     public BufFacade getByteBuffer();
 

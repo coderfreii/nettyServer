@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author pengliren
  */
-public abstract class HTTPMessageEncoder extends MessageToByteEncoder<HTTPMessage> {
+public abstract class HTTPMessageEncoder extends MessageToByteEncoder<Object> {
 
     private static final BufFacade LAST_CHUNK = BufFacade.buffer(10);
 
@@ -26,7 +26,7 @@ public abstract class HTTPMessageEncoder extends MessageToByteEncoder<HTTPMessag
         LAST_CHUNK.writeCharSequence("0\r\n\r\n", CharsetUtil.US_ASCII);
     }
 
-    protected BufFacade encodeBuffer(HTTPMessage msg) throws Exception {
+    protected BufFacade encodeBuffer(Object msg) throws Exception {
         if (msg instanceof HTTPMessage) {
             HTTPMessage m = (HTTPMessage) msg;
             boolean chunked;

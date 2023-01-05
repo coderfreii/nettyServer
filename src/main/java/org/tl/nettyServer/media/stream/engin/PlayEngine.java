@@ -47,6 +47,7 @@ import org.tl.nettyServer.media.stream.base.IBroadcastStream;
 import org.tl.nettyServer.media.stream.client.IPlaylistSubscriberStream;
 import org.tl.nettyServer.media.stream.client.ISubscriberStream;
 import org.tl.nettyServer.media.stream.codec.IStreamCodecInfo;
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
 import org.tl.nettyServer.media.stream.data.IStreamData;
 import org.tl.nettyServer.media.stream.message.Duplicateable;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;

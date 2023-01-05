@@ -92,7 +92,7 @@ public class ImmutableTag implements ITag {
     }
 
     /**
-     * Return the body IoBuffer
+     * Return the body BufFacade
      *
      * @return Tag body
      */

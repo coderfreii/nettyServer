@@ -158,8 +158,8 @@ public class MP3Reader implements ITagReader, IKeyFrameDataAnalyzer {
              * //send album image if included List<Artwork> tagFieldList = idTag.getArtworkList(); if (tagFieldList == null || tagFieldList.isEmpty()) { log.debug("No cover art was found"); }
              * else { Artwork imageField = tagFieldList.get(0); log.debug("Picture type: {}", imageField.getPictureType()); FrameBodyAPIC imageFrameBody = new FrameBodyAPIC();
              * imageFrameBody.setImageData(imageField.getBinaryData()); if (!imageFrameBody.isImageUrl()) { byte[] imageBuffer = (byte[])
-             * imageFrameBody.getObjectValue(DataTypes.OBJ_PICTURE_DATA); //set the cover image on the metadata metaData.setCovr(imageBuffer); // Create tag for onImageData event IoBuffer buf
-             * = IoBuffer.allocate(imageBuffer.length); buf.setAutoExpand(true); Output out = new Output(buf); out.writeString("onImageData"); Map<Object, Object> props = new HashMap<Object,
+             * imageFrameBody.getObjectValue(DataTypes.OBJ_PICTURE_DATA); //set the cover image on the metadata metaData.setCovr(imageBuffer); // Create tag for onImageData event BufFacade buf
+             * = BufFacade.allocate(imageBuffer.length); buf.setAutoExpand(true); Output out = new Output(buf); out.writeString("onImageData"); Map<Object, Object> props = new HashMap<Object,
              * Object>(); props.put("trackid", 1); props.put("data", imageBuffer); out.writeMap(props); buf.flip(); //Ugh i hate flash sometimes!! //Error #2095: flash.net.NetStream was unable
              * to invoke callback onImageData. ITag result = new Tag(IoConstants.TYPE_METADATA, 0, buf.limit(), null, 0); result.setBody(buf); //add to first frames firstTags.add(result); } }
              * } else { log.info("File did not contain ID3v2 data: {}", file.getName()); }

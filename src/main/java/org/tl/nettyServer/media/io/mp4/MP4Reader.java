@@ -860,7 +860,7 @@ public class MP4Reader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
     }
 
     /**
-     * Get the total readable bytes in a file or IoBuffer.
+     * Get the total readable bytes in a file or BufFacade.
      *
      * @return Total readable bytes
      */
@@ -875,7 +875,7 @@ public class MP4Reader implements IoConstants, ITagReader, IKeyFrameDataAnalyzer
     }
 
     /**
-     * Get the current position in a file or IoBuffer.
+     * Get the current position in a file or BufFacade.
      *
      * @return Current position in a file
      */

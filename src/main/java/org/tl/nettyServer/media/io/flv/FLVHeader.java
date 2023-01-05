@@ -224,9 +224,9 @@ public class FLVHeader {
     }
 
     /**
-     * Writes the FLVHeader to IoBuffer.
+     * Writes the FLVHeader to BufFacade.
      *
-     * @param buffer IoBuffer to write
+     * @param buffer BufFacade to write
      */
     public void write(BufFacade buffer) {
         // FLV

@@ -20,6 +20,7 @@ package org.tl.nettyServer.media.messaging;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 
 

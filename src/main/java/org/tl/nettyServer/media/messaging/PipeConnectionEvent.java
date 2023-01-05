@@ -18,6 +18,8 @@
 
 package org.tl.nettyServer.media.messaging;
 
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
+
 import java.util.EventObject;
 import java.util.LinkedList;
 import java.util.List;

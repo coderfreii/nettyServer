@@ -18,6 +18,8 @@
 
 package org.tl.nettyServer.media.messaging;
 
+import org.tl.nettyServer.media.stream.consumer.IConsumer;
+
 /**
  * 筛选标记接口组使用者和提供程序接口
  */
