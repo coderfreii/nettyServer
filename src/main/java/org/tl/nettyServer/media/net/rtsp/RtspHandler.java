@@ -273,19 +273,7 @@ public final class RtspHandler {
         if (player != null) {
             rtspConsumer.addStreamListener(player);
         }
-
-        try {
-            rtspStream.play();
-            conn.setAttribute("playing", true);
-        } catch (Exception e) {
-            rtspStream.stop();
-            conn.removeAttribute("playing");
-        }
-
-        if (rtspStream.isFailure()) {
-            rtspStream.stop();
-            conn.removeAttribute("playing");
-        }
+        conn.setAttribute("playing", true);
     }
 
     /**
@@ -698,13 +686,26 @@ public final class RtspHandler {
 
         // set up stream
         RTSPConnectionConsumer rtspConsumer = new RTSPConnectionConsumer(conn);
-        rtspConsumer.getConnection().connect(scope, new String[]{"1"});
+        rtspConsumer.getConnection().connect(scope,new String[]{"1"});
         CustomSingleItemSubStream rtspStream = new CustomSingleItemSubStream(scope, rtspConsumer);
         SimplePlayItem playItem = SimplePlayItem.build(stream, -2000, -1);
         rtspStream.setPlayItem(playItem);
         rtspStream.start();
 
         conn.setAttribute("rtspStream", rtspStream);
+
+        try {
+            rtspStream.play();
+        } catch (Exception e) {
+            rtspStream.stop();
+            return null;
+        }
+
+        if (rtspStream.isFailure()) {
+            rtspStream.stop();
+            return null;
+        }
+
         return rtspConsumer;
     }
 

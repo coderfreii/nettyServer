@@ -117,7 +117,7 @@ public abstract class RTSPProxyStream extends BaseRTMPProxyStream {
 				}
 			}
 		} else if (naluType == 24) {// NALU_TYPE_STAPA			
-			log.debug("rtsp proxy stream unsupported packet type: STAP-A");
+			log.info("rtsp proxy stream unsupported packet type: STAP-A");
 		} else if(naluType == 25) { // STAP-B 
 			log.info("rtsp proxy stream unsupported packet type: STAP-B");
 		} else if(naluType == 26) {// MTAP-16
