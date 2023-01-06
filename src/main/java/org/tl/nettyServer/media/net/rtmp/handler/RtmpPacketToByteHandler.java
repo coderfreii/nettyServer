@@ -10,7 +10,6 @@ import org.tl.nettyServer.media.net.rtmp.codec.RTMPProtocolEncoder;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
 import org.tl.nettyServer.media.session.SessionAccessor;
-import org.tl.nettyServer.media.stream.message.Duplicateable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet msg, List<Object> out) throws Exception {
-        RTMPConnection conn = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        RTMPConnection conn = (RTMPConnection) SessionAccessor.resolveRtmpConn(ctx);
         RTMPConnection localConn = (RTMPConnection) Red5.getConnectionLocal();
         if (conn != null) {
             //TODO

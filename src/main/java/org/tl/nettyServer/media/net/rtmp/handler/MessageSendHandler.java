@@ -15,7 +15,7 @@ import org.tl.nettyServer.media.session.SessionAccessor;
 public class MessageSendHandler extends ChannelOutboundHandlerAdapter {
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        messageSend((RTMPConnection) SessionAccessor.resolveConn(ctx), msg);
+        messageSend((RTMPConnection) SessionAccessor.resolveRtmpConn(ctx), msg);
         super.write(ctx, msg, promise);
     }
 

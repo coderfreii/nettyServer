@@ -20,7 +20,7 @@ public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<B
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> msg, List<Object> out) throws Exception {
-        RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveRtmpConn(ctx);
         if (bufFacadeStore.readable()) {
             log.debug("left {}", bufFacadeStore.readableBytes());
         }

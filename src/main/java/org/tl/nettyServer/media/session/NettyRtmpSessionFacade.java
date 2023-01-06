@@ -12,7 +12,7 @@ import java.net.SocketAddress;
 
 @Data
 @Slf4j
-public class NettySessionFacade implements SessionFacade<ChannelHandlerContext, RTMPConnection> {
+public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerContext, RTMPConnection> {
     public static AttributeKey<RTMPConnection> connectionAttributeKey = AttributeKey.valueOf(sessionKey);
 
     /**

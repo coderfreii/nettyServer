@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
-import org.tl.nettyServer.media.session.NettySessionFacade;
+import org.tl.nettyServer.media.session.NettyRtmpSessionFacade;
 import org.tl.nettyServer.media.session.SessionFacade;
 
 import javax.crypto.Cipher;
@@ -18,7 +18,7 @@ import java.util.List;
 public class RTMPEHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>> {
     @Override
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> in, List<Object> out) throws Exception {
-        Attribute<RTMPConnection> attr = ctx.channel().attr(NettySessionFacade.connectionAttributeKey);
+        Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
         RTMPConnection connection = attr.get();
         SessionFacade session = connection.getSession();
         RtmpProtocolState state = connection.getState();

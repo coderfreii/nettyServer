@@ -30,7 +30,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        IConnection iConnection = SessionAccessor.resolveConn(ctx);
+        IConnection iConnection = SessionAccessor.resolveRtmpConn(ctx);
         if (iConnection != null) {
             handler.connectionClosed((RTMPConnection) iConnection);
         }
@@ -39,7 +39,7 @@ public class RtmpPacketMayAsyncDecoder extends MessageToMessageDecoder<Packet> {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, Packet msg, List<Object> out) throws Exception {
-        RTMPConnection conn = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        RTMPConnection conn = (RTMPConnection) SessionAccessor.resolveRtmpConn(ctx);
         RtmpProtocolState state = conn.getState();
 
         ThreadPoolTaskExecutor executor = conn.getExecutor();

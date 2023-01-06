@@ -7,8 +7,8 @@ import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtsp.conn.RTSPMinaConnection;
 
 public class SessionAccessor {
-    static public IConnection resolveConn(ChannelHandlerContext ctx) {
-        Attribute<RTMPConnection> attr = ctx.channel().attr(NettySessionFacade.connectionAttributeKey);
+    static public IConnection resolveRtmpConn(ChannelHandlerContext ctx) {
+        Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
         return attr.get();
     }
 

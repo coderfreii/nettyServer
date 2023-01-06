@@ -9,7 +9,7 @@ import org.tl.nettyServer.media.conf.ExtConfiguration;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnManager;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPNettyConnection;
-import org.tl.nettyServer.media.session.NettySessionFacade;
+import org.tl.nettyServer.media.session.NettyRtmpSessionFacade;
 
 
 public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
@@ -23,10 +23,10 @@ public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
     // conn -> session
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Attribute<RTMPConnection> attr = ctx.channel().attr(NettySessionFacade.connectionAttributeKey);
+        Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
         if (attr.get() == null) {
             RTMPNettyConnection connection = (RTMPNettyConnection) RTMPConnManager.getInstance().createConnection(RTMPNettyConnection.class);
-            NettySessionFacade session = new NettySessionFacade();
+            NettyRtmpSessionFacade session = new NettyRtmpSessionFacade();
             session.setContext(ctx);
             session.setConnection(connection);
             connection.setSession(session);

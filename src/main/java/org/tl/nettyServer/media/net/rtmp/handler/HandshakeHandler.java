@@ -20,7 +20,7 @@ public class HandshakeHandler extends MessageToMessageDecoder<BufFacade<ByteBuf>
 
     @Override
     protected void decode(ChannelHandlerContext ctx, BufFacade<ByteBuf> in, List<Object> out) throws Exception {
-        RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveConn(ctx);
+        RTMPConnection connection = (RTMPConnection) SessionAccessor.resolveRtmpConn(ctx);
         SessionFacade nettySessionFacade = connection.getSession();
         RtmpProtocolState state = connection.getState();
 
