@@ -250,6 +250,7 @@ public class RTPPacketizerRFC3984H264 extends RTPPacketizerVideoBase implements 
 		String profile = null;
 		H264CodecConfigParts configParts = H264Utils.breakApartAVCC(config.asReadOnly());
 		H264CodecConfigInfo configInfo = null;
+		config.readerIndex(5);
 		if (config != null) {
 			configInfo = H264Utils.decodeAVCC(config.asReadOnly());
 		}

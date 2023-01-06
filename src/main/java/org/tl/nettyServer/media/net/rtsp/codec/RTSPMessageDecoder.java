@@ -54,13 +54,13 @@ public abstract class RTSPMessageDecoder extends HTTPMessageDecoder {
                         break;
                     } else {
                         byte[] temp = new byte[len];
-                        in.writeBytes(temp);
+                        in.readBytes(temp);
                         BufFacade data = BufFacade.wrappedBuffer(temp);
                         RTSPChannelData channelData = new RTSPChannelData(channel, data);
                         out.add(channelData);
                         ret = true;
                     }
-                } else {
+                } else {  //解析http请求
                     pos = in.readerIndex();
                     in.readerIndex(pos - 1);
                     DecodeState obj = decodeBuffer(BufFacade.wrapperAndCast(in));
