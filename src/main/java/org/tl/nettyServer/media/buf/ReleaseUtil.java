@@ -38,6 +38,7 @@ public class ReleaseUtil {
     }
 
     public static BufFacade duplicate(BufFacade o) {
+        if (o == null) return null;
         BufFacade<Object> buffer = BufFacade.buffer(o.readableBytes());
         byte[] dst = new byte[o.readableBytes()];
         o.markReaderIndex();
