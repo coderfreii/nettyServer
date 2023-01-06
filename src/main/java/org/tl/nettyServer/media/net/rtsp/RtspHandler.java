@@ -686,7 +686,7 @@ public final class RtspHandler {
 
         // set up stream
         RTSPConnectionConsumer rtspConsumer = new RTSPConnectionConsumer(conn);
-        rtspConsumer.getConnection().connect(scope,new String[]{"1"});
+        rtspConsumer.getConnection().connect(scope, new String[]{"1"});
         CustomSingleItemSubStream rtspStream = new CustomSingleItemSubStream(scope, rtspConsumer);
         SimplePlayItem playItem = SimplePlayItem.build(stream, -2000, -1);
         rtspStream.setPlayItem(playItem);
