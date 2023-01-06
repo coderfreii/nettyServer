@@ -32,7 +32,7 @@ import java.util.Date;
 @ManagedResource(objectName = "org.red5.server:type=RecordableBroadcastStream", description = "RecordableBroadcastStream")
 public class RecordableBroadcastStream extends ClientBroadcastStream implements IStreamListener {
 
-	public static String BEAN_NAME = "broadcastStream";
+	public static final String BEAN_NAME = "broadcastStream";
 
 	private Logger log = LoggerFactory.getLogger(RecordableBroadcastStream.class);
 	

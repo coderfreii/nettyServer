@@ -1,5 +1,6 @@
 package org.tl.nettyServer.media.conf;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -18,6 +19,7 @@ import org.tl.nettyServer.media.service.provider.IProviderService;
 import org.tl.nettyServer.media.service.provider.ProviderService;
 import org.tl.nettyServer.media.stream.client.ClientBroadcastStream;
 import org.tl.nettyServer.media.stream.client.PlaylistSubscriberStream;
+import org.tl.nettyServer.media.stream.timeshift.RecordableBroadcastStream;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +50,7 @@ public class Beans {
         return factory;
     }
 
+
     @Bean(name = "playlistSubscriberStream")  //一个连接一个
     @Lazy
     @Scope("prototype")
@@ -66,6 +69,17 @@ public class Beans {
     public ClientBroadcastStream clientBroadcastStream() {
         ClientBroadcastStream cache = new ClientBroadcastStream();
         return cache;
+    }
+
+
+    @Bean(name = RecordableBroadcastStream.BEAN_NAME)
+    @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public RecordableBroadcastStream recordableBroadcastStream() throws Exception {
+        RecordableBroadcastStream context = new RecordableBroadcastStream();
+        context.setCanRecord(false);
+        context.setStorePath("/temp");
+        context.setDurationPerFile(60);
+        return context;
     }
 
 
