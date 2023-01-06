@@ -10,7 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.tl.nettyServer.media.net.rtsp.codec.RTSPRequestDecoder;
 import org.tl.nettyServer.media.net.rtsp.codec.RTSPResponseEncoder;
 import org.tl.nettyServer.media.net.rtsp.handler.ConnInboundHandlerAdapter;
-import org.tl.nettyServer.media.net.rtsp.handler.RTSPMinaIoHandler;
+import org.tl.nettyServer.media.net.rtsp.handler.RTSPChannelDataHandler;
+import org.tl.nettyServer.media.net.rtsp.handler.RTSPRequestHandler;
 import org.tl.nettyServer.media.util.CustomizableThreadFactory;
 
 import java.util.concurrent.ExecutorService;
@@ -79,7 +80,8 @@ public class RtspServer {
                         .addLast(new RTSPResponseEncoder())
                         .addLast(new ConnInboundHandlerAdapter())
                         .addLast(new RTSPRequestDecoder())
-                        .addLast(new RTSPMinaIoHandler())
+                        .addLast(new RTSPRequestHandler())
+                        .addLast(new RTSPChannelDataHandler())
                 ;
             }
         };
