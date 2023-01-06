@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.IoConstants;
-import org.tl.nettyServer.media.io.flv.impl.FLVReader;
+import org.tl.nettyServer.media.media.flv.impl.FLVReader;
 
 import java.io.File;
 import java.util.Arrays;

@@ -5,10 +5,10 @@ import gov.nist.javax.sdp.MediaDescriptionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.flv.FLVUtils;
-import org.tl.nettyServer.media.io.flv.codec.NettyH264Utils;
-import org.tl.nettyServer.media.io.h264.H264CodecConfigInfo;
-import org.tl.nettyServer.media.io.h264.H264CodecConfigParts;
+import org.tl.nettyServer.media.media.flv.FLVUtils;
+import org.tl.nettyServer.media.media.h264.H264Utils;
+import org.tl.nettyServer.media.media.h264.H264CodecConfigInfo;
+import org.tl.nettyServer.media.media.h264.H264CodecConfigParts;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
 import org.tl.nettyServer.media.net.rtsp.rtp.RTPPacket;
@@ -248,10 +248,10 @@ public class RTPPacketizerRFC3984H264 extends RTPPacketizerVideoBase implements 
 		StringBuilder sb = new StringBuilder();
 		sb.append("packetization-mode=1");
 		String profile = null;
-		H264CodecConfigParts configParts = NettyH264Utils.breakApartAVCC(config.asReadOnly());
+		H264CodecConfigParts configParts = H264Utils.breakApartAVCC(config.asReadOnly());
 		H264CodecConfigInfo configInfo = null;
 		if (config != null) {
-			configInfo = NettyH264Utils.decodeAVCC(config.asReadOnly());
+			configInfo = H264Utils.decodeAVCC(config.asReadOnly());
 		}
 		profile = configParts.getProfileLevelIdStr();
 		if(profile.length() > 0) {

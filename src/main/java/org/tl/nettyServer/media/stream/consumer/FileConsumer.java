@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.ITagWriter;
-import org.tl.nettyServer.media.io.flv.impl.FLVWriter;
+import org.tl.nettyServer.media.media.flv.impl.FLVWriter;
 import org.tl.nettyServer.media.messaging.*;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;

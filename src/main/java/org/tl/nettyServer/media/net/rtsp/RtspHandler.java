@@ -13,7 +13,7 @@ import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.client.IServer;
 import org.tl.nettyServer.media.conf.ConfigServer;
-import org.tl.nettyServer.media.io.flv.FLVUtils;
+import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.net.http.codec.HTTPCodecUtil;
 import org.tl.nettyServer.media.net.http.codec.QueryStringDecoder;
 import org.tl.nettyServer.media.net.http.message.HTTPMethod;

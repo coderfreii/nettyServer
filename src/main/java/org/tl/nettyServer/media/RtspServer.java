@@ -98,48 +98,47 @@ public class RtspServer {
                 return new Thread(r, "worker");
             }
         });
-        try {
-            //创建服务端的启动对象，设置参数
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            //设置两个线程组boosGroup和workerGroup
-            bootstrap.group(bossGroup, workerGroup)
-                    //设置服务端通道实现类型
-                    .channel(NioServerSocketChannel.class)
-                    //设置线程队列得到连接个数
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    //设置保持活动连接状态
-                    .childOption(ChannelOption.SO_KEEPALIVE, true)
-                    //使用匿名内部类的形式初始化通道对象
-                    .childHandler(test);//给workerGroup的EventLoop对应的管道设置处理器
 
-            //绑定端口号，启动服务端
-            ChannelFuture channelFuture = bootstrap.bind(5541);
+        //创建服务端的启动对象，设置参数
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        //设置两个线程组boosGroup和workerGroup
+        bootstrap.group(bossGroup, workerGroup)
+                //设置服务端通道实现类型
+                .channel(NioServerSocketChannel.class)
+                //设置线程队列得到连接个数
+                .option(ChannelOption.SO_BACKLOG, 128)
+                //设置保持活动连接状态
+                .childOption(ChannelOption.SO_KEEPALIVE, true)
+                //使用匿名内部类的形式初始化通道对象
+                .childHandler(test);//给workerGroup的EventLoop对应的管道设置处理器
 
-            //添加监听器
-            channelFuture.addListener(new ChannelFutureListener() {
-                //使用匿名内部类，ChannelFutureListener接口
-                //重写operationComplete方法
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    //判断是否操作成功
-                    if (future.isSuccess()) {
-                        System.out.println("连接成功");
-                    } else {
-                        System.out.println("连接失败");
-                    }
+        //绑定端口号，启动服务端
+        ChannelFuture channelFuture = bootstrap.bind(5541);
+
+        //添加监听器
+        channelFuture.addListener(new ChannelFutureListener() {
+            //使用匿名内部类，ChannelFutureListener接口
+            //重写operationComplete方法
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                //判断是否操作成功
+                if (future.isSuccess()) {
+                    System.out.println("rtsp 连接成功 5541");
+                } else {
+                    System.out.println("连接失败");
                 }
-            });
+            }
+        });
 
-            //对关闭通道进行监听
-            ChannelFuture channelCloseFuture = channelFuture.channel().closeFuture();
-            channelCloseFuture.sync();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            bossGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+        //对关闭通道进行监听
+        ChannelFuture channelCloseFuture = channelFuture.channel().closeFuture();
+        channelCloseFuture.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                bossGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully();
+            }
+        });
     }
 
 

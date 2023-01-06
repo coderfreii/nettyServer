@@ -76,7 +76,7 @@ public class RtmpServer {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     //判断是否操作成功
                     if (future.isSuccess()) {
-                        System.out.println("连接成功");
+                        System.out.println("rtmp 连接成功 8521");
                     } else {
                         System.out.println("连接失败");
                     }

@@ -20,7 +20,7 @@
 package org.tl.nettyServer.media.io;
 
 
-import org.tl.nettyServer.media.io.flv.IKeyFrameDataAnalyzer;
+import org.tl.nettyServer.media.media.flv.IKeyFrameDataAnalyzer;
 
 import java.io.File;
 import java.io.IOException;

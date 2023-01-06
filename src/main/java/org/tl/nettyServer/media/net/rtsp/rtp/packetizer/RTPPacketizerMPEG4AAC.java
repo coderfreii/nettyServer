@@ -5,9 +5,9 @@ import gov.nist.javax.sdp.MediaDescriptionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.flv.FLVUtils;
-import org.tl.nettyServer.media.io.flv.codec.NettyAACFrame;
-import org.tl.nettyServer.media.io.flv.codec.NettyAACUtils;
+import org.tl.nettyServer.media.media.flv.FLVUtils;
+import org.tl.nettyServer.media.media.acc.AACFrame;
+import org.tl.nettyServer.media.media.acc.AACUtils;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtsp.rtp.RTPPacket;
@@ -86,7 +86,7 @@ public class RTPPacketizerMPEG4AAC extends RTPPacketizerAudioBase implements IRT
 		 * a=fmtp:96 profile-level-id=1;mode=AAC-hbr;sizelength=13;indexlength=3;indexdeltalength=3;config=1490
 		 */
 		describeInfo = (MediaDescriptionImpl)SdpFactory.getInstance().createMediaDescription("audio", 0, 0, "RTP/AVP", new int[]{sdpTypeId});
-		NettyAACFrame aacFrame = NettyAACUtils.decodeAACCodecConfig(config);
+		AACFrame aacFrame = AACUtils.decodeAACCodecConfig(config);
 		describeInfo.setAttribute("rtpmap", 
 						new StringBuilder()
 								.append(sdpTypeId)

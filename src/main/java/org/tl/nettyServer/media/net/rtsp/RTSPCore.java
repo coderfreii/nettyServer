@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.RtspServer;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.flv.FLVUtils;
+import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.net.http.codec.HTTPCodecUtil;
 import org.tl.nettyServer.media.net.http.codec.QueryStringDecoder;
 import org.tl.nettyServer.media.net.http.request.HTTPRequest;

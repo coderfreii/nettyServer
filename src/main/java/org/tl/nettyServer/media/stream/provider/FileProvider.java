@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.ITagReader;
-import org.tl.nettyServer.media.io.flv.IKeyFrameDataAnalyzer;
+import org.tl.nettyServer.media.media.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.messaging.*;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;

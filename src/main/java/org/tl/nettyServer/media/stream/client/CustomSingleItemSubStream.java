@@ -12,7 +12,7 @@ import org.tl.nettyServer.media.exception.StreamNotFoundException;
 import org.tl.nettyServer.media.io.IStreamableFile;
 import org.tl.nettyServer.media.io.ITag;
 import org.tl.nettyServer.media.io.ITagReader;
-import org.tl.nettyServer.media.io.flv.FLVUtils;
+import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.messaging.IMessageOutput;
 import org.tl.nettyServer.media.messaging.IPipe;
 import org.tl.nettyServer.media.messaging.InMemoryPushPushPipe;

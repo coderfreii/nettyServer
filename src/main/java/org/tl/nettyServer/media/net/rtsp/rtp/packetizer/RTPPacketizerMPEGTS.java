@@ -5,8 +5,8 @@ import gov.nist.javax.sdp.MediaDescriptionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.io.ts.FLV2MPEGTSWriter;
-import org.tl.nettyServer.media.io.ts.IFLV2MPEGTSWriter;
+import org.tl.nettyServer.media.media.ts.FLV2MPEGTSWriter;
+import org.tl.nettyServer.media.media.ts.IFLV2MPEGTSWriter;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
 import org.tl.nettyServer.media.net.rtsp.rtp.RTPPacket;
@@ -15,7 +15,7 @@ import org.tl.nettyServer.media.stream.data.IStreamPacket;
 import javax.sdp.SdpFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.tl.nettyServer.media.io.ts.codec.VideNaluInfosResolver.TIME_SCALE;
+import static org.tl.nettyServer.media.media.ts.codec.VideNaluInfosResolver.TIME_SCALE;
 
 
 /**
