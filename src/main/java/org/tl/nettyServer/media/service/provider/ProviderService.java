@@ -29,6 +29,7 @@ import org.tl.nettyServer.media.service.IStreamableFileServiceFactory;
 import org.tl.nettyServer.media.stream.DefaultStreamFilenameGenerator;
 import org.tl.nettyServer.media.stream.IStreamFilenameGenerator;
 import org.tl.nettyServer.media.stream.base.IBroadcastStream;
+import org.tl.nettyServer.media.stream.client.IClientBroadcastStream;
 import org.tl.nettyServer.media.stream.provider.FileProvider;
 import org.tl.nettyServer.media.util.ScopeUtils;
 
@@ -141,6 +142,12 @@ public class ProviderService implements IProviderService {
                 log.warn("Broadcast scope was not added to {}", scope);
             }
         }
+
+        // set the client broadcast stream if we have a broadcast scope
+        if (broadcastScope != null && bs instanceof IClientBroadcastStream) {
+            broadcastScope.setClientBroadcastStream((IClientBroadcastStream) bs);
+        }
+
         if (log.isDebugEnabled()) {
             log.debug("Subscribing scope {} to provider {}", broadcastScope, bs.getProvider());
         }
