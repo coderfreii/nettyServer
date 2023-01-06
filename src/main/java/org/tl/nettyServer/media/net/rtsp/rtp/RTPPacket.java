@@ -62,7 +62,7 @@ public class RTPPacket extends BaseRTPPacket {
 	public RTPPacket(BufFacade buffer) {
 		int len = buffer.readableBytes();
         buff = new byte[len];
-        buffer.writeBytes(buff, 0, len);
+        buffer.readBytes(buff, 0, len);
 
         int b = buff[0] & 0xff;
 
