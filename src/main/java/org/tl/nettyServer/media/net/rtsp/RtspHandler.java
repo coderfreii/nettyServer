@@ -273,7 +273,19 @@ public final class RtspHandler {
         if (player != null) {
             rtspConsumer.addStreamListener(player);
         }
-        conn.setAttribute("playing", true);
+
+        try {
+            rtspStream.play();
+            conn.setAttribute("playing", true);
+        } catch (Exception e) {
+            rtspStream.stop();
+            conn.removeAttribute("playing");
+        }
+
+        if (rtspStream.isFailure()) {
+            rtspStream.stop();
+            conn.removeAttribute("playing");
+        }
     }
 
     /**
@@ -547,13 +559,13 @@ public final class RtspHandler {
             if (data.readable()) {
                 data.markReaderIndex();
                 codecId = (byte) FLVUtils.getVideoCodec(data.readByte());
-                data.readerIndex(5);
                 switch (codecId) {
                     case 0x07: //avc/h.264 video
                         videoRtpPacketizer = new RTPPacketizerRFC3984H264();
                         break;
                 }
 
+                data.readerIndex(5);
                 if (videoRtpPacketizer != null) {
                     mdvideo = videoRtpPacketizer.getDescribeInfo(data);
                 }
@@ -562,6 +574,7 @@ public final class RtspHandler {
                     mdvideo.setAttribute("control", "trackID=0");
                     mds.add(mdvideo);
                 }
+                data.resetReaderIndex();
             }
 
             // configure audio sdp
@@ -569,7 +582,6 @@ public final class RtspHandler {
             if (data.readable()) {
                 data.markReaderIndex();
                 codecId = (byte) FLVUtils.getAudioCodec(data.readByte());
-                data.skipBytes(1);
                 switch (codecId) {
                     case 0x02: //mp3
                         audioRtpPacketizer = new RTPPacketizerRFC2250MP3();
@@ -578,7 +590,7 @@ public final class RtspHandler {
                         audioRtpPacketizer = new RTPPacketizerMPEG4AAC();
                         break;
                 }
-
+                data.skipBytes(1);
                 if (audioRtpPacketizer != null) {
                     mdaudio = audioRtpPacketizer.getDescribeInfo(data);
                 }
@@ -587,6 +599,7 @@ public final class RtspHandler {
                     mdaudio.setAttribute("control", "trackID=1");
                     mds.add(mdaudio);
                 }
+                data.resetReaderIndex();
             }
         }
         player = new RTPPlayer(conn, videoRtpPacketizer, audioRtpPacketizer);
@@ -623,6 +636,7 @@ public final class RtspHandler {
 
         RTSPPushProxyStream pubStream = new RTSPPushProxyStream(stream);
         pubStream.setScope(scope);
+        pubStream.setPublishedName(stream);
         return pubStream;
     }
 
@@ -691,19 +705,6 @@ public final class RtspHandler {
         rtspStream.start();
 
         conn.setAttribute("rtspStream", rtspStream);
-
-        try {
-            rtspStream.play();
-        } catch (Exception e) {
-            rtspStream.stop();
-            return null;
-        }
-
-        if (rtspStream.isFailure()) {
-            rtspStream.stop();
-            return null;
-        }
-
         return rtspConsumer;
     }
 
