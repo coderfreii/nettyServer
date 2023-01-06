@@ -34,9 +34,7 @@ public abstract class RTSPProxyStream extends BaseRTMPProxyStream {
 	private volatile boolean hasAudio = false;
 
 	public RTSPProxyStream(String streamName) {
-
 		super();
-		setPublishedName(streamName);
 	}
 
 	@Override
