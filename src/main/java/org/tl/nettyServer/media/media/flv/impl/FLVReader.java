@@ -7,13 +7,14 @@ import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.io.*;
 import org.tl.nettyServer.media.io.amf.Input;
 import org.tl.nettyServer.media.io.amf.Output;
+import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.media.flv.FLVHeader;
 import org.tl.nettyServer.media.media.flv.IKeyFrameDataAnalyzer;
-import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.util.IOUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -254,6 +255,8 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
                 channel.position(pos);
                 fillBuffer(bufferSize, true);
             }
+        } catch (ClosedByInterruptException e) {
+            log.error("Error setCurrentPosition ClosedByInterruptException", e);
         } catch (Exception e) {
             log.error("Error setCurrentPosition", e);
         }

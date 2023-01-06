@@ -352,7 +352,7 @@ public abstract class BaseEngine implements IPushableConsumer {
         Status seek = new Status(StatusCodes.NS_SEEK_NOTIFY);
         seek.setClientid(streamId);
         seek.setDetails(item.getName());
-        seek.setDesciption(String.format("Seeking %d (stream ID: %d).", position, streamId));
+        seek.setDesciption(String.format("Seeking %d (stream ID: %.2f).", position, streamId));
 
         doPushMessage(seek);
     }

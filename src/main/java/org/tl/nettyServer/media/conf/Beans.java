@@ -31,6 +31,7 @@ public class Beans {
     public JDKSchedulingService schedulingService() {
         JDKSchedulingService schedulingService = new JDKSchedulingService();
         schedulingService.setThreadCount(ExtConfiguration.SO_POOL_SIZE);
+        schedulingService.setInterruptOnRemove(false);
         return schedulingService;
     }
 

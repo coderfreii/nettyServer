@@ -1164,6 +1164,8 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                 // 我们无法获取更多数据，请停止流。
                 log.warn("Error while getting message", err);
                 runDeferredStop();
+            } catch (RuntimeException e) {
+                System.out.println();
             } finally {
                 // 重置运行标志
                 pushPullRunning.compareAndSet(true, false);
@@ -1269,7 +1271,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                 audioMessage.getBody().release();
             }
             if (!messageSent && subscriberStream.getState() == StreamState.PLAYING) {
-                boolean isRTMPTPlayback = subscriberStream.getConnection().getProtocol().equals("rtmpt");
+                boolean isRTMPTPlayback = "rtmpt".equals(subscriberStream.getConnection().getProtocol());
                 // send all frames from last keyframe up to requested position and fill client buffer
                 if (sendCheckVideoCM()) {
                     final long clientBuffer = subscriberStream.getClientBufferDuration();
