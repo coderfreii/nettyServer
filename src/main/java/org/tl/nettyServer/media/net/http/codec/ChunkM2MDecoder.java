@@ -8,6 +8,12 @@ import org.tl.nettyServer.media.net.http.message.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 这里直接解析  ChunkMessage   这个是将前端分片传来的Chunk 合并为 message
+ *
+ * @author TL
+ * @date 2023/01/13
+ */
 public class ChunkM2MDecoder extends MessageToMessageDecoder<HTTPChunk> {
     List<HTTPChunk> chunkList = new ArrayList();
 

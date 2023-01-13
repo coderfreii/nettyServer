@@ -3,17 +3,13 @@ package org.tl.nettyServer.media.session;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
+import org.tl.nettyServer.media.net.http.conn.HTTPConnection;
 
 import javax.crypto.Cipher;
 import java.net.SocketAddress;
 
-@Data
-@Slf4j
-public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerContext, RTMPConnection> {
-    public static AttributeKey<RTMPConnection> connectionAttributeKey = AttributeKey.valueOf(sessionKey);
+public class NettyHttpSessionFacade implements SessionFacade<ChannelHandlerContext, HTTPConnection> {
+    public static AttributeKey<HTTPConnection> connectionAttributeKey = AttributeKey.valueOf(sessionKey);
 
     /**
      * 框架上下文
@@ -23,16 +19,7 @@ public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerConte
     /**
      * 连接
      */
-    private RTMPConnection connection;
-
-    /**
-     * 密码在
-     */
-    private Cipher cipherIn;
-    /**
-     * 算出
-     */
-    private Cipher cipherOut;
+    private HTTPConnection connection;
 
 
     @Override
@@ -43,6 +30,16 @@ public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerConte
     @Override
     public String getSessionId() {
         return this.connection.getSessionId();
+    }
+
+    @Override
+    public void setConnection(HTTPConnection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public HTTPConnection getConnection() {
+        return this.connection;
     }
 
     @Override
@@ -60,9 +57,31 @@ public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerConte
         return context.channel().localAddress();
     }
 
+
     @Override
     public ChannelFuture write(Object o) {
         return context.writeAndFlush(o);
+    }
+
+
+    @Override
+    public void setCipherIn(Cipher cipherIn) {
+
+    }
+
+    @Override
+    public void setCipherOut(Cipher cipherOut) {
+
+    }
+
+    @Override
+    public Cipher getCipherIn() {
+        return null;
+    }
+
+    @Override
+    public Cipher getCipherOut() {
+        return null;
     }
 
     @Override

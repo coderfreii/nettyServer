@@ -1,6 +1,10 @@
 package org.tl.nettyServer.media.net.http.service;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.net.http.conn.HTTPConnection;
 import org.tl.nettyServer.media.net.http.message.HTTPHeaders;
 import org.tl.nettyServer.media.net.http.request.HTTPRequest;
 import org.tl.nettyServer.media.net.http.response.HTTPResponse;
@@ -50,18 +54,17 @@ public abstract class BaseHTTPService implements IHTTPService {
     }
 
     protected void flush(boolean isKeepAlive, HTTPResponse resp, boolean isClose) {
-//        HTTPNettyConnection conn = (HTTPNettyConnection) Red5.getConnectionLocal();
-//
-//        ChannelFuture future = conn.write(resp);
+        HTTPConnection conn = (HTTPConnection) Red5.getConnectionLocal();
+        ChannelFuture future = conn.write(resp);
 
-//        if (isClose || !isKeepAlive) {
-//            future.addListener(new ChannelFutureListener() {
-//                @Override
-//                public void operationComplete(ChannelFuture future) throws Exception {
-//                    future.channel().close();
-//                }
-//            });
-//        }
+        if (isClose || !isKeepAlive) {
+            future.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    future.channel().close();
+                }
+            });
+        }
     }
 
     @Override

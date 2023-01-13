@@ -476,13 +476,14 @@ public abstract class HTTPMessageDecoder extends ByteToMessageDecoder {
         if (isContentAlwaysEmpty(message)) {
             //后续内容为空 重置到初始状态
             nextState = State.SKIP_CONTROL_CHARS;
-        } else if (message.isChunked()) {
+        } else if (HTTPCodecUtil.isTransferEncodingChunked(message)) {
             // HttpMessage.isChunked() returns true when either:
             // 1) HttpMessage.setChunked(true) was called or
             // 2) 'Transfer-Encoding' is 'chunked'.
             // Because this decoder did not call HttpMessage.setChunked(true)
             // yet, HttpMessage.isChunked() should return true only when
             // 'Transfer-Encoding' is 'chunked'.
+            message.setChunked(true);
             nextState = State.READ_CHUNK_SIZE;
         } else if (HTTPHeaders.getContentLength(message, -1) >= 0) {
             nextState = State.READ_FIXED_LENGTH_CONTENT;

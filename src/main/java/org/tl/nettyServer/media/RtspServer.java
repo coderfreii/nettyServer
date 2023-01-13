@@ -127,7 +127,7 @@ public class RtspServer {
                 if (future.isSuccess()) {
                     System.out.println("rtsp 连接成功 5541");
                 } else {
-                    System.out.println("连接失败");
+                    System.out.println("rtsp 连接失败 5541");
                 }
             }
         });

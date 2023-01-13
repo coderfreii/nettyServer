@@ -106,7 +106,7 @@ public class Application extends ApplicationAdapter {
     @Override
     public void streamPublishStart(IBroadcastStream stream) {
         //添加hls监听
-//		MpegTsSegmentNettyService nettySs = MpegTsSegmentNettyService.getInstance();
+//		MpegTsSegmentService nettySs = MpegTsSegmentService.getInstance();
 //		stream.addStreamListener(nettySs);
 
 

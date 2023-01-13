@@ -1,14 +1,14 @@
 /*
  * RED5 Open Source Media Server - https://github.com/Red5/
- * 
+ *
  * Copyright 2006-2016 by respective authors (see below). All rights reserved.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.tl.nettyServer.media.client.IContext;
+import org.tl.nettyServer.media.client.Server;
 import org.tl.nettyServer.media.persistence.IPersistable;
 import org.tl.nettyServer.media.scope.*;
 
@@ -45,10 +46,8 @@ public class ScopeUtils {
     /**
      * Resolves scope for specified scope and path.
      *
-     * @param from
-     *            Scope to use as context (to start from)
-     * @param path
-     *            Path to resolve
+     * @param from Scope to use as context (to start from)
+     * @param path Path to resolve
      * @return Resolved scope
      */
     public static IScope resolveScope(IScope from, String path) {
@@ -90,8 +89,7 @@ public class ScopeUtils {
     /**
      * Finds root scope for specified scope object. Root scope is the top level scope among scope's parents.
      *
-     * @param from
-     *            Scope to find root for
+     * @param from Scope to find root for
      * @return Root scope object
      */
     public static IScope findRoot(IScope from) {
@@ -104,17 +102,16 @@ public class ScopeUtils {
 
     /**
      * Returns the application scope for specified scope. Application scope has depth of 1 and has no parent.
-     *
+     * <p>
      * See
-     * 
+     *
      * <pre>
      * isApp
      * </pre>
-     * 
+     * <p>
      * method for details.
      *
-     * @param from
-     *            Scope to find application for
+     * @param from Scope to find application for
      * @return Application scope.
      */
     public static IScope findApplication(IScope from) {
@@ -128,21 +125,19 @@ public class ScopeUtils {
     /**
      * Check whether one scope is an ancestor of another
      *
-     * @param from
-     *            Scope
-     * @param ancestor
-     *            Scope to check
+     * @param from     Scope
+     * @param ancestor Scope to check
      * @return <pre>
      * true
      * </pre>
-     * 
-     *         if ancestor scope is really an ancestor of scope passed as from parameter,
-     * 
-     *         <pre>
+     * <p>
+     * if ancestor scope is really an ancestor of scope passed as from parameter,
+     *
+     * <pre>
      * false
      * </pre>
-     * 
-     *         otherwise.
+     * <p>
+     * otherwise.
      */
     public static boolean isAncestor(IBasicScope from, IBasicScope ancestor) {
         IBasicScope current = from;
@@ -158,19 +153,18 @@ public class ScopeUtils {
     /**
      * Checks whether scope is root or not
      *
-     * @param scope
-     *            Scope to check
+     * @param scope Scope to check
      * @return <pre>
      * true
      * </pre>
-     * 
-     *         if scope is root scope (top level scope),
-     * 
-     *         <pre>
+     * <p>
+     * if scope is root scope (top level scope),
+     *
+     * <pre>
      * false
      * </pre>
-     * 
-     *         otherwise.
+     * <p>
+     * otherwise.
      */
     public static boolean isRoot(IBasicScope scope) {
         return !scope.hasParent();
@@ -178,22 +172,21 @@ public class ScopeUtils {
 
     /**
      * Check whether scope is the global scope (level 0 leaf in scope tree) or not
-     *
+     * <p>
      * When user connects the following URL: rtmp://localhost/myapp/foo/bar then / is the global level scope, myapp is app level, foo is room level and bar is room level as well (but with higher depth level)
      *
-     * @param scope
-     *            Scope to check
+     * @param scope Scope to check
      * @return <pre>
      * true
      * </pre>
-     * 
-     *         if scope is the global scope,
-     * 
-     *         <pre>
+     * <p>
+     * if scope is the global scope,
+     *
+     * <pre>
      * false
      * </pre>
-     * 
-     *         otherwise.
+     * <p>
+     * otherwise.
      */
     public static boolean isGlobal(IBasicScope scope) {
         return scope.getType().equals(ScopeType.GLOBAL);
@@ -202,19 +195,18 @@ public class ScopeUtils {
     /**
      * Check whether scope is an application scope (level 1 leaf in scope tree) or not
      *
-     * @param scope
-     *            Scope to check
+     * @param scope Scope to check
      * @return <pre>
      * true
      * </pre>
-     * 
-     *         if scope is an application scope,
-     * 
-     *         <pre>
+     * <p>
+     * if scope is an application scope,
+     *
+     * <pre>
      * false
      * </pre>
-     * 
-     *         otherwise.
+     * <p>
+     * otherwise.
      */
     public static boolean isApp(IBasicScope scope) {
         return scope.getType().equals(ScopeType.APPLICATION.toString());
@@ -223,19 +215,18 @@ public class ScopeUtils {
     /**
      * Check whether scope is a room scope (level 2 leaf in scope tree or lower, e.g. 3, 4, ...) or not
      *
-     * @param scope
-     *            Scope to check
+     * @param scope Scope to check
      * @return <pre>
      * true
      * </pre>
-     * 
-     *         if scope is a room scope,
-     * 
-     *         <pre>
+     * <p>
+     * if scope is a room scope,
+     *
+     * <pre>
      * false
      * </pre>
-     * 
-     *         otherwise.
+     * <p>
+     * otherwise.
      */
     public static boolean isRoom(IBasicScope scope) {
         return scope.getType().equals(ScopeType.ROOM);
@@ -244,10 +235,8 @@ public class ScopeUtils {
     /**
      * Returns scope service by bean name. See overloaded method for details.
      *
-     * @param scope
-     *            scope
-     * @param name
-     *            name
+     * @param scope scope
+     * @param name  name
      * @return object
      */
     protected static Object getScopeService(IScope scope, String name) {
@@ -257,12 +246,9 @@ public class ScopeUtils {
     /**
      * Returns scope services (e.g. SharedObject, etc) for the scope. Method uses either bean name passes as a string or class object.
      *
-     * @param scope
-     *            The scope service belongs to
-     * @param name
-     *            Bean name
-     * @param defaultClass
-     *            Class of service
+     * @param scope        The scope service belongs to
+     * @param name         Bean name
+     * @param defaultClass Class of service
      * @return Service object
      */
     protected static Object getScopeService(IScope scope, String name, Class<?> defaultClass) {
@@ -291,10 +277,8 @@ public class ScopeUtils {
     /**
      * Returns scope service that implements a given interface.
      *
-     * @param scope
-     *            The scope service belongs to
-     * @param intf
-     *            The interface the service must implement
+     * @param scope The scope service belongs to
+     * @param intf  The interface the service must implement
      * @return Service object
      */
     public static Object getScopeService(IScope scope, Class<?> intf) {
@@ -308,12 +292,9 @@ public class ScopeUtils {
     /**
      * Returns scope service that implements a given interface.
      *
-     * @param scope
-     *            The scope service belongs to
-     * @param intf
-     *            The interface the service must implement
-     * @param defaultClass
-     *            Class that should be used to create a new service if no service was found.
+     * @param scope        The scope service belongs to
+     * @param intf         The interface the service must implement
+     * @param defaultClass Class that should be used to create a new service if no service was found.
      * @return Service object
      */
     public static Object getScopeService(IScope scope, Class<?> intf, Class<?> defaultClass) {
@@ -375,6 +356,11 @@ public class ScopeUtils {
         // cache service
         scope.setAttribute(attr, handler);
         return handler;
+    }
+
+    public static Scope getScope(String app) {
+        WebScope webScope = (WebScope) Server.getInstance().getGlobal("default").getScope(app);
+        return webScope;
     }
 
 }

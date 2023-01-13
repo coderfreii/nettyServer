@@ -48,7 +48,7 @@ public class DefaultHttpMessage implements HTTPMessage {
         if (chunked) {
             return true;
         } else {
-            return HTTPCodecUtil.isTransferEncodingChunkedNetty(this);
+            return HTTPCodecUtil.isTransferEncodingChunked(this);
         }
     }
 

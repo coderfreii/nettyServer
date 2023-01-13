@@ -10,7 +10,8 @@ import org.tl.nettyServer.media.net.http.codec.ChunkM2MDecoder;
 import org.tl.nettyServer.media.net.http.codec.ContentTypeDecoder;
 import org.tl.nettyServer.media.net.http.codec.HTTPRequestDecoder;
 import org.tl.nettyServer.media.net.http.codec.HTTPResponseEncoder;
-import org.tl.nettyServer.media.net.http.handler.HTTPNettyIoHandler;
+import org.tl.nettyServer.media.net.http.handler.ConnInboundHandlerAdapter;
+import org.tl.nettyServer.media.net.http.handler.HTTPIoHandler;
 
 public class HttpServer {
     static private EventLoopGroup bossGroup;
@@ -21,11 +22,12 @@ public class HttpServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new HTTPRequestDecoder())
                         .addLast(new HTTPResponseEncoder())
+                        .addLast(new ConnInboundHandlerAdapter())
+                        .addLast(new HTTPRequestDecoder())
                         .addLast(new ChunkM2MDecoder())
                         .addLast(new ContentTypeDecoder())
-                        .addLast(new HTTPNettyIoHandler());
+                        .addLast(new HTTPIoHandler());
             }
         };
 
@@ -58,20 +60,16 @@ public class HttpServer {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     //判断是否操作成功
                     if (future.isSuccess()) {
-                        System.out.println("连接成功");
+                        System.out.println("http 连接成功 8521");
                     } else {
-                        System.out.println("连接失败");
+                        System.out.println("http 连接失败 8521");
                     }
                 }
             });
 
             //对关闭通道进行监听
             ChannelFuture channelCloseFuture = channelFuture.channel().closeFuture();
-            channelCloseFuture.sync();
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
+        } catch (RuntimeException e) {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }

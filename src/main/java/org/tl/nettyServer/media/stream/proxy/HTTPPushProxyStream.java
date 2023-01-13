@@ -2,19 +2,20 @@ package org.tl.nettyServer.media.stream.proxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tl.nettyServer.media.scope.IScope;
+
 
 /**
- * 推流到播放器， 语义上也可推流到一个服务器
- * rtsp tcp push stream
+ * http 推流
  * @author pengliren
  *
  */
-public class RTSPPushProxyStream extends RTSPProxyStream {
+public class HTTPPushProxyStream extends HTTPProxyStream {
 
-	private static Logger log = LoggerFactory.getLogger(RTSPPushProxyStream.class);
+	private static Logger log = LoggerFactory.getLogger(HTTPPushProxyStream.class);
 	
-	public RTSPPushProxyStream(String streamName) {
-		super(streamName);
+	public HTTPPushProxyStream(IScope scope, String streamName) {
+		super(scope,streamName);
 	}
 
 	@Override
@@ -31,6 +32,6 @@ public class RTSPPushProxyStream extends RTSPProxyStream {
 			connManager.register(publishedName, this);
 		}
 		
-		log.info("rtsp push proxy stream {} is start!", getPublishedName());
+		log.info("http push proxy stream {} is start!", getPublishedName());
 	}
 }

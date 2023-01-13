@@ -1,56 +1,37 @@
-package org.tl.nettyServer.media;
+package org.tl.nettyServer.media.net.hls;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.tl.nettyServer.media.net.rtmp.handler.*;
+import lombok.extern.slf4j.Slf4j;
+import org.tl.nettyServer.media.net.http.codec.HTTPRequestDecoder;
+import org.tl.nettyServer.media.net.http.codec.HTTPResponseEncoder;
+import org.tl.nettyServer.media.net.http.handler.HTTPIoHandler;
 
-import java.util.concurrent.ThreadFactory;
 
-public class RtmpServer {
-    static private EventLoopGroup bossGroup;
-    static private EventLoopGroup workerGroup;
+@Slf4j
+public class HTTPTransport extends Thread {
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
 
-    public static void main(String[] args) {
+    @Override
+    public void run()   {
         ChannelHandler test = new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new BufFacadeDecoder())
-                        .addLast(new NioEventLoopGroup(10, new ThreadFactory() {
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                return new Thread(r, "RtmpPacketToByte");
-                            }
-                        }), new RtmpPacketToByteHandler())
-                        .addLast(new MessageSendHandler())
-                        .addLast(new ByteBufEncoder())
-                        .addLast(new ConnInboundHandler()) //
-                        .addLast(new HandshakeHandler())
-                        .addLast(new RTMPEHandler())
-                        .addLast(new RtmpByteToPacketHandler())
-                        .addLast(new RtmpPacketMayAsyncDecoder())
-                        .addLast(new InExceptionHandler());
-
+                        .addLast(new HTTPRequestDecoder())
+                        .addLast(new HTTPResponseEncoder())
+                        .addLast(new HTTPIoHandler());
             }
         };
 
 
         //创建两个线程组 boosGroup、workerGroup
-        bossGroup = new NioEventLoopGroup(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "boss");
-            }
-        });
-        workerGroup = new NioEventLoopGroup(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "worker");
-            }
-        });
+        bossGroup = new NioEventLoopGroup();
+        workerGroup = new NioEventLoopGroup();
         try {
             //创建服务端的启动对象，设置参数
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -66,7 +47,7 @@ public class RtmpServer {
                     .childHandler(test);//给workerGroup的EventLoop对应的管道设置处理器
 
             //绑定端口号，启动服务端
-            ChannelFuture channelFuture = bootstrap.bind(13511);
+            ChannelFuture channelFuture = bootstrap.bind(8765);
 
             //添加监听器
             channelFuture.addListener(new ChannelFutureListener() {
@@ -76,9 +57,9 @@ public class RtmpServer {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     //判断是否操作成功
                     if (future.isSuccess()) {
-                        System.out.println("rtmp 连接成功 13511");
+                        System.out.println("连接成功");
                     } else {
-                        System.out.println("rtmp 连接失败 13511");
+                        System.out.println("连接失败");
                     }
                 }
             });
@@ -94,4 +75,11 @@ public class RtmpServer {
             workerGroup.shutdownGracefully();
         }
     }
+
+    public void stopped() {
+        bossGroup.shutdownGracefully();
+        workerGroup.shutdownGracefully();
+        log.info("Http  Transport stopped");
+    }
+
 }

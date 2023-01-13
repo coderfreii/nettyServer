@@ -172,20 +172,6 @@ public class HTTPCodecUtil {
         return false;
     }
 
-    public static boolean isTransferEncodingChunkedNetty(HTTPMessage m) {
-        List<String> chunked = m.getHeaders(HTTPHeaders.Names.TRANSFER_ENCODING);
-        if (chunked.isEmpty()) {
-            return false;
-        }
-
-        for (String v : chunked) {
-            if (v.equalsIgnoreCase(HTTPHeaders.Values.CHUNKED)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static ByteBuf encodeBody(String body) {
         ByteBuf buffer = Unpooled.buffer(512);
 
