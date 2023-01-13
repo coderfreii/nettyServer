@@ -1,6 +1,4 @@
-
 package org.tl.nettyServer.media.media.ts;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +10,20 @@ import org.tl.nettyServer.media.media.h264.H264CodecConfigParts;
 import org.tl.nettyServer.media.media.h264.H264Utils;
 import org.tl.nettyServer.media.media.mp3.MP3BufferedDecoder;
 import org.tl.nettyServer.media.media.mp3.MP3HeaderData;
+import org.tl.nettyServer.media.media.ts.FLV2MPEGTSWriter;
+import org.tl.nettyServer.media.media.ts.IFLV2MPEGTSWriter;
+import org.tl.nettyServer.media.media.ts.TSPacketFragment;
+import org.tl.nettyServer.media.media.ts.TransportStreamUtils;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
 import org.tl.nettyServer.media.util.BufferUtil;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.tl.nettyServer.media.media.ts.TransportStreamUtils_.*;
-
+import static org.tl.nettyServer.media.media.ts.TransportStreamUtils.*;
 
 /**
  * FLV TO Mpeg2TS
@@ -205,7 +205,7 @@ public class FLV2MPEGTSWriter_ {
 	protected int audioCodec = TransportStreamUtils.STREAM_TYPE_AUDIO_UNKNOWN;
 
 	public FLV2MPEGTSWriter_(IFLV2MPEGTSWriter writer, BufFacade videoConfig, BufFacade audioConfig) {
-		
+
 		this.writer = writer;
 		if(videoConfig != null) {
 			videoCodec = (byte) FLVUtils.getVideoCodec(videoConfig.getByte(0));
@@ -214,7 +214,7 @@ public class FLV2MPEGTSWriter_ {
 				h264CodecConfigPart = H264Utils.breakApartAVCC(videoConfig);
 			}
 		}
-		
+
 		if(audioConfig != null) {
 			audioCodec = (byte)FLVUtils.getAudioCodec(audioConfig.getByte(0));
 			if(audioCodec == AudioCodec.AAC.getId()) {
@@ -223,9 +223,9 @@ public class FLV2MPEGTSWriter_ {
 			}
 		}
 	}
-	
+
 	public void handleVideo(VideoData data) {
-		
+
 		BufFacade dataBuff = data.getData().asReadOnly();
 		dataBuff.markReaderIndex();
 		long ts90 = data.getTimestamp() * TIME_SCALE;
@@ -328,18 +328,18 @@ public class FLV2MPEGTSWriter_ {
 					if ((naluLen <= 0) || (loop + naluLen > dataLen))break;
 					//nalu每个NALU第一个字节的前5位标明的是该NAL包的类型，即NAL nal_unit_type
 					/*
-				  		* 	NALU_TYPE_SLICE 1
-						* 	NALU_TYPE_DPA 2
-						* 	NALU_TYPE_DPB 3
-						* 	NALU_TYPE_DPC 4
-						* 	NALU_TYPE_IDR 5
-						* 	NALU_TYPE_SEI 6
-						* 	NALU_TYPE_SPS 7
-						* 	NALU_TYPE_PPS 8
-						* 	NALU_TYPE_AUD 9//访问分隔符
-						* 	NALU_TYPE_EOSEQ 10
-						* 	NALU_TYPE_EOSTREAM 11
-						* 	NALU_TYPE_FILL 12
+					 * 	NALU_TYPE_SLICE 1
+					 * 	NALU_TYPE_DPA 2
+					 * 	NALU_TYPE_DPB 3
+					 * 	NALU_TYPE_DPC 4
+					 * 	NALU_TYPE_IDR 5
+					 * 	NALU_TYPE_SEI 6
+					 * 	NALU_TYPE_SPS 7
+					 * 	NALU_TYPE_PPS 8
+					 * 	NALU_TYPE_AUD 9//访问分隔符
+					 * 	NALU_TYPE_EOSEQ 10
+					 * 	NALU_TYPE_EOSTREAM 11
+					 * 	NALU_TYPE_FILL 12
 					 */
 
 					int naluType = dataBytes[loop] & 0x1F;
@@ -403,7 +403,7 @@ public class FLV2MPEGTSWriter_ {
 					if (frameType == 1 && pps == 0 && h264CodecConfigPart != null && h264CodecConfigPart.getPpss() != null) {
 						List<byte[]> ppss = h264CodecConfigPart.getPpss();
 						for (byte[] b : ppss) {
-							byte[] h264PpsStartcode = new byte[4]; 
+							byte[] h264PpsStartcode = new byte[4];
 							h264PpsStartcode[3] = 1;
 							tsPacketList.add(idx, new TSPacketFragment(h264PpsStartcode, 0, h264PpsStartcode.length));
 							idx++;
@@ -426,13 +426,13 @@ public class FLV2MPEGTSWriter_ {
 					int paloadReadedLen = 0;
 					/*
 					 *	payload_unit_start_indicator // 1 bit
-		 			 * 	◆有效载荷单元起始符（payload_unit_start_indicator）：长度为1bit，对于携带PES包或PSI数据的传输流包具有规范含义。
-		 			 *	◆当TS包的有效载荷包含PES数据时，payload_unit_start_indicator具有以下含义：“1”表示该TS包的有效载荷从PES的第一个
-		 			 *		字节开始，“0”则表示PES包的起始地址并非有效载荷的开始。 如果payload_unit_start_indicator被设置为’1’，则在该TS包中有且仅有一个PES包。
-		 			 *	◆当TS包的有效载荷包含PSI数据时，payload_unit_start_indicator具有以下含义：如果TS包携带PSI部分的第一个字节，则
-		 			 *		payload_unit_start_indicator值应为’1’，表示TS包有效载荷的第一个字节包含pointer_field。
-		 			 *		如果TS包不携带PSI部分的第一个字节，则payload_unit_start_indicator值应为’0’，表示有效载荷中没有pointer_field。
-		 			 *	◆对于空包，payload_unit_start_indicator应设置为’0’。这意味着，该TS包只包含了MPEG2-TS规范未定义的用户自定义数据。
+					 * 	◆有效载荷单元起始符（payload_unit_start_indicator）：长度为1bit，对于携带PES包或PSI数据的传输流包具有规范含义。
+					 *	◆当TS包的有效载荷包含PES数据时，payload_unit_start_indicator具有以下含义：“1”表示该TS包的有效载荷从PES的第一个
+					 *		字节开始，“0”则表示PES包的起始地址并非有效载荷的开始。 如果payload_unit_start_indicator被设置为’1’，则在该TS包中有且仅有一个PES包。
+					 *	◆当TS包的有效载荷包含PSI数据时，payload_unit_start_indicator具有以下含义：如果TS包携带PSI部分的第一个字节，则
+					 *		payload_unit_start_indicator值应为’1’，表示TS包有效载荷的第一个字节包含pointer_field。
+					 *		如果TS包不携带PSI部分的第一个字节，则payload_unit_start_indicator值应为’0’，表示有效载荷中没有pointer_field。
+					 *	◆对于空包，payload_unit_start_indicator应设置为’0’。这意味着，该TS包只包含了MPEG2-TS规范未定义的用户自定义数据。
 					 *
 					 */
 					int stt = 1; // pay_load_unit_start_indicator
@@ -464,8 +464,8 @@ public class FLV2MPEGTSWriter_ {
 							 *  PID                           			:    13;     //有效负载数据的类型
 							 *  transport_scrambling_control   			:    2;      //加密标志位,00表示未加密
 							 *  adaption_field_control        			:    2;      //调整字段控制,。01仅含有效负载，10仅含调整字段，11含有调整字段和有效负载。为00的话解码器不进行处理。
-							    continuity_counter             			:    4;   	 //一个4bit的计数器，范围0-15
-							*/
+							 continuity_counter             			:    4;   	 //一个4bit的计数器，范围0-15
+							 */
 							//此处构建上面4个参数，第一个字节取前三位和 videPID的后前5位 (0x1F = 1 1111)
 							//“1”表示该TS包的有效载荷从PES的第一个字节开始
 							// stt!=0 则64的二进制（100 0000）即 010
@@ -508,7 +508,7 @@ public class FLV2MPEGTSWriter_ {
 							 */
 							if (atf != 0) {
 								int thirdByte = 3;
-																		//0010 0000
+								//0010 0000
 								block[thirdByte] = (byte) (block[thirdByte] | 0x20); //由 01 -> 11
 								//自适应区长度固定8字节
 								atfLen = 8;
@@ -642,9 +642,9 @@ public class FLV2MPEGTSWriter_ {
 			}
 		}
 	}
-	
+
 	public void handleAudio(AudioData data) {
-		
+
 		BufFacade dataBuff = data.getData().asReadOnly();
 		dataBuff.markReaderIndex();
 		int dataLen = dataBuff.readableBytes();
@@ -663,7 +663,7 @@ public class FLV2MPEGTSWriter_ {
 				}
 				if(tempFrame == null) log.error("audio error configure:{}", dataBuff);
 			}
-		} else if ((codecId == AudioCodec.AAC.getId() || codecId == AudioCodec.MP3.getId()) 
+		} else if ((codecId == AudioCodec.AAC.getId() || codecId == AudioCodec.MP3.getId())
 				&& (codecId != AudioCodec.AAC.getId() || aacFrame != null)) {
 			long ts = data.getTimestamp() * TIME_SCALE;
 			long incTs;
@@ -671,14 +671,14 @@ public class FLV2MPEGTSWriter_ {
 			int interval = -1;
 			// fix low-resolution timestamp in RTMP to MPEG-TS
 			if(codecId == AudioCodec.AAC.getId()) {
-				 
+
 				if(lastAACSampleRate == -1 || lastAACSampleRate != aacFrame.getSampleRate()) {
 					lastAACSampleRate = this.aacFrame.getSampleRate();
-	                lastAACTimeCode = Math.round(data.getTimestamp() * lastAACSampleRate / 1000.0D);
+					lastAACTimeCode = Math.round(data.getTimestamp() * lastAACSampleRate / 1000.0D);
 				} else {
 					incTs = lastAACTimeCode + aacFrame.getSampleCount();
-	                fixTs = Math.round(incTs * 1000.0D / lastAACSampleRate);
-	                interval = (int)Math.abs(fixTs - data.getTimestamp());
+					fixTs = Math.round(incTs * 1000.0D / lastAACSampleRate);
+					interval = (int)Math.abs(fixTs - data.getTimestamp());
 					if (interval <= 1) {
 						ts = Math.round(incTs * 90000L / lastAACSampleRate);
 						lastAACTimeCode = incTs;
@@ -686,19 +686,19 @@ public class FLV2MPEGTSWriter_ {
 						lastAACTimeCode = Math.round(data.getTimestamp() * lastAACSampleRate / 1000.0D);
 					}
 				}
-				
+
 				// aacFram size = 7 byte(adts header) + aac data size - 2 byte(0xAF 0x00)
 				aacFrame.setSize(7 + dataBytes.length - 2);
 				byte[] adts = new byte[7];
-				AACUtils.frameToADTSBuffer(aacFrame, adts, 0);
-				
+				AACUtils.frameToADTSBuffers(aacFrame, adts, 0);
+
 				waitingAudio.fragments.add(new TSPacketFragment(adts, 0, adts.length));
 				waitingAudio.size += adts.length;
 				waitingAudio.fragments.add(new TSPacketFragment(dataBytes, 2, dataBytes.length - 2));
 				waitingAudio.size += dataBytes.length - 2;
-				waitingAudio.codec = codecId;				
+				waitingAudio.codec = codecId;
 			} else if(codecId == AudioCodec.MP3.getId()) {
-				
+
 				try {
 					if (mp3HeaderBuf == null) {
 						mp3HeaderBuf = new byte[4];
@@ -709,9 +709,9 @@ public class FLV2MPEGTSWriter_ {
 					if(syncData != 0) {
 						MP3BufferedDecoder.decodeHeader(syncData, 0, mp3HeaderData);
 						int sampleCount = MP3BufferedDecoder.samples_per_frame(this.mp3HeaderData);
-		                int sampleRate = MP3BufferedDecoder.frequency(mp3HeaderData);
-		                
-		                if (lastMP3SampleRate == -1 || lastMP3SampleRate != sampleRate) {
+						int sampleRate = MP3BufferedDecoder.frequency(mp3HeaderData);
+
+						if (lastMP3SampleRate == -1 || lastMP3SampleRate != sampleRate) {
 							lastMP3SampleRate = sampleRate;
 							lastMP3TimeCode = Math.round(data.getTimestamp() * lastMP3SampleRate / 1000.0D);
 						} else {
@@ -726,16 +726,16 @@ public class FLV2MPEGTSWriter_ {
 								lastMP3TimeCode = Math.round(data.getTimestamp() * lastMP3SampleRate / 1000.0D);
 							}
 						}
-					}					
+					}
 				} catch (Exception e) {
 					log.debug("mp3 header parse fail: {}", e.toString());
 				}
-				
+
 				waitingAudio.fragments.add(new TSPacketFragment(dataBytes, 1, dataBytes.length - 1));
-	            waitingAudio.size += dataBytes.length - 1;
-	            waitingAudio.codec = codecId;
+				waitingAudio.size += dataBytes.length - 1;
+				waitingAudio.codec = codecId;
 			}
-			
+
 			waitingAudio.count += 1;
 			if (waitingAudio.timecode == -1L)
 				waitingAudio.timecode = ts;
@@ -747,14 +747,14 @@ public class FLV2MPEGTSWriter_ {
 			}
 		}
 	}
-	
+
 	/**
 	 *  write mult audio packets
 	 * @param waitingAudio
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void writeAudioPackets(WaitingAudio waitingAudio) {
-		
+
 		int size = waitingAudio.size;
 		long ts = waitingAudio.timecode;
 		long ts90 = waitingAudio.timecode;
@@ -873,19 +873,19 @@ public class FLV2MPEGTSWriter_ {
 			if (totalWritten >= size) break;
 		}
 	}
-	
+
 	/**
 	 * add pat pmt
 	 * @return
 	 */
-	public void addPAT(long ts) {		
+	public void addPAT(long ts) {
 		fillPAT(block, 0, patCCounter);
 		writer.nextBlock(ts, block);
 		fillPMT(block, 0, patCCounter, videoPID, audioPID, videoCodecToStreamType(videoCodec), audioCodecToStreamType(audioCodec));
 		writer.nextBlock(ts, block);
 		this.patCCounter++;
 	}
-	
+
 	private long getPCRTimeCode() {
 		long ts = -1L;
 		if ((lastAudioTimeCode >= 0L) && (lastVideoTimeCode >= 0L))
@@ -899,11 +899,11 @@ public class FLV2MPEGTSWriter_ {
 		if (ts < 0L)
 			ts = 0L;
 		if (ts >= pcrBufferTime)
-		      ts -= pcrBufferTime;
+			ts -= pcrBufferTime;
 		lastPCRTimeCode = ts;
 		return ts;
 	}
-	
+
 	public long getLastPCRTimeCode() {
 		return lastPCRTimeCode;
 	}
@@ -927,7 +927,7 @@ public class FLV2MPEGTSWriter_ {
 
 
 	/**
-	 * 
+	 *
 	 * @author pengliren
 	 *
 	 */

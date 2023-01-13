@@ -1,3 +1,4 @@
+package test.java;
 
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.conf.ExtConfiguration;
@@ -7,14 +8,13 @@ import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.media.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.media.flv.impl.FLVService;
-import org.tl.nettyServer.media.media.ts.FLV2MPEGTSChunkWriter;
 import org.tl.nettyServer.media.media.ts.FLV2MPEGTSChunkWriter_;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
-
-import java.io.File;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class Flv2MpegtsTest {
         double fixDuration = 0;
         List<String> segments = new ArrayList<>();
         for (int i = 0; i < positions.length; i++) {
-            if(positions[i] <= positions[1]){
+            if (positions[i] <= positions[1]) {
                 continue;
             }
 

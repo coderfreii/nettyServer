@@ -421,9 +421,9 @@ public class FLVWriter implements ITagWriter {
 			}
 			if (reader == null) {
 				channel.position(0);
-				reader = new FLVReader_(file.getChannel());
+				reader = new FLVReader(file.getChannel());
 				//				RandomAccessFile raf = new RandomAccessFile("E:/dev/red5/java/server/trunk/distx/webapps/oflaDemo/streams/toystory3.flv", "r");
-				//				reader = new FLVReader_(raf.createChannelIfAbsent());
+				//				reader = new FLVReader(raf.createChannelIfAbsent());
 			}
 			log.trace("reader: {}", reader);
 			log.debug("Has more tags: {}", reader.hasMoreTags());

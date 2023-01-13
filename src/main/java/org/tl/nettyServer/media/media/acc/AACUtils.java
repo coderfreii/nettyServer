@@ -294,4 +294,35 @@ public class AACUtils {
         int NumberOfAACFrames = aacFrame.getRdb(); //2
         adts[(startIdx + 6)] = (byte) ((BufferFullness << 2 & 0xFF) + (NumberOfAACFrames & 0x3));
     }
+
+
+    //这里使原来的方法  上面的方法有 bug
+    public static void frameToADTSBuffers(AACFrame aacFrame, byte[] adts, int startIdx) {
+
+        int rateIdx = aacFrame.getSamplingFrequencyIndex();
+        int profileObjectType = aacFrame.getAudioObjectType();
+        int channelIdx = aacFrame.getChannelConfiguration();
+        int size = aacFrame.getSize();
+        boolean isError = aacFrame.isErrorBitsAbsent();
+        adts[(startIdx + 0)] = (byte)0xFF;
+        adts[(startIdx + 1)] = isError ? (byte) 0xF1 : (byte) 0xF0;
+        adts[(startIdx + 2)] = (byte)((profileObjectType - 1 & 0x3) << 6);
+        int adtsSecondByte = (startIdx + 2);
+        adts[adtsSecondByte] = (byte)(adts[adtsSecondByte] + (byte)(rateIdx << 2 & 0x3C));
+        adts[adtsSecondByte] = (byte)(adts[adtsSecondByte] + (byte)(channelIdx >> 2 & 0x1));
+        adts[(startIdx + 3)] = (byte)((channelIdx & 0x3) << 6);
+        adts[(startIdx + 5)] = (byte)((size & 0x7) << 5);
+        size >>= 3;
+        adts[(startIdx + 4)] = (byte)(size & 0xFF);
+        size >>= 8;
+        int adtsThirdByte = (startIdx + 3);
+        adts[adtsThirdByte] = (byte)(adts[adtsThirdByte] + (byte)(size & 0x3));
+        int n = 2047;
+        int adtsFiveByte = (startIdx + 5);
+        adts[adtsFiveByte] = (byte)(adts[adtsFiveByte] + (n >> 6));
+        adts[(startIdx + 6)] = (byte)(n << 2 & 0xFF);
+        int rdb = aacFrame.getRdb();
+        int adtsSixByte = (startIdx + 6);
+        adts[adtsSixByte] = (byte)(adts[adtsSixByte] + (byte)(rdb & 0x3));
+    }
 }

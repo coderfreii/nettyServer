@@ -25,7 +25,7 @@ public class FLV2MPEGTSChunkWriter implements IFLV2MPEGTSWriter {
     /* 是否初始化 */
     private boolean init = false;
     /* flv到mpegts的真正的操作类 */
-    private FLV2MPEGTSWriter flv2tsWriter;
+    private FLV2MPEGTSWriter_ flv2tsWriter;
     /* 是否加密 */
     private boolean isEncrypt = false;
     /* 加密类 */
@@ -33,7 +33,7 @@ public class FLV2MPEGTSChunkWriter implements IFLV2MPEGTSWriter {
 
     public FLV2MPEGTSChunkWriter(BufFacade videoConfig, BufFacade audioConfig, boolean isEncrypt) {
 
-        flv2tsWriter = new FLV2MPEGTSWriter(this, videoConfig, audioConfig);
+        flv2tsWriter = new FLV2MPEGTSWriter_(this, videoConfig, audioConfig);
         flv2tsWriter.setLastPCRTimeCode(0);
 
         this.isEncrypt = isEncrypt;
