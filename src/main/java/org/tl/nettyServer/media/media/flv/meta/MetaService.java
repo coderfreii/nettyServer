@@ -26,8 +26,9 @@ import org.tl.nettyServer.media.io.IoConstants;
 import org.tl.nettyServer.media.io.Tag;
 import org.tl.nettyServer.media.io.amf.Input;
 import org.tl.nettyServer.media.io.amf.Output;
+import org.tl.nettyServer.media.media.flv.impl.FLVReader_;
 import org.tl.nettyServer.media.media.flv.impl.FLVWriter;
-import org.tl.nettyServer.media.media.flv.impl.FLVReader;
+import org.tl.nettyServer.media.media.flv.impl.FLVReader_;
 import org.tl.nettyServer.media.io.object.Deserializer;
 import org.tl.nettyServer.media.io.object.Serializer;
 
@@ -74,7 +75,7 @@ public class MetaService implements IMetaService {
     public void write(IMetaData<?, ?> meta) throws IOException {
         // Get cue points, FLV reader and writer
         IMetaCue[] metaArr = meta.getMetaCue();
-        FLVReader reader = new FLVReader(file, false);
+        FLVReader_ reader = new FLVReader_(file, false);
         FLVWriter writer = new FLVWriter(file, false);
         ITag tag = null;
         // Read first tag

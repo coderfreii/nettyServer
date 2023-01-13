@@ -1,11 +1,11 @@
-package org.tl.nettyServer.media.net.hls.ts.codec;
+package org.tl.nettyServer.media.media.ts;
 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.event.IEvent;
-import org.tl.nettyServer.media.media.ts.IFLV2MPEGTSWriter;
+import org.tl.nettyServer.media.net.hls.ts.codec.MpegtsSegmentEncryptor;
 import org.tl.nettyServer.media.net.hls.ts.message.MpegTsSegment;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
@@ -13,7 +13,7 @@ import org.tl.nettyServer.media.net.rtmp.event.VideoData;
 import java.io.IOException;
 
 /**
- * FLV TO Mpeg2TS Chunk Writer
+ * FLV TO Mpeg2TS Chunk Writer  直播的
  *
  * @author pengliren
  */

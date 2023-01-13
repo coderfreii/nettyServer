@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.codec.*;
 import org.tl.nettyServer.media.conf.ExtConfiguration;
-import org.tl.nettyServer.media.net.hls.ts.codec.FLV2MPEGTSChunkWriter;
+import org.tl.nettyServer.media.media.ts.FLV2MPEGTSChunkWriter;
 import org.tl.nettyServer.media.net.hls.ts.message.MpegTsSegment;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;

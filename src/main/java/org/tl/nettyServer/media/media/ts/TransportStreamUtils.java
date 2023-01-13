@@ -106,7 +106,7 @@ public class TransportStreamUtils {
         //if(program_number = 0) network_id				13      0x001F
         // else program_map_PID							13		0x0FF1		   		   EFF1
         // table_id 到 program_map_PID 闭区间
-        //CRC_32										32      0x3690E23D			   3690E23D
+//        CRC_32										32      0x3690E23D			   3690E23D
         byte[] patArray = HexDump.decodeHexString("474000100000B00D0001C100000001EFF10A1E4237");
         System.arraycopy(patArray, 0, data, pos, patArray.length);
 
@@ -118,12 +118,20 @@ public class TransportStreamUtils {
 
         int stuffLength = TS_PACKETLEN - patArray.length;
         fillBlock(data, pos + patArray.length, stuffLength);
+
+//        byte[] patArray = HexDump.decodeHexString("474000100000B00D0001C100000001EFFF3690E23D");
+//        System.arraycopy(patArray, 0, data, pos, patArray.length);
+//        int startPos = pos + 3;
+//        byte counter = (byte) (data[startPos] & 0xFFFFFFF0);
+//        data[startPos] = (byte) (counter | (byte)(patCounter & 0xF));
+//        int patLen = patArray.length;
+//        fillBlock(data, pos + patLen, TS_PACKETLEN - patLen);
     }
 
 
     /**
      * @param data
-     * @param startPos   貌似永远是 0 开始
+     * @param startPos        貌似永远是 0 开始
      * @param pmtCounter
      * @param videoPid
      * @param audioPid

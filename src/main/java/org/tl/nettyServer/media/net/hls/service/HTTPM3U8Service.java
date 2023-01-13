@@ -197,15 +197,14 @@ public class HTTPM3U8Service extends BaseHTTPService {
         StringBuilder sb = new StringBuilder();
         sb.append("#EXTM3U\n")
                 .append("#EXT-X-VERSION:3\n")
-                .append("#EXT-X-TARGETDURATION:").append(ExtConfiguration.HLS_SEGMENT_TIME + 1).append("\n")
-                .append("#EXT-X-MEDIA-SEQUENCE:1\n")
-                .append("#EXT-X-PLAYLIST-TYPE:VOD\n");
+                .append("#EXT-X-TARGETDURATION:").append(ExtConfiguration.HLS_SEGMENT_TIME).append("\n")
+                .append("#EXT-X-MEDIA-SEQUENCE:1\n");
 
         int seqNum = 1;
         int rest = 0;  //代表是否最后执行的为else
         long startPos = positions[1];
         for (int i = 0; i < positions.length; i++) {
-            if(positions[i] < positions[1]){
+            if (positions[i] < positions[1]) {
                 continue;
             }
             if (timestamps[i] >= nextTime) {
@@ -217,8 +216,10 @@ public class HTTPM3U8Service extends BaseHTTPService {
                 sb.append("#EXTINF:").append(fixDuration).append(",\n");
                 if (i == (positions.length - 1)) { //last one
                     sb.append(String.format("%s_%s_%d.ts?type=vod\n", startPos, file.length(), seqNum));
+                    sb.append("\r\n");
                 } else {
                     sb.append(String.format("%s_%s_%d.ts?type=vod\n", startPos, positions[i], seqNum));
+                    sb.append("\r\n");
                 }
 
                 seqNum++;
@@ -234,6 +235,7 @@ public class HTTPM3U8Service extends BaseHTTPService {
             float lastOneDuration = (duration - (nextTime - timestamps[timestamps.length - 1])) / 1000;
             sb.append("#EXTINF:").append(lastOneDuration).append(",\n");
             sb.append(String.format("%s_%s_%d.ts?type=vod\n", startPos, file.length(), seqNum));
+            sb.append("\r\n");
         }
 
         sb.append("#EXT-X-ENDLIST\n");

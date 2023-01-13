@@ -105,7 +105,7 @@ public class FLV implements IFLV {
         this.generateMetadata = generateMetadata;
         if (generateMetadata) {
             try {
-                FLVReader reader = new FLVReader(this.file);
+                FLVReader_ reader = new FLVReader_(this.file);
                 ITag tag = null;
                 int count = 0;
                 while (reader.hasMoreTags() && (++count < 5)) {
@@ -239,7 +239,7 @@ public class FLV implements IFLV {
 
     @Override
     public ITagReader getReader() throws IOException {
-        FLVReader reader = null;
+        FLVReader_ reader = null;
         BufFacade fileData;
         String fileName = file.getName();
         // if no cache is set an NPE will be thrown
@@ -252,7 +252,7 @@ public class FLV implements IFLV {
         if (null == ic || (null == ic.getByteBuffer())) {
             if (file.exists()) {
                 log.debug("File size: {}", file.length());
-                reader = new FLVReader(file, generateMetadata);
+                reader = new FLVReader_(file, generateMetadata);
                 // get a ref to the mapped byte buffer
                 fileData = reader.getFileData();
                 // offer the uncached file to the cache
@@ -267,7 +267,7 @@ public class FLV implements IFLV {
             }
         } else {
             fileData = BufFacade.wrappedBuffer(ic.getBytes());
-            reader = new FLVReader(fileData, generateMetadata);
+            reader = new FLVReader_(fileData, generateMetadata);
         }
         return reader;
     }

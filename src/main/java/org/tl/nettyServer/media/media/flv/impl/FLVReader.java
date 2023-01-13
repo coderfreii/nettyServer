@@ -93,9 +93,9 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
     /**
      * Buffer type / style to use
      **/
-    private static BufferType bufferType = BufferType.AUTO;
+    public static BufferType bufferType = BufferType.AUTO;
 
-    private static int bufferSize = 4096;
+    public static int bufferSize = 4096;
 
     /**
      * Use load buffer
@@ -105,7 +105,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
     /**
      * Cache for keyframe informations.
      */
-    private static IKeyFrameMetaCache keyframeCache = CachingFileKeyFrameMetaCache.getInstance();
+    public static IKeyFrameMetaCache keyframeCache = CachingFileKeyFrameMetaCache.getInstance();
 
     /**
      * The header of this FLV file.
@@ -250,7 +250,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         }
         try {
             if (pos >= (channel.position() - in.readableBytes()) && pos < channel.position()) {
-                in.setIndex((int) (pos - (channel.position() - in.readableBytes())), in.writerIndex());
+                in.setIndex((int) (pos - (channel.position() - in.writerIndex())), in.writerIndex());
             } else {
                 channel.position(pos);
                 fillBuffer(bufferSize, true);
@@ -616,7 +616,7 @@ public class FLVReader implements IoConstants, IKeyFrameDataAnalyzer, ITagReader
         long origPos = getCurrentPosition();
 
         // point to the first tag
-        setCurrentPosition((header.getDataOffset()));
+        setCurrentPosition(9);
 
         // number of tags read
         int totalValidTags = 0;
