@@ -18,7 +18,7 @@ public class ExtConfiguration {
     public static int HTTP_IDLE = 30;
 
     public static int HLS_SEGMENT_MAX = 3;
-    public static int HLS_SEGMENT_TIME = 10;
+    public static int HLS_SEGMENT_TIME = 5;
     public static boolean HLS_ENCRYPT = false;
 
     public static String RTMP_HOST = "0.0.0.0";

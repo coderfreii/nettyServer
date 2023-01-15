@@ -248,7 +248,6 @@ public class HTTPTSService extends BaseHTTPService implements IHTTPService {
             String appScopeName = ScopeUtils.findApplication(scope).getName();
             String createFile = String.format("%s/webapps/%s/hls/%s/%s", System.getProperty("red5.root"), appScopeName, streamName, tsIndex);
             File createF = new File(createFile);
-
             if (!createF.exists()) {
                 CompletableFuture<File> future = CompletableFuture.supplyAsync(() -> {
                     return new TsFileCreate(service, file, writeLock, createF).doCreateFile();

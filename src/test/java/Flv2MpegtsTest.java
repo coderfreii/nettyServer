@@ -8,11 +8,13 @@ import org.tl.nettyServer.media.io.ITagReader;
 import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.media.flv.IKeyFrameDataAnalyzer;
 import org.tl.nettyServer.media.media.flv.impl.FLVService;
+import org.tl.nettyServer.media.media.mp4.MP4Service;
 import org.tl.nettyServer.media.media.ts.FLV2MPEGTSChunkWriter_;
 import org.tl.nettyServer.media.net.rtmp.codec.AudioCodec;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
+import org.tl.nettyServer.media.service.IStreamableFileService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,17 +27,18 @@ public class Flv2MpegtsTest {
     private static Pattern pattern = Pattern.compile("(\\d+)_(\\d+)_(\\d+)\\.ts$");
 
     public static void main(String[] args) throws Exception {
+        String fileName = "D:\\tl\\webapps\\oflaDemo\\streams\\5.mp4";
+        String tlp = "D:\\tl\\webapps\\oflaDemo\\hls\\5.mp4\\";
 
         boolean audioChecked = false;
         boolean videoChecked = false;
         BufFacade videoConfig = null;
         BufFacade audioConfig = null;
 
-        FLVService service = new FLVService();//new MP3Service();
-//        service.setGenerateMetadata(true);
+        IStreamableFileService service = new MP4Service();//new MP3Service();
         ITagReader reader = null;
         IStreamableFile streamFile;
-        File file = new File("D:\\tl\\ts_test\\file.flv");
+        File file = new File(fileName);
         // File ts = new File("E:\\demo\\123.ts");
 
         streamFile = service.getStreamableFile(file);
@@ -114,7 +117,7 @@ public class Flv2MpegtsTest {
                 start = Integer.valueOf(m.group(1)) - 1;
                 end = Integer.valueOf(m.group(2)) + 1;
             }
-            File ts = new File("D:\\tl\\ts_test\\ts2\\" + tsIndex);
+            File ts = new File(tlp + tsIndex);
             FileOutputStream fos = new FileOutputStream(ts);
             FLV2MPEGTSChunkWriter_ writer = new FLV2MPEGTSChunkWriter_(videoConfig, audioConfig, false);
             BufFacade data = BufFacade.buffer(4096);

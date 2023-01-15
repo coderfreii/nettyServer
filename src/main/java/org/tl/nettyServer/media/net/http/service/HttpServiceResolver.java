@@ -1,6 +1,8 @@
-package org.tl.nettyServer.media.net.hls.service;
+package org.tl.nettyServer.media.net.http.service;
 
 
+import org.tl.nettyServer.media.net.hls.service.HTTPM3U8Service;
+import org.tl.nettyServer.media.net.hls.service.HTTPTSService;
 import org.tl.nettyServer.media.net.http.request.HTTPRequest;
 import org.tl.nettyServer.media.net.http.response.HTTPResponse;
 import org.tl.nettyServer.media.net.http.service.BaseHTTPService;
@@ -15,7 +17,7 @@ public class HttpServiceResolver {
     private Map<String, IHTTPService> serviceMap = new LinkedHashMap<String, IHTTPService>();
 
     {
-        //		addHttpService("/*", new HTTPStaticFileService());
+        //addHttpService("/*", new HTTPStaticFileService());
 //		addHttpService("/flv/*", new HTTPFlvPlayerService());
 //		addHttpService("*/aes", new HTTPAESKeyService());
 //		addHttpService("/liveflv/*", new HTTPLiveFlvPublisherService());

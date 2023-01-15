@@ -209,6 +209,7 @@ public class ConfigServer implements ApplicationContextAware {
             root = root.substring(0, root.length() - 1);
         }
 
+        root = "D:\\tl";
         //make sure property set to VM
         System.setProperty("red5.root", root);
     }

@@ -1,4 +1,4 @@
-package org.tl.nettyServer.media.net.hls;
+package org.tl.nettyServer.media.net.http;
 
 
 import org.tl.nettyServer.media.net.http.conn.HTTPConnection;

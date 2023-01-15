@@ -1,9 +1,8 @@
 package org.tl.nettyServer.media.net.http.conn;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.net.hls.IHTTPApplicationAdapter;
+import org.tl.nettyServer.media.net.http.IHTTPApplicationAdapter;
 import org.tl.nettyServer.media.net.rtmp.conn.BaseConnection;
 import org.tl.nettyServer.media.session.NettyHttpSessionFacade;
 import org.tl.nettyServer.media.stream.base.IClientStream;

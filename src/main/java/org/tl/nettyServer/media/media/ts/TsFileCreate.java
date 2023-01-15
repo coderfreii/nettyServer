@@ -51,6 +51,7 @@ public class TsFileCreate implements Runnable {
             return createFile;
         }
         try {
+            createFile.createNewFile();
             createFile(createFile);
         } catch (Exception e) {
             e.printStackTrace();

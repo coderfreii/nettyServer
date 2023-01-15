@@ -1,4 +1,4 @@
-package org.tl.nettyServer.media.net.hls;
+package org.tl.nettyServer.media.net.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +12,8 @@ import org.tl.nettyServer.media.net.http.response.HTTPResponse;
 import org.tl.nettyServer.media.net.http.response.HTTPResponseStatus;
 import org.tl.nettyServer.media.net.http.service.IHTTPService;
 
-import org.tl.nettyServer.media.net.hls.service.HttpServiceResolver;
+import org.tl.nettyServer.media.net.http.service.HttpServiceResolver;
 import org.tl.nettyServer.media.scope.IScope;
-import org.tl.nettyServer.media.scope.Scope;
 import org.tl.nettyServer.media.stream.client.CustomSingleItemSubStream;
 import org.tl.nettyServer.media.stream.proxy.HTTPPushProxyStream;
 
@@ -80,7 +79,7 @@ public class HTTPApplicationAdapter implements IHTTPApplicationAdapter {
 	public void onConnectionClose(HTTPConnection conn) {
 		
 		if(conn.getAttribute("consumer") != null) {
-			HTTPConnectionConsumer consumer = (HTTPConnectionConsumer)conn.getAttribute("consumer"); 
+			HTTPConnectionConsumer consumer = (HTTPConnectionConsumer)conn.getAttribute("consumer");
 			consumer.setClose(true);
 		}
 		
