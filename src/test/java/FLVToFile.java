@@ -1,5 +1,6 @@
 import org.tl.nettyServer.media.io.ITag;
-import org.tl.nettyServer.media.media.flv.impl.FLVReader;
+import org.tl.nettyServer.media.io.ITagReader;
+import org.tl.nettyServer.media.media.flv.impl.FLV;
 import org.tl.nettyServer.media.media.flv.impl.FLVWriter;
 
 import java.io.File;
@@ -9,17 +10,22 @@ public class FLVToFile {
 
 
     public static void main(String[] args) throws IOException {
-        FLVReader flvReader = new FLVReader(new File("D:\\tl\\webapps\\oflaDemo\\streams\\6.flv"));
-        FLVWriter flvWriter = new FLVWriter(new File("D:\\tl\\test.flv"), false);
+        File in = new File("D:\\tl\\webapps\\oflaDemo\\streams\\6.flv");
+        File out = new File("D:\\tl\\webapps\\oflaDemo\\streams\\test.flv");
+        FLV flv = new FLV(in, false);
+        ITagReader reader = flv.getReader();
+        FLVWriter flvWriter = new FLVWriter(out, false);
         try {
-            if (flvReader.hasMoreTags()) {
-                ITag iTag = flvReader.readTag();
+            while (reader.hasMoreTags()) {
+                ITag iTag = reader.readTag();
                 if (iTag != null) {
                     flvWriter.writeTag(iTag);
                 }
             }
+        } catch (RuntimeException e) {
+            System.out.println();
         } finally {
-            flvReader.close();
+            reader.close();
             flvWriter.close();
         }
     }

@@ -57,21 +57,12 @@ public class RtmpServer {
                             }
                         })
                         .addLast(new HandshakeHandler())
-                        .addLast(new RTMPEHandler())
-                        .addLast(new NioEventLoopGroup(5, new ThreadFactory() {
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                return new Thread(r, "RtmpByteToPacketHandler");
-                            }
-                        }), new RtmpByteToPacketHandler())
-                        .addLast(new NioEventLoopGroup(5, new ThreadFactory() {
-                            @Override
-                            public Thread newThread(Runnable r) {
-                                return new Thread(r, "RtmpPacketMayAsyncDecoder");
-                            }
-                        }), new RtmpPacketMayAsyncDecoder())
+                        //将来也会很耗时
+                        .addLast(NettyUtil.getNEG(1, "RTMPEHandler"),new RTMPEHandler())
+                        //这一步骤计算比较耗时会阻塞接收其它的
+                        .addLast(NettyUtil.getNEG(1, "RtmpByteToPacketHandler"), new RtmpByteToPacketHandler())
+                        .addLast(new RtmpPacketMayAsyncDecoder())
                         .addLast(new InExceptionHandler());
-
             }
         };
 
