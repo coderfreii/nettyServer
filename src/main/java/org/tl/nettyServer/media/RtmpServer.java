@@ -5,7 +5,14 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.traffic.ChannelTrafficShapingHandler;
+import io.netty.handler.traffic.TrafficCounter;
+import io.netty.util.Attribute;
+import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.*;
+import org.tl.nettyServer.media.session.NettyRtmpSessionFacade;
+import org.tl.nettyServer.media.session.SessionFacade;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -14,6 +21,7 @@ public class RtmpServer {
     static private EventLoopGroup workerGroup;
 
     public static void main(String[] args) {
+
         ChannelHandler test = new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
@@ -28,10 +36,40 @@ public class RtmpServer {
                         .addLast(new MessageSendHandler())
                         .addLast(new ByteBufEncoder())
                         .addLast(new ConnInboundHandler()) //
+                        .addLast(new ChannelTrafficShapingHandler(0) {
+                            @Override
+                            public void channelActive(ChannelHandlerContext ctx) throws Exception {
+                                Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
+                                if (attr.get() != null) {
+                                    TrafficCounter trafficCounter = trafficCounter();
+                                    SessionFacade session = attr.get().getSession();
+                                    session.setTrafficCounter(trafficCounter);
+                                }
+                                super.channelActive(ctx);
+                            }
+
+                            @Override
+                            protected long calculateSize(Object msg) {
+                                if (msg instanceof BufFacade) {
+                                    return ((BufFacade<?>) msg).readableBytes();
+                                }
+                                return super.calculateSize(msg);
+                            }
+                        })
                         .addLast(new HandshakeHandler())
                         .addLast(new RTMPEHandler())
-                        .addLast(new RtmpByteToPacketHandler())
-                        .addLast(new RtmpPacketMayAsyncDecoder())
+                        .addLast(new NioEventLoopGroup(5, new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "RtmpByteToPacketHandler");
+                            }
+                        }), new RtmpByteToPacketHandler())
+                        .addLast(new NioEventLoopGroup(5, new ThreadFactory() {
+                            @Override
+                            public Thread newThread(Runnable r) {
+                                return new Thread(r, "RtmpPacketMayAsyncDecoder");
+                            }
+                        }), new RtmpPacketMayAsyncDecoder())
                         .addLast(new InExceptionHandler());
 
             }
@@ -62,11 +100,13 @@ public class RtmpServer {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     //设置保持活动连接状态
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
+
+                    .childOption(ChannelOption.SO_RCVBUF, 1024 * 1024)
                     //使用匿名内部类的形式初始化通道对象
                     .childHandler(test);//给workerGroup的EventLoop对应的管道设置处理器
 
             //绑定端口号，启动服务端
-            ChannelFuture channelFuture = bootstrap.bind(13511);
+            ChannelFuture channelFuture = bootstrap.bind(19351);
 
             //添加监听器
             channelFuture.addListener(new ChannelFutureListener() {
@@ -76,9 +116,9 @@ public class RtmpServer {
                 public void operationComplete(ChannelFuture future) throws Exception {
                     //判断是否操作成功
                     if (future.isSuccess()) {
-                        System.out.println("rtmp 连接成功 13511");
+                        System.out.println("rtmp 连接成功 19351");
                     } else {
-                        System.out.println("rtmp 连接失败 13511");
+                        System.out.println("rtmp 连接失败 19351");
                     }
                 }
             });

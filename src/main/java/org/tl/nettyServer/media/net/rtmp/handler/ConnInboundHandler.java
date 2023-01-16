@@ -15,14 +15,6 @@ import org.tl.nettyServer.media.session.NettyRtmpSessionFacade;
 public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-    }
-
-    // ctx  => conn
-    // session -> ctx, conn
-    // conn -> session
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
         if (attr.get() == null) {
             RTMPNettyConnection connection = (RTMPNettyConnection) RTMPConnManager.getInstance().createConnection(RTMPNettyConnection.class);
@@ -33,6 +25,14 @@ public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
             attr.set(connection);
             initialSession(connection);
         }
+        super.channelActive(ctx);
+    }
+
+    // ctx  => conn
+    // session -> ctx, conn
+    // conn -> session
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         super.channelRead(ctx, msg);
     }
 

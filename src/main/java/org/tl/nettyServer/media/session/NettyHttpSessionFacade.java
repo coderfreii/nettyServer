@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.traffic.TrafficCounter;
 import io.netty.util.AttributeKey;
 import org.tl.nettyServer.media.net.http.conn.HTTPConnection;
 
@@ -89,4 +90,18 @@ public class NettyHttpSessionFacade implements SessionFacade<ChannelHandlerConte
         this.context.flush();
         this.context.close();
     }
+
+    private TrafficCounter trafficCounter;
+
+
+    @Override
+    public void setTrafficCounter(TrafficCounter trafficCounter) {
+        this.trafficCounter = trafficCounter;
+    }
+
+    @Override
+    public TrafficCounter getTrafficCounter() {
+        return this.trafficCounter;
+    }
+
 }

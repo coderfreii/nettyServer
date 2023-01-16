@@ -44,7 +44,6 @@ public class ReleaseUtil {
         o.markReaderIndex();
         o.readBytes(dst);
         o.resetReaderIndex();
-        o.release();
         return buffer.writeBytes(dst);
     }
 }

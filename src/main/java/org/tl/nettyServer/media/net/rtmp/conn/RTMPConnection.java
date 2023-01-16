@@ -17,8 +17,8 @@ import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.exception.ClientRejectedException;
 import org.tl.nettyServer.media.net.rtmp.Channel;
 import org.tl.nettyServer.media.net.rtmp.DeferredResult;
-import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMPDecodeState;
+import org.tl.nettyServer.media.net.rtmp.codec.RtmpProtocolState;
 import org.tl.nettyServer.media.net.rtmp.event.*;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.net.rtmp.message.Header;
@@ -962,6 +962,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
             log.trace("updateBytesRead");
         }
         long bytesRead = getReadBytes();
+        System.out.println(bytesRead);
         if (bytesRead >= nextBytesRead) {
             BytesRead sbr = new BytesRead((int) (bytesRead % Integer.MAX_VALUE));
             createChannelIfAbsent(2).write(sbr);
@@ -1057,7 +1058,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
 
     @Override
     public long getReadBytes() {
-        return 0;
+        return getSession().getTrafficCounter().cumulativeReadBytes();
     }
 
 
@@ -1090,7 +1091,7 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
         }
     }
 
-    public void messageReceived() {
+    public synchronized void messageReceived() {
         if (log.isTraceEnabled()) {
             log.trace("messageReceived");
         }

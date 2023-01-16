@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.codec.*;
 import org.tl.nettyServer.media.event.IEvent;
 import org.tl.nettyServer.media.event.IEventDispatcher;
@@ -328,11 +329,13 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     // notify event listeners
                     checkSendNotifications(event);
                     // note this timestamp is set in event/body but not in the associated header
+
+                    IRTMPEvent forLive = Duplicateable.doDuplicate(rtmpEvent);
                     try {
                         // route to live
                         if (livePipe != null) {
                             // create new RtmpProtocolState message, initialize it and push through pipe
-                            RTMPMessage msg = RTMPMessage.build(rtmpEvent, eventTime);
+                            RTMPMessage msg = RTMPMessage.build(forLive, eventTime);
                             livePipe.pushMessage(msg);
                         } else if (log.isDebugEnabled()) {
                             log.debug("Live pipe was null, message was not pushed");
@@ -340,8 +343,6 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     } catch (IOException err) {
                         stop();
                     }
-
-
                     // notify listeners about received packet
                     if (rtmpEvent instanceof IStreamPacket) {
                         for (IStreamListener listener : getStreamListeners()) {
@@ -355,6 +356,8 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                             }
                         }
                     }
+
+                    ReleaseUtil.releaseAll(rtmpEvent);
                     break;
                 default:
                     // ignored event

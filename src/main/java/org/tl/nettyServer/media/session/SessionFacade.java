@@ -1,9 +1,9 @@
 package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelFuture;
+import io.netty.handler.traffic.TrafficCounter;
 
 import javax.crypto.Cipher;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 public interface SessionFacade<T, S> {
@@ -35,6 +35,12 @@ public interface SessionFacade<T, S> {
 
     Cipher getCipherOut();
 
-
     void closeOnFlush();
+
+
+    void setTrafficCounter(TrafficCounter trafficCounter);
+
+
+    TrafficCounter getTrafficCounter();
+
 }

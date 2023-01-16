@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.session;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.traffic.TrafficCounter;
 import io.netty.util.AttributeKey;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -69,5 +70,16 @@ public class NettyRtmpSessionFacade implements SessionFacade<ChannelHandlerConte
     public void closeOnFlush() {
         this.context.flush();
         this.context.close();
+    }
+
+    private TrafficCounter trafficCounter;
+    @Override
+    public void setTrafficCounter(TrafficCounter trafficCounter) {
+        this.trafficCounter = trafficCounter;
+    }
+
+    @Override
+    public TrafficCounter getTrafficCounter() {
+        return this.trafficCounter;
     }
 }
