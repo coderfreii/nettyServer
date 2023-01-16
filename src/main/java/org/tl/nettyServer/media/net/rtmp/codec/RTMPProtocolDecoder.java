@@ -95,7 +95,7 @@ public class RTMPProtocolDecoder implements Constants {
                 }
                 // buffer剩余
                 int remaining;
-                // buffer可操作空间要大于0
+                // buffer可操作空间要大于0   //这个循环需要独立一个线程否则会阻塞其它的解包
                 while ((remaining = in.readableBytes()) > 0) {
                     // 通过decoderBufferAmount判断是否可以进行解码
                     if (state.canStartDecoding(remaining)) {

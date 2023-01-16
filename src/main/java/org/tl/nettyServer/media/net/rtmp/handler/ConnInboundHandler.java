@@ -18,10 +18,6 @@ public class ConnInboundHandler extends ChannelInboundHandlerAdapter {
         Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
         if (attr.get() == null) {
             RTMPNettyConnection connection = (RTMPNettyConnection) RTMPConnManager.getInstance().createConnection(RTMPNettyConnection.class);
-            NettyRtmpSessionFacade session = new NettyRtmpSessionFacade();
-            session.setContext(ctx);
-            session.setConnection(connection);
-            connection.setSession(session);
             attr.set(connection);
             initialSession(connection);
         }

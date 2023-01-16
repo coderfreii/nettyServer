@@ -5,14 +5,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.traffic.ChannelTrafficShapingHandler;
-import io.netty.handler.traffic.TrafficCounter;
-import io.netty.util.Attribute;
-import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.*;
-import org.tl.nettyServer.media.session.NettyRtmpSessionFacade;
-import org.tl.nettyServer.media.session.SessionFacade;
+import org.tl.nettyServer.media.net.rtmp.handler.packet.ChannelTrafficShapingSessionHandler;
 
 import java.util.concurrent.ThreadFactory;
 
@@ -36,30 +30,11 @@ public class RtmpServer {
                         .addLast(new MessageSendHandler())
                         .addLast(new ByteBufEncoder())
                         .addLast(new ConnInboundHandler()) //
-                        .addLast(new ChannelTrafficShapingHandler(0) {
-                            @Override
-                            public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                                Attribute<RTMPConnection> attr = ctx.channel().attr(NettyRtmpSessionFacade.connectionAttributeKey);
-                                if (attr.get() != null) {
-                                    TrafficCounter trafficCounter = trafficCounter();
-                                    SessionFacade session = attr.get().getSession();
-                                    session.setTrafficCounter(trafficCounter);
-                                }
-                                super.channelActive(ctx);
-                            }
-
-                            @Override
-                            protected long calculateSize(Object msg) {
-                                if (msg instanceof BufFacade) {
-                                    return ((BufFacade<?>) msg).readableBytes();
-                                }
-                                return super.calculateSize(msg);
-                            }
-                        })
+                        .addLast(new ChannelTrafficShapingSessionHandler(0))
                         .addLast(new HandshakeHandler())
-                        //将来也会很耗时
-                        .addLast(NettyUtil.getNEG(1, "RTMPEHandler"),new RTMPEHandler())
-                        //这一步骤计算比较耗时会阻塞接收其它的
+                        //将来可能也会很耗时
+                        .addLast(NettyUtil.getNEG(1, "RTMPEHandler"), new RTMPEHandler())
+                        //这一步骤计算比较耗时会阻塞接收其它的   //里面有一个重试机制耗时严重  需要自己的event loop
                         .addLast(NettyUtil.getNEG(1, "RtmpByteToPacketHandler"), new RtmpByteToPacketHandler())
                         .addLast(new RtmpPacketMayAsyncDecoder())
                         .addLast(new InExceptionHandler());
@@ -117,7 +92,6 @@ public class RtmpServer {
             //对关闭通道进行监听
             ChannelFuture channelCloseFuture = channelFuture.channel().closeFuture();
             channelCloseFuture.sync();
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
