@@ -962,7 +962,6 @@ public abstract class RTMPConnection extends BaseConnection implements IStreamCa
             log.trace("updateBytesRead");
         }
         long bytesRead = getReadBytes();
-        System.out.println(bytesRead);
         if (bytesRead >= nextBytesRead) {
             BytesRead sbr = new BytesRead((int) (bytesRead % Integer.MAX_VALUE));
             createChannelIfAbsent(2).write(sbr);

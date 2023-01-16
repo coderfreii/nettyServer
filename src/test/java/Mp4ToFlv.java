@@ -8,11 +8,8 @@ import java.nio.ByteBuffer;
 
 public class Mp4ToFlv {
     public static void main(String[] args) throws IOException {
-
-        ByteBuffer.allocate(0).limit();
-
-        File in = new File("D:\\tl\\webapps\\oflaDemo\\streams\\6.mp4");
-        File out = new File("D:\\tl\\webapps\\oflaDemo\\streams\\test1.flv");
+        File in = new File("D:\\tl\\webapps\\oflaDemo\\streams\\7.mp4");
+        File out = new File("D:\\tl\\webapps\\oflaDemo\\streams\\7.flv");
         MP4Reader mp4Reader = new MP4Reader(in);
 
 

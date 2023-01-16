@@ -51,6 +51,11 @@ public class TsFileCreate implements Runnable {
             return createFile;
         }
         try {
+            File parentFile = createFile.getParentFile();
+
+            if (!parentFile.exists()) {
+                boolean mkdir = parentFile.mkdir();
+            }
             createFile.createNewFile();
             createFile(createFile);
         } catch (Exception e) {

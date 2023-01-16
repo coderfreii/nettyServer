@@ -49,7 +49,7 @@ public class RtmpServer {
                 return new Thread(r, "boss");
             }
         });
-        workerGroup = new NioEventLoopGroup(new ThreadFactory() {
+        workerGroup = new NioEventLoopGroup(10, new ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "worker");
