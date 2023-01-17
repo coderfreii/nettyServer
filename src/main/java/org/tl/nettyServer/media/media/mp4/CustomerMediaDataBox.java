@@ -26,6 +26,8 @@ public class CustomerMediaDataBox implements ParsableBox, Closeable {
     ByteBuffer header;
     File dataFile;
 
+    private Field filePath;
+
     public CustomerMediaDataBox() {
     }
 
@@ -47,11 +49,14 @@ public class CustomerMediaDataBox implements ParsableBox, Closeable {
     @DoNotParseDetail
     public void parse(ReadableByteChannel dataSource, ByteBuffer header, long contentSize, BoxParser boxParser) throws IOException {
         FileChannelImpl fci = (FileChannelImpl) dataSource;
-        Field path = ReflectionUtils.findField(fci.getClass(), "path");
-        boolean accessible = path.isAccessible();
-        path.setAccessible(true);
-        String field = (String) ReflectionUtils.getField(path, fci);
-        path.setAccessible(accessible);
+        if (filePath == null) {
+            filePath = ReflectionUtils.findField(fci.getClass(), "path");
+        }
+        boolean accessible = filePath.isAccessible();
+        filePath.setAccessible(true);
+        String field = (String) ReflectionUtils.getField(filePath, fci);
+        filePath.setAccessible(accessible);
+
         this.dataFile = new File(field);
         this.header = ByteBuffer.allocate(header.limit());
         this.header.put(header);

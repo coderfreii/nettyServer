@@ -26,7 +26,7 @@ public abstract class HTTPMessageEncoder extends MessageToByteEncoder<Object> {
         LAST_CHUNK.writeCharSequence("0\r\n\r\n", CharsetUtil.US_ASCII);
     }
 
-    protected BufFacade encodeBuffer(Object msg) throws Exception {
+    public BufFacade encodeBuffer(Object msg) throws Exception {
         if (msg instanceof HTTPMessage) {
             HTTPMessage m = (HTTPMessage) msg;
             boolean chunked;

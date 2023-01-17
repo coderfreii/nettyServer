@@ -9,6 +9,7 @@ public class Starter {
         SpringApplication.run(Starter.class, args);
         HttpServer.main(args);
         RtspServer.main(args);
+        WsServer.main(args);
         RtmpServer.main(args);
     }
 }

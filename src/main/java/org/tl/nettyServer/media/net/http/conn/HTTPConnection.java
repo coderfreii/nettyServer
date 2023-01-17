@@ -31,6 +31,16 @@ public class HTTPConnection extends BaseConnection implements IStreamCapableConn
 
     private IHTTPApplicationAdapter applicationAdapter;
 
+    private boolean isWebsocket = false;
+
+    public boolean isWebsocket() {
+        return isWebsocket;
+    }
+
+    public void setWebsocket(boolean websocket) {
+        isWebsocket = websocket;
+    }
+
     public HTTPConnection() {
 
     }
@@ -54,10 +64,8 @@ public class HTTPConnection extends BaseConnection implements IStreamCapableConn
         return httpSession.write(out);
     }
 
-    public void messageSent(Object message) {
-        if (message instanceof BufFacade) {
-            pendings.decrementAndGet();
-        }
+    public void messageSent() {
+        pendings.decrementAndGet();
     }
 
     @Override

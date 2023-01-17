@@ -78,7 +78,7 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
     /**
      * Output data chunker.
      */
-    private static final class Chunk {
+    public static final class Chunk {
 
         @SuppressWarnings("unused")
         public static List<BufFacade> chunk(BufFacade message, int chunkSize, int desiredSize) {

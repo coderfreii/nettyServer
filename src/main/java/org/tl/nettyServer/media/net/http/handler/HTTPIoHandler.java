@@ -7,7 +7,6 @@ import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
 import org.tl.nettyServer.media.net.http.HTTPApplicationAdapter;
 import org.tl.nettyServer.media.net.http.IHTTPApplicationAdapter;
-import org.tl.nettyServer.media.net.http.service.HttpServiceResolver;
 import org.tl.nettyServer.media.net.http.conn.HTTPConnection;
 import org.tl.nettyServer.media.net.http.message.HTTPHeaders;
 import org.tl.nettyServer.media.net.http.message.HTTPVersion;
@@ -15,6 +14,7 @@ import org.tl.nettyServer.media.net.http.request.HTTPRequest;
 import org.tl.nettyServer.media.net.http.response.DefaultHttpResponse;
 import org.tl.nettyServer.media.net.http.response.HTTPResponse;
 import org.tl.nettyServer.media.net.http.response.HTTPResponseStatus;
+import org.tl.nettyServer.media.net.http.service.HttpServiceResolver;
 import org.tl.nettyServer.media.net.http.service.IHTTPService;
 import org.tl.nettyServer.media.scope.IScope;
 import org.tl.nettyServer.media.session.SessionAccessor;
@@ -56,22 +56,6 @@ public class HTTPIoHandler extends SimpleChannelInboundHandler<HTTPRequest> {
                 defaultHttpService.commitResponse(req, resp, BufFacade.wrappedBuffer("{'message':'访问被拒绝'}".getBytes(StandardCharsets.UTF_8)));
             }
         }
-
-
-//        else if (message instanceof HTTPChunk) {
-//            HTTPChunk chunk = (HTTPChunk) message;
-//            IHTTPApplicationAdapter applicationAdapter = conn.getApplicationAdapter();
-//            if (applicationAdapter != null) {
-//                applicationAdapter.onHTTPChunk(chunk);
-//            } else {
-//                ctx.flush();
-//                ctx.close();
-//            }
-//        } else {
-//            log.info("unkown http request : {}", message.toString());
-//            ctx.flush();
-//            ctx.close();
-//        }
         Red5.setConnectionLocal(null);
     }
 
@@ -89,7 +73,7 @@ public class HTTPIoHandler extends SimpleChannelInboundHandler<HTTPRequest> {
     }
 
 
-    class AppAndReq {
+    public static class AppAndReq {
         HTTPRequest httpReq;
 
         String appName;
@@ -113,7 +97,7 @@ public class HTTPIoHandler extends SimpleChannelInboundHandler<HTTPRequest> {
         }
     }
 
-    class AppRequestResolver {
+    public static class AppRequestResolver {
         public AppAndReq resolve(HTTPRequest req) {
             String noAppPath;
             String scopeName = resolveScopeName(req.getUri());

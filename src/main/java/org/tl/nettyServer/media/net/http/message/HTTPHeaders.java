@@ -422,7 +422,7 @@ public class HTTPHeaders {
         /**
          * {@code "WebSocket"}
          */
-        public static final String WEBSOCKET = "WebSocket";
+        public static final String WEBSOCKET = "websocket";
 
         private Values() {
         }
