@@ -69,7 +69,7 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
                             connection.messageSent();
                         } else {
                             log.error("retry");
-                            connection.write(binMessageFrame);
+                            connection.messageSent();
                         }
                     }
                 });

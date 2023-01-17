@@ -4,6 +4,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.http.*;
 import lombok.SneakyThrows;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
@@ -122,13 +123,15 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
 
     private void http(HTTPConnection conn, HTTPIoHandler.AppAndReq rar) {
         DefaultHttpResponse response = new DefaultHttpResponse(HTTPVersion.HTTP_1_1, HTTPResponseStatus.OK);
+        response.setHeader(HTTPHeaders.Names.CONNECTION, HTTPHeaders.Values.CLOSE);
         response.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "video/x-flv");
+        response.setHeader(HTTPHeaders.Names.ACCEPT_RANGES, HTTPHeaders.Values.BYTES);
+        response.setHeader(HTTPHeaders.Names.CACHE_CONTROL,  HTTPHeaders.Values.NO_CACHE);
         response.setHeader(HTTPHeaders.Names.TRANSFER_ENCODING, "chunked");
-        //we may need a cross domain configuration in future
-        response.setHeader(HTTPHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-        response.setHeader("access-control-allow-methods", "GET, POST, PUT,DELETE");
-        response.setHeader("access-control-allow-headers", "Origin, X-Requested-With, Content-Type, Accept");
-        response.setHeader(HTTPHeaders.Names.CONNECTION, HTTPHeaders.Values.KEEP_ALIVE);
+        response.setHeader("access-control-allow-origin", rar.getHttpReq().getHeader(HTTPHeaders.Names.ORIGIN));
+        response.setHeader("access-control-allow-credentials", "true");
+        response.setHeader("vary", "origin");
+        response.setHeader(HTTPHeaders.Names.SERVER, "tl");
         ChannelFuture write = conn.write(response);
 
         write.addListener((i) -> {

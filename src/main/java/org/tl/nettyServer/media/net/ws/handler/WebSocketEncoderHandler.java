@@ -11,17 +11,20 @@ import org.tl.nettyServer.media.net.ws.message.WebSocketFrame;
 public class WebSocketEncoderHandler extends MessageToByteEncoder<Object> {
     private HTTPResponseEncoder he = new HTTPResponseEncoder();
 
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
-        BufFacade bufFacade;
+        BufFacade bufFacade = null;
         if (msg instanceof WebSocketFrame) {
             bufFacade = FrameUtils.genFinalFrameByte(msg);
+        } else if (msg instanceof BufFacade) {
+            ctx.writeAndFlush(((BufFacade<?>) msg).getBuf());
         } else {
             bufFacade = he.encodeBuffer(msg);
         }
 
-        if (bufFacade != null) {
-            BufFacade.wrapperAndCast(out).writeBytes(bufFacade);
+        if (bufFacade != null && bufFacade.readable()) {
+            ctx.writeAndFlush(bufFacade.getBuf());
         }
     }
 }

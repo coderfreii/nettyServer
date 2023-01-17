@@ -36,7 +36,6 @@ import org.tl.nettyServer.media.media.flv.meta.MetaService;
 import org.tl.nettyServer.media.media.processor.IPostProcessor;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -97,6 +96,12 @@ public class FLV implements IFLV {
         this(file, false);
     }
 
+    private ITag md;
+
+    public ITag getMd() {
+        return md;
+    }
+
     /**
      * Create FLV from given file source and with specified metadata generation option
      */
@@ -114,10 +119,11 @@ public class FLV implements IFLV {
                         if (metaService == null) {
                             metaService = new MetaService();
                         }
-                        metaData = metaService.readMetaData(tag.getBody());
+//                        metaData = metaService.readMetaData(tag.getBody());
+                        md = tag;
                     }
                     //这里release-
-                    tag.release();
+//                    tag.release();
                 }
                 reader.close();
             } catch (Exception e) {
@@ -177,9 +183,8 @@ public class FLV implements IFLV {
 
     @SuppressWarnings({"rawtypes"})
     @Override
-    public IMetaData getMetaData() throws FileNotFoundException {
-        metaService.setFile(file);
-        return null;
+    public IMetaData getMetaData() {
+        return this.metaData;
     }
 
     @Override

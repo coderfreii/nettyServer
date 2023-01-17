@@ -24,8 +24,8 @@ public class WsServer {
             @Override
             protected void initChannel(SocketChannel socketChannel) {
                 socketChannel.pipeline()
-                        .addLast(new WebSocketEncoderHandler())
-                        .addLast(new ConnInboundHandlerAdapter())
+                        .addLast(NettyUtil.getNEG(5, "WebSocketEncoderHandler"), new WebSocketEncoderHandler())
+                        .addLast(NettyUtil.getNEG(5, "ConnInboundHandlerAdapter"), new ConnInboundHandlerAdapter())
                         .addLast(new WebSocketDecoderHandler())
                         .addLast(new ChunkM2MDecoder())
                         .addLast(new ContentTypeDecoder())
@@ -49,6 +49,7 @@ public class WsServer {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     //设置保持活动连接状态
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .childOption(ChannelOption.SO_RCVBUF, 1024 * 1024)
                     //使用匿名内部类的形式初始化通道对象
                     .childHandler(test);//给workerGroup的EventLoop对应的管道设置处理器
 
