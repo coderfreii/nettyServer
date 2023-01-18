@@ -4,6 +4,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.messaging.IMessage;
 import org.tl.nettyServer.media.messaging.IMessageComponent;
 import org.tl.nettyServer.media.messaging.IPipe;
@@ -13,6 +14,7 @@ import org.tl.nettyServer.media.net.http.message.DefaultHttpChunk;
 import org.tl.nettyServer.media.net.rtmp.event.AudioData;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
+import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.stream.consumer.ICustomPushableConsumer;
 import org.tl.nettyServer.media.stream.data.IStreamPacket;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
@@ -66,15 +68,9 @@ public class HTTPConnectionConsumer implements ICustomPushableConsumer {
     public void pushMessage(IPipe pipe, IMessage message) {
         if (!inited) {
             //new byte{}{0x46, 0x4c, 0x56, 0x01, 0x05, 0x00, 0x00, 0x00, 0x09}
-            ChannelFuture write = conn.write(new DefaultHttpChunk(BufFacade.wrappedBuffer(header.array())));
-            write.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
-                    if (future.isSuccess()) {
-                        inited = true;
-                    }
-                }
-            });
+            conn.write(new DefaultHttpChunk(BufFacade.wrappedBuffer(header.array())));
+            //这里不能放在future的监听里面
+            inited = true;
         }
 
 
@@ -90,18 +86,21 @@ public class HTTPConnectionConsumer implements ICustomPushableConsumer {
                         if (future.isSuccess()) {
                             conn.messageSent();
                         } else {
+                            if (!future.channel().isOpen()) {
+                                conn.close();
+                                return;
+                            }
                             log.error("retry");
                             conn.messageSent();
                         }
                     }
                 });
             }
-
         } else if (message instanceof StatusMessage) {
-//            if (((StatusMessage) message).getBody().getCode().equals(StatusCodes.NS_PLAY_UNPUBLISHNOTIFY)) {
-//                closed = true;
-//                conn.close();
-//            }
+            if (((StatusMessage) message).getBody().getCode().equals(StatusCodes.NS_PLAY_UNPUBLISHNOTIFY)) {
+                closed = true;
+                conn.close();
+            }
         }
     }
 
@@ -123,6 +122,7 @@ public class HTTPConnectionConsumer implements ICustomPushableConsumer {
         byte[] r = new byte[buffer.readableBytes()];
         buffer.readBytes(r);
         buffer.release();
+        ReleaseUtil.releaseAll(msg);
         if (r.length > 1024) {
         }
         return r;

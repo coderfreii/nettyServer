@@ -3,6 +3,7 @@ package org.tl.nettyServer.media.net.http.codec;
 import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.CharsetUtil;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.http.message.HTTPChunk;
 import org.tl.nettyServer.media.net.http.message.HTTPChunkTrailer;
 import org.tl.nettyServer.media.net.http.message.HTTPHeaders;
@@ -83,6 +84,7 @@ public abstract class HTTPMessageEncoder extends MessageToByteEncoder<Object> {
                     temp.writeBytes(HTTPCodecUtil.CRLF);
                     temp.writeBytes(content);
                     temp.writeBytes(HTTPCodecUtil.CRLF);
+                    ReleaseUtil.releaseAll(content);
                     return temp;
                 }
             } else {

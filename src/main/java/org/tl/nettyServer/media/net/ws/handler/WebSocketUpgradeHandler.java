@@ -4,7 +4,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import io.netty.handler.codec.http.*;
 import lombok.SneakyThrows;
 import org.tl.nettyServer.media.Red5;
 import org.tl.nettyServer.media.buf.BufFacade;
@@ -51,33 +50,31 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
         }
 
 
-        HTTPResponse resp = new DefaultHttpResponse(HTTPVersion.HTTP_1_1, HTTPResponseStatus.BAD_REQUEST);
-        resp.setHeader(HTTPHeaders.Names.CONNECTION, HTTPHeaders.Values.UPGRADE);
+        HTTPResponse resp = new DefaultHttpResponse(HTTPVersion.HTTP_1_1, HTTPResponseStatus.NOT_FOUND);
+        IHTTPService defaultHttpService = HttpServiceResolver.getDefaultHttpService();
+        resp.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "application/json; charset=utf-8");
+
         HTTPIoHandler.AppRequestResolver appRequestResolver = new HTTPIoHandler.AppRequestResolver();
         HTTPIoHandler.AppAndReq resolve = appRequestResolver.resolve(req);
         IScope scope = ScopeUtils.getScope(resolve.getAppName());
         if (scope != null) {
             if (scope.isConnectionAllowed(conn)) {
                 try {
-                    doUpgrade(req, resp, conn, resolve);
+                    preparePlay(req, resp, conn, resolve);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else {
-                IHTTPService defaultHttpService = HttpServiceResolver.getDefaultHttpService();
-                resp.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "application/json; charset=utf-8");
                 defaultHttpService.commitResponse(req, resp, BufFacade.wrappedBuffer("{'message':'访问被拒绝'}".getBytes(StandardCharsets.UTF_8)));
                 return;
             }
         } else {
-            IHTTPService defaultHttpService = HttpServiceResolver.getDefaultHttpService();
-            resp.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "application/json; charset=utf-8");
             defaultHttpService.commitResponse(req, resp, BufFacade.wrappedBuffer("{'message':'访问被拒绝'}".getBytes(StandardCharsets.UTF_8)));
         }
         Red5.setConnectionLocal(null);
     }
 
-    void doUpgrade(HTTPRequest req, HTTPResponse resp, HTTPConnection conn, HTTPIoHandler.AppAndReq rar) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    void preparePlay(HTTPRequest req, HTTPResponse resp, HTTPConnection conn, HTTPIoHandler.AppAndReq rar) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         //这直接升级
         if (req.containsHeader(HTTPHeaders.Names.CONNECTION)) {
             if ("websocket".equals(req.getHeader(HTTPHeaders.Names.UPGRADE))) {
@@ -104,7 +101,7 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
                             conn.setWebsocket(true);
-                            upgradeSuccess(new WebSocketConnConsumer(conn), rar);
+                            startPlay(new WebSocketConnConsumer(conn), rar);
                         } else {
                             IHTTPService defaultHttpService = HttpServiceResolver.getDefaultHttpService();
                             resp.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "application/json; charset=utf-8");
@@ -123,7 +120,7 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
 
     private void http(HTTPConnection conn, HTTPIoHandler.AppAndReq rar) {
         DefaultHttpResponse response = new DefaultHttpResponse(HTTPVersion.HTTP_1_1, HTTPResponseStatus.OK);
-        response.setHeader(HTTPHeaders.Names.CONNECTION, HTTPHeaders.Values.CLOSE);
+        response.setHeader(HTTPHeaders.Names.CONNECTION, HTTPHeaders.Values.KEEP_ALIVE);
         response.setHeader(HTTPHeaders.Names.CONTENT_TYPE, "video/x-flv");
         response.setHeader(HTTPHeaders.Names.ACCEPT_RANGES, HTTPHeaders.Values.BYTES);
         response.setHeader(HTTPHeaders.Names.CACHE_CONTROL,  HTTPHeaders.Values.NO_CACHE);
@@ -136,7 +133,7 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
 
         write.addListener((i) -> {
             if (i.isSuccess()) {
-                upgradeSuccess(new HTTPConnectionConsumer(conn), rar);
+                startPlay(new HTTPConnectionConsumer(conn), rar);
             } else {
 
             }
@@ -144,7 +141,7 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
     }
 
     @SneakyThrows
-    private void upgradeSuccess(ICustomPushableConsumer httpConnectionConsumer, HTTPIoHandler.AppAndReq rar) {
+    private void startPlay(ICustomPushableConsumer httpConnectionConsumer, HTTPIoHandler.AppAndReq rar) {
         IScope scope = ScopeUtils.getScope(rar.getAppName());
         httpConnectionConsumer.getConnection().connect(scope, new String[]{"1"});
         CustomSingleItemSubStream rtspStream = new CustomSingleItemSubStream(scope, httpConnectionConsumer);

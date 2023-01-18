@@ -10,20 +10,24 @@ import org.tl.nettyServer.media.messaging.IPipe;
 import org.tl.nettyServer.media.messaging.OOBControlMessage;
 import org.tl.nettyServer.media.net.http.conn.HTTPConnection;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
+import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.net.ws.message.BinMessageFrame;
 import org.tl.nettyServer.media.stream.consumer.ICustomPushableConsumer;
 import org.tl.nettyServer.media.stream.data.IStreamPacket;
 import org.tl.nettyServer.media.stream.message.RTMPMessage;
+import org.tl.nettyServer.media.stream.message.StatusMessage;
 
 import java.io.IOException;
 
 @Slf4j
 public class WebSocketConnConsumer implements ICustomPushableConsumer {
-    private HTTPConnection connection;
+    private HTTPConnection conn;
 
     private static BufFacade header = BufFacade.buffer(13);
 
     private boolean inited = false;
+
+    private boolean closed = false;
 
     static {
         // write flv header
@@ -34,7 +38,7 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
     }
 
     public WebSocketConnConsumer(HTTPConnection connection) {
-        this.connection = connection;
+        this.conn = connection;
     }
 
     @Override
@@ -44,14 +48,14 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
 
     @Override
     public HTTPConnection getConnection() {
-        return this.connection;
+        return this.conn;
     }
 
     @Override
     public void pushMessage(IPipe pipe, IMessage message) throws IOException {
         if (!inited) {
             //new byte{}{0x46, 0x4c, 0x56, 0x01, 0x05, 0x00, 0x00, 0x00, 0x09}
-            connection.write(new BinMessageFrame(header.array()));
+            conn.write(new BinMessageFrame(header.array()));
             //尝试发送metadata
             inited = true;
         }
@@ -61,18 +65,23 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
             if (body instanceof IStreamPacket) {
                 IStreamPacket ip = (IStreamPacket) body;
                 BinMessageFrame binMessageFrame = encodeMediaAsFlvTagAndPrevTagSize(ip);
-                ChannelFuture write = connection.write(binMessageFrame);
+                ChannelFuture write = conn.write(binMessageFrame);
                 write.addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (future.isSuccess()) {
-                            connection.messageSent();
+                            conn.messageSent();
                         } else {
                             log.error("retry");
-                            connection.messageSent();
+                            conn.messageSent();
                         }
                     }
                 });
+            }
+        } else if (message instanceof StatusMessage) {
+            if (((StatusMessage) message).getBody().getCode().equals(StatusCodes.NS_PLAY_UNPUBLISHNOTIFY)) {
+                closed = true;
+                conn.close();
             }
         }
     }
