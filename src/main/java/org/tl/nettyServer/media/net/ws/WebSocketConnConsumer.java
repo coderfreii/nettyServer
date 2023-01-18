@@ -4,6 +4,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.messaging.IMessage;
 import org.tl.nettyServer.media.messaging.IMessageComponent;
 import org.tl.nettyServer.media.messaging.IPipe;
@@ -105,6 +106,7 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
         byte[] r = new byte[buffer.readableBytes()];
         buffer.readBytes(r);
         buffer.release();
+        ReleaseUtil.releaseAll(msg);
         if (r.length > 1024) {
         }
         return new BinMessageFrame(r);
