@@ -18,7 +18,7 @@ public interface BufFacade<T> {
     Class<ByteBuf> currentByteBuf = ByteBuf.class;
 
     static <T> BufFacade<T> buffer(int size) {
-        return (BufFacade<T>) new ByteBufFacade(PooledByteBufAllocator.DEFAULT.buffer(size));
+        return (BufFacade<T>) new ByteBufFacade(PooledByteBufAllocator.DEFAULT.heapBuffer(size));
     }
 
     static <T> BufFacade<T> directBuffer(int size) {

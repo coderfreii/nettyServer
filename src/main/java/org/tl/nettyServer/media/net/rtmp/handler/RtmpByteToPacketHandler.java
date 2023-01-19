@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.codec.RTMPProtocolDecoder;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.session.SessionAccessor;
@@ -25,8 +26,9 @@ public class RtmpByteToPacketHandler extends MessageToMessageDecoder<BufFacade<B
             log.debug("left {}", bufFacadeStore.readableBytes());
         }
         bufFacadeStore.writeBytes(msg);
-        msg.release();
+        ReleaseUtil.releaseAll(msg);
         List<Object> objects = decoder.decodeBuffer(connection, bufFacadeStore);
+        bufFacadeStore.discardReadBytes();
         out.addAll(objects);
     }
 

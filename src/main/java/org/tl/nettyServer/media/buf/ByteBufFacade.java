@@ -1,7 +1,6 @@
 package org.tl.nettyServer.media.buf;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Data;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.io.IOException;
@@ -20,6 +19,7 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
     @Override
     public String hex() {
         this.markReaderIndex();
+        this.readerIndex(0);
         byte[] dst = new byte[this.readableBytes()];
         this.readBytes(dst);
         this.resetReaderIndex();
@@ -779,14 +779,19 @@ public class ByteBufFacade implements BufFacade<ByteBuf> {
         return this;
     }
 
+    private byte[] array;
+
     @Override
     public byte[] array() {
         try {
+            if (!this.target.isDirect()) {
+                throw new Exception("empty array");
+            }
             return this.target.array();
         } catch (Exception e) {
             this.markReaderIndex();
             this.rewind();
-            byte[] array = new byte[this.readableBytes()];
+            byte[] array = new byte[readableBytes()];
             this.readBytes(array);
             this.resetReaderIndex();
             return array;
