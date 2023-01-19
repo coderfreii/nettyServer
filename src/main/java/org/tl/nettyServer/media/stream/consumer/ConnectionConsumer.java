@@ -177,7 +177,8 @@ public class ConnectionConsumer implements IPushableConsumer, IPipeConnectionLis
                     data.write(msg);
             }
         } else {
-            ReleaseUtil.release(message);
+            ReleaseUtil.releaseAll(message);
+            message = null;
             log.debug("Unhandled push message: {}", message);
             if (log.isTraceEnabled()) {
                 Class<? extends IMessage> clazz = message.getClass();

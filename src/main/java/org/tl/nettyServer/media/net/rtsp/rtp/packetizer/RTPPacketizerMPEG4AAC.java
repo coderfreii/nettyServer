@@ -5,6 +5,7 @@ import gov.nist.javax.sdp.MediaDescriptionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.media.acc.AACFrame;
 import org.tl.nettyServer.media.media.acc.AACUtils;
@@ -72,6 +73,7 @@ public class RTPPacketizerMPEG4AAC extends RTPPacketizerAudioBase implements IRT
 		payload[2] = auheader[0];
 		payload[3] = auheader[1];
 		dataBuff.readBytes(payload, 4, ausize);
+		ReleaseUtil.releaseAll(dataBuff);
 		rtpPacket.setPayload(payload);
 		
 		write(rtpPacket);		

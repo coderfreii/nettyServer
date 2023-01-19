@@ -29,10 +29,7 @@ import org.tl.nettyServer.media.net.rtmp.consts.FormatMessageType;
 import org.tl.nettyServer.media.net.rtmp.event.Abort;
 import org.tl.nettyServer.media.net.rtmp.event.ChunkSize;
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
-import org.tl.nettyServer.media.net.rtmp.message.ChunkHeader;
-import org.tl.nettyServer.media.net.rtmp.message.Constants;
-import org.tl.nettyServer.media.net.rtmp.message.Header;
-import org.tl.nettyServer.media.net.rtmp.message.Packet;
+import org.tl.nettyServer.media.net.rtmp.message.*;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.service.stream.StreamCommandService;
@@ -359,11 +356,12 @@ public class RTMPProtocolDecoder implements Constants {
         final byte format = chh.getFormat();
         Header lastHeader = rtmpProtocolState.getLastReadHeader(csId);
         if (log.isTraceEnabled()) {
-            log.trace("{} lastHeader: {}", Header.HeaderType.values()[format], lastHeader);
+            log.trace("{} lastHeader: {}", HeaderType.HeaderTypeValues.values[format], lastHeader);
         }
         // got a non-new header for a channel which has no last-read header
         if (format != FormatMessageType.FULL && lastHeader == null) {
-            String detail = String.format("Last header null: %s, csId %s", Header.HeaderType.values()[format], csId);
+//            String detail = String.format("Last header null: %s, csId %s", HeaderType.HeaderTypeValues.values[format], csId);
+            String detail = String.format("Last header null:  csId %s",  csId);
             log.debug("{}", detail);
             // if the op prefers to exit or kill the connection, we should allow based on configuration param
             if (closeOnHeaderError) {
@@ -463,7 +461,7 @@ public class RTMPProtocolDecoder implements Constants {
             default:
                 throw new ProtocolException(String.format("Unexpected header: %s", format));
         }
-        log.trace("Decoded chunk {} {}", Header.HeaderType.values()[format], header);
+//        log.trace("Decoded chunk {} {}", HeaderType.HeaderTypeValues.values[format], header);
         header.collapseTimeStamps();
         return header;
     }

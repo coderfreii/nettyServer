@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.stream.message;
 
 import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 import org.tl.nettyServer.media.stream.data.IStreamData;
+import org.tl.nettyServer.media.stream.data.IStreamPacket;
 
 import java.io.IOException;
 
@@ -18,6 +19,13 @@ public interface Duplicateable<T> {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+        }
+        return rtmpEvent;
+    }
+
+    static IStreamPacket doDuplicate(IStreamPacket rtmpEvent) {
+        if (rtmpEvent instanceof IRTMPEvent) {
+            return (IStreamPacket) doDuplicate((IRTMPEvent) rtmpEvent);
         }
         return rtmpEvent;
     }

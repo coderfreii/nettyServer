@@ -30,9 +30,6 @@ public class Header implements Constants, Cloneable, Externalizable {
 
     private static final long serialVersionUID = 8982665579411495026L;
 
-    public enum HeaderType {
-        HEADER_NEW, HEADER_SAME_SOURCE, HEADER_TIMER_CHANGE, HEADER_CONTINUE;
-    }
 
     private int csId;
 

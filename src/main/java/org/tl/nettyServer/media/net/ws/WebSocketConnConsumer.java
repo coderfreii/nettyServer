@@ -107,6 +107,7 @@ public class WebSocketConnConsumer implements ICustomPushableConsumer {
         buffer.readBytes(r);
         buffer.release();
         ReleaseUtil.releaseAll(msg);
+        msg = null;
         if (r.length > 1024) {
         }
         return new BinMessageFrame(r);

@@ -20,6 +20,7 @@ public class ReleaseUtil {
 
             }
         }
+        o = null;
     }
 
 
@@ -35,6 +36,7 @@ public class ReleaseUtil {
         while (!release(o)) {
 
         }
+        o = null;
     }
 
     public static BufFacade duplicate(BufFacade o) {

@@ -5,10 +5,12 @@ import gov.nist.javax.sdp.MediaDescriptionImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.media.flv.FLVUtils;
 import org.tl.nettyServer.media.media.h264.H264Utils;
 import org.tl.nettyServer.media.media.h264.H264CodecConfigInfo;
 import org.tl.nettyServer.media.media.h264.H264CodecConfigParts;
+import org.tl.nettyServer.media.net.rtmp.RTMPType;
 import org.tl.nettyServer.media.net.rtmp.codec.VideoCodec;
 import org.tl.nettyServer.media.net.rtmp.event.VideoData;
 import org.tl.nettyServer.media.net.rtsp.rtp.RTPPacket;
@@ -169,6 +171,7 @@ public class RTPPacketizerRFC3984H264 extends RTPPacketizerVideoBase implements 
 				videoRTMP2RTPH264FU(nalu, ts);
 				start += packetLen;
 	            if (start >= len) {
+					ReleaseUtil.releaseAll(dataBuff);
 	            	break;
 	            }
 			}

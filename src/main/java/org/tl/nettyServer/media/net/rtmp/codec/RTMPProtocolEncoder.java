@@ -33,10 +33,7 @@ import org.tl.nettyServer.media.net.rtmp.RTMPUtils;
 import org.tl.nettyServer.media.net.rtmp.conn.IConnection;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.event.*;
-import org.tl.nettyServer.media.net.rtmp.message.Constants;
-import org.tl.nettyServer.media.net.rtmp.message.Header;
-import org.tl.nettyServer.media.net.rtmp.message.Packet;
-import org.tl.nettyServer.media.net.rtmp.message.SharedObjectTypeMapping;
+import org.tl.nettyServer.media.net.rtmp.message.*;
 import org.tl.nettyServer.media.net.rtmp.status.Status;
 import org.tl.nettyServer.media.net.rtmp.status.StatusCodes;
 import org.tl.nettyServer.media.net.rtmp.status.StatusObject;
@@ -394,7 +391,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
         byte headerType = getHeaderType(header, lastHeader);
         RTMPUtils.encodeHeaderByte(buf, headerType, header.getCsId());
         if (log.isTraceEnabled()) {
-            log.trace("{} lastHeader: {}", Header.HeaderType.values()[headerType], lastHeader);
+//            log.trace("{} lastHeader: {}", HeaderType.HeaderTypeValues.values[headerType], lastHeader);
         }
         /*
          Timestamps in RtmpProtocolState are given as an integer number of milliseconds relative to an unspecified epoch. Typically, each stream will start
@@ -476,7 +473,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
             default:
                 break;
         }
-        log.trace("Encoded chunk {} {}", Header.HeaderType.values()[headerType], header);
+//        log.trace("Encoded chunk {} {}", HeaderType.HeaderTypeValues.values[headerType], header);
     }
 
     /**

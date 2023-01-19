@@ -198,6 +198,7 @@ public class RTMPNettyConnection extends RTMPConnection implements RTMPNettyConn
             }
         } else {
             ReleaseUtil.releaseAll(out);
+            out = null;
         }
     }
 

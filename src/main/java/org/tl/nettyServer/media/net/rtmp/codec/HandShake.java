@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.BigIntegers;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.message.Constants;
 import org.tl.nettyServer.media.util.Tools;
@@ -477,6 +478,8 @@ public class HandShake {
         }
         byte[] c2 = new byte[Constants.HANDSHAKE_SIZE];
         in.readBytes(c2);
+        ReleaseUtil.releaseAll(in);
+        in = null;
 
         // 在client1中做过判断
         if (fp9Handshake) {

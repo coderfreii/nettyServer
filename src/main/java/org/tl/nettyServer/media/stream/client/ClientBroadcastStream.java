@@ -358,6 +358,7 @@ public class ClientBroadcastStream extends AbstractClientStream implements IClie
                     }
 
                     ReleaseUtil.releaseAll(rtmpEvent);
+                    rtmpEvent = null;
                     break;
                 default:
                     // ignored event

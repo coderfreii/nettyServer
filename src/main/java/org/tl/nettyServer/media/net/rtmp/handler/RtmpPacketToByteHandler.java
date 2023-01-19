@@ -71,6 +71,7 @@ public class RtmpPacketToByteHandler extends MessageToMessageEncoder<Packet> {
             }
         } else {
             ReleaseUtil.releaseAll(msg);
+            msg = null;
         }
     }
 

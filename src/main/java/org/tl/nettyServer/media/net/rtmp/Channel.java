@@ -112,6 +112,7 @@ public class Channel {
             write(event, streamId);
         } else {
             ReleaseUtil.releaseAll(event);
+            event = null;
             log.debug("Connection {} is closed, cannot X to channel: {}", connection.getSessionId(), id);
         }
     }

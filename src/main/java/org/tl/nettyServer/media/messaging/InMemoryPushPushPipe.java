@@ -117,7 +117,8 @@ public class InMemoryPushPushPipe extends AbstractPipe {
             }
         }
         if (message instanceof RTMPMessage) {
-            ReleaseUtil.release(message);
+            ReleaseUtil.releaseAll(message);
+            message = null;
         }
     }
 
