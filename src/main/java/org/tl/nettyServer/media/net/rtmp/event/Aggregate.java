@@ -302,4 +302,8 @@ public class Aggregate extends BaseEvent implements IoConstants, IStreamData<Agg
         return result;
     }
 
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(data);
+    }
 }

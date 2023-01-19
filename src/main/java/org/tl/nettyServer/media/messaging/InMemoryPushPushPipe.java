@@ -97,7 +97,7 @@ public class InMemoryPushPushPipe extends AbstractPipe {
         log.debug("pushMessage: {} to {} consumers", message, consumers.size());
         if (consumers.size() == 0) {
             if (message instanceof Releasable) {
-                ((Releasable) message).release();
+                ReleaseUtil.releaseAll(message);
             }
         }
         /* 把消息推给消费者 */

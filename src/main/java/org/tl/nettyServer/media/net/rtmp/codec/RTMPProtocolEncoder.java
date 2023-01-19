@@ -176,7 +176,7 @@ public class RTMPProtocolEncoder implements Constants, IEventEncoder {
             }
         } else {
             //这里release-
-            packet.release();
+            ReleaseUtil.releaseAll(packet);
         }
         return out;
     }

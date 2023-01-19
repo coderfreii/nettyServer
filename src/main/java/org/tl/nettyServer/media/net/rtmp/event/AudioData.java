@@ -225,4 +225,8 @@ public class AudioData extends BaseEvent implements IStreamData<AudioData>, IStr
         return String.format("Audio - ts: %s length: %s", getTimestamp(), (data != null ? data.readableBytes() : '0'));
     }
 
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(data);
+    }
 }

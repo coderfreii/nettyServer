@@ -281,4 +281,8 @@ public class VideoData extends BaseEvent implements IoConstants, IStreamData<Vid
         return String.format("Video - ts: %s length: %s", getTimestamp(), (data != null ? data.readableBytes() : '0'));
     }
 
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(data);
+    }
 }

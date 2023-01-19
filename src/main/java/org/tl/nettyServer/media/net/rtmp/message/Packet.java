@@ -189,7 +189,7 @@ public class Packet implements Externalizable, Releasable {
             d = ReleaseUtil.release(data);
         }
         if (this.message != null) {
-            m = this.message.release();
+            m = ReleaseUtil.release(message);
         }
 
         if (d && m) {
@@ -197,5 +197,11 @@ public class Packet implements Externalizable, Releasable {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(data);
+        ReleaseUtil.clear(message);
     }
 }

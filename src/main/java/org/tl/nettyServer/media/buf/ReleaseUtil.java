@@ -3,6 +3,19 @@ package org.tl.nettyServer.media.buf;
 import org.tl.nettyServer.media.stream.message.Releasable;
 
 public class ReleaseUtil {
+    public static void clear(Object o) {
+        if (o == null) return;
+        if (o instanceof Releasable) {
+            ((Releasable) o).clear();
+        }
+    }
+
+    public static void clear(BufFacade o) {
+        if (o == null) return;
+        o.clear();
+    }
+
+
     public static boolean release(Object o) {
         if (o == null) return true;
 
@@ -20,6 +33,7 @@ public class ReleaseUtil {
 
             }
         }
+        clear(o);
         o = null;
     }
 
@@ -36,6 +50,7 @@ public class ReleaseUtil {
         while (!release(o)) {
 
         }
+        clear(o);
         o = null;
     }
 

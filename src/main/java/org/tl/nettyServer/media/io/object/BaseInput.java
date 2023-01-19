@@ -111,4 +111,9 @@ public class BaseInput implements Releasable {
             return true;
         }
     }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(buf);
+    }
 }

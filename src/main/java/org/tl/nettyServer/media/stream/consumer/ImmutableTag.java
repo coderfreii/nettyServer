@@ -229,4 +229,10 @@ public class ImmutableTag implements ITag {
             return false;
         }
     }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(this.getData());
+        ReleaseUtil.clear(this.getBody());
+    }
 }

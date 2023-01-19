@@ -162,4 +162,10 @@ public class Tag implements ITag {
             return false;
         }
     }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(this.getBody());
+        ReleaseUtil.clear(this.getData());
+    }
 }

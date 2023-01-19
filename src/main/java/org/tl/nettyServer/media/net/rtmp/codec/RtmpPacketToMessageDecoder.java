@@ -2,6 +2,7 @@ package org.tl.nettyServer.media.net.rtmp.codec;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.io.amf.AMF;
 import org.tl.nettyServer.media.io.amf.Input;
 import org.tl.nettyServer.media.io.amf.Output;
@@ -330,7 +331,7 @@ public class RtmpPacketToMessageDecoder implements IEventDecoder {
         // get / set the parameters if there any
         Object[] params = in.readable() ? handleParameters(in, invoke, input) : new Object[0];
         //这里release-
-        input.release();
+        ReleaseUtil.releaseAll(input);
 
         // determine service information
         final int dotIndex = action.lastIndexOf('.');

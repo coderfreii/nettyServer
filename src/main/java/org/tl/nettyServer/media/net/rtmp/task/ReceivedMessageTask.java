@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.tl.nettyServer.media.Red5;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.net.rtmp.conn.RTMPConnection;
 import org.tl.nettyServer.media.net.rtmp.handler.packet.IRtmpPacketHandler;
 import org.tl.nettyServer.media.net.rtmp.message.Packet;
@@ -174,5 +175,10 @@ public final class ReceivedMessageTask implements Callable<Packet>, Releasable {
         }else {
             return true;
         }
+    }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(this.packet);
     }
 }

@@ -99,4 +99,9 @@ public class RTMPMessage extends AbstractMessage implements Releasable {
             return true;
         }
     }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(body);
+    }
 }

@@ -22,6 +22,7 @@ package org.tl.nettyServer.media.stream.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tl.nettyServer.media.buf.BufFacade;
+import org.tl.nettyServer.media.buf.ReleaseUtil;
 import org.tl.nettyServer.media.client.IContext;
 import org.tl.nettyServer.media.codec.IAudioStreamCodec;
 import org.tl.nettyServer.media.codec.IVideoStreamCodec;
@@ -465,7 +466,7 @@ public class ServerPlaylistBroadcastStream extends AbstractStream implements ISe
                 msgIn = null;
             }
             if (nextRTMPMessage != null) {
-                nextRTMPMessage.getBody().release();
+                ReleaseUtil.releaseAll(nextRTMPMessage.getBody());
             }
             stopRecording();
             setState(StreamState.STOPPED);
@@ -785,7 +786,7 @@ public class ServerPlaylistBroadcastStream extends AbstractStream implements ISe
             } catch (IOException err) {
                 log.error("Error while sending message.", err);
             }
-            nextRTMPMessage.getBody().release();
+            ReleaseUtil.releaseAll(nextRTMPMessage.getBody());
         }
         return sent;
     }
@@ -865,7 +866,7 @@ public class ServerPlaylistBroadcastStream extends AbstractStream implements ISe
             } catch (IOException err) {
                 log.error("Error while sending message.", err);
             }
-            nextRTMPMessage.getBody().release();
+            ReleaseUtil.releaseAll(nextRTMPMessage.getBody());
             nextRTMPMessage = null;
         }
         ResetMessage reset = new ResetMessage();

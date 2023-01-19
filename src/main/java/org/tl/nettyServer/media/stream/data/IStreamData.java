@@ -19,16 +19,15 @@
 package org.tl.nettyServer.media.stream.data;
 
 import org.tl.nettyServer.media.buf.BufFacade;
-import org.tl.nettyServer.media.net.rtmp.event.IRTMPEvent;
 import org.tl.nettyServer.media.stream.message.Duplicateable;
-import org.tl.nettyServer.media.stream.message.RTMPMessage;
+import org.tl.nettyServer.media.stream.message.Releasable;
 
 import java.io.IOException;
 
 /**
  * Stream data packet
  */
-public interface IStreamData<T> extends Duplicateable<IStreamData<T>> {
+public interface IStreamData<T> extends Duplicateable<IStreamData<T>>, Releasable {
 
     /**
      * Getter for property 'data'.

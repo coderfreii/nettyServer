@@ -1245,7 +1245,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                         if (body instanceof VideoData && ((VideoData) body).getFrameType() == VideoData.FrameType.KEYFRAME) {
                             //body.setTimestamp(seekPos);
                             doPushMessage(rtmpMessage);
-                            rtmpMessage.getBody().release();
+                            ReleaseUtil.releaseAll(rtmpMessage.getBody());
                             messageSent = true;
                             lastMessageTs = body.getTimestamp();
                             break;
@@ -1268,7 +1268,7 @@ public final class PlayEngine extends BaseEngine implements IFilter, IPipeConnec
                 RTMPMessage audioMessage = RTMPMessage.build(audio);
                 lastMessageTs = seekPos;
                 doPushMessage(audioMessage);
-                audioMessage.getBody().release();
+                ReleaseUtil.releaseAll(audioMessage.getBody());
             }
             if (!messageSent && subscriberStream.getState() == StreamState.PLAYING) {
                 boolean isRTMPTPlayback = "rtmpt".equals(subscriberStream.getConnection().getProtocol());

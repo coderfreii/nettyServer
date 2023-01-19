@@ -245,4 +245,9 @@ public class Notify extends BaseEvent implements ICommand, IStreamData<Notify>, 
     public String getAction() {
         return action;
     }
+
+    @Override
+    public void clear() {
+        ReleaseUtil.clear(this.data);
+    }
 }
