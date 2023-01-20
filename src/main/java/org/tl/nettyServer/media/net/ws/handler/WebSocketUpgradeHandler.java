@@ -125,7 +125,8 @@ public class WebSocketUpgradeHandler extends MessageToMessageDecoder<HTTPRequest
         response.setHeader(HTTPHeaders.Names.ACCEPT_RANGES, HTTPHeaders.Values.BYTES);
         response.setHeader(HTTPHeaders.Names.CACHE_CONTROL,  HTTPHeaders.Values.NO_CACHE);
         response.setHeader(HTTPHeaders.Names.TRANSFER_ENCODING, "chunked");
-        response.setHeader("access-control-allow-origin", rar.getHttpReq().getHeader(HTTPHeaders.Names.ORIGIN));
+//        response.setHeader("access-control-allow-origin", rar.getHttpReq().getHeader(HTTPHeaders.Names.ORIGIN));
+        response.setHeader("access-control-allow-origin", "*");
         response.setHeader("access-control-allow-credentials", "true");
         response.setHeader("vary", "origin");
         response.setHeader(HTTPHeaders.Names.SERVER, "tl");
