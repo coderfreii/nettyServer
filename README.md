@@ -1,9 +1,7 @@
 # nettyServer
-this repository is meant for learn how  stream media service work
+this repository is meant for knowing how stream media server works
 
-this project is based on red5 ,  for learnning purpose I decide to migrate it from mina to netty , it's basiclly available for stream for flv stream.
-
-
+this project is based on red5 ,  for learnning purpose I decide to migrate it from mina to netty which I prefer to and familiar with
 
 credits for 
   https://gitee.com/endlesshh/red5-server
